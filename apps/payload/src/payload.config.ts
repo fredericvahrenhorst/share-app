@@ -9,7 +9,7 @@ import elements from './fields/richText/elements'
 import leaves from './fields/richText/leaves'
 
 import Users from './collections/Users'
-import Pages from './collections/Pages'
+import Locations from './collections/Locations'
 import Media from './collections/Media'
 
 import { Settings } from './globals/Settings'
@@ -26,7 +26,7 @@ export default buildConfig({
     }
   }),
   collections: [
-    Pages,
+    Locations,
     Media,
     Users,
   ],
@@ -39,7 +39,12 @@ export default buildConfig({
   graphQL: {
     schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),
   },
-  cors: ['http://localhost:5173'],
+  csrf: [
+    'http://localhost:5173'
+  ],
+  cors: [
+    'http://localhost:5173'
+],
   upload: {
     limits: {
       fileSize: 20000000,

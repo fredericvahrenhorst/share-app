@@ -6,9 +6,8 @@ import { closeCircleOutline } from 'ionicons/icons';
 
 export default async function apiCall(endpoint, options, token) {
     const headers = {
-        accept: 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
     };
 
     if (token) {

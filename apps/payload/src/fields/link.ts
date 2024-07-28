@@ -104,7 +104,7 @@ const link: LinkType = ({ appearances, disableLabel = false, overrides = {}, nam
         en: 'Document to link to',
       },
       type: 'relationship',
-      relationTo: ['pages'],
+      relationTo: ['locations'],
       required: true,
       maxDepth: 1,
       admin: {

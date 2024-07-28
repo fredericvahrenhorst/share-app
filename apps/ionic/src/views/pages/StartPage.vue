@@ -96,7 +96,7 @@ const getStartPageData = async() => {
     await Promise.all([
         locationsStore.getAllLocations(),
     ]).then((values) => {
-        pins.value = values[0]?.data;
+        pins.value = values[0]?.docs;
 
         loading.value = false;
     });

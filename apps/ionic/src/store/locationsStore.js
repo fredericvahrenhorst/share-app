@@ -26,22 +26,19 @@ export const useLocationsStore = defineStore('locations', {
         },
 
         async getAllLocations () {
-            return [];
+             const response = await apiCall ('locations', {
+                method: 'GET'
+            });
 
+            const { docs } = response;
 
-            // const response = await apiCall ('locations/', {
-            //     method: 'GET'
-            // });
+            docs.forEach(location => {
+                if (!this.locations.find(e => e.slug === location.slug)) {
+                    this.locations.push(location);
+                }
+            });
 
-            // const { data } = response;
-
-            // data.forEach(location => {
-            //     if (!this.locations.find(e => e.slug === location.slug)) {
-            //         this.locations.push(location);
-            //     }
-            // });
-
-            // return response;
+            return response;
         },
     },
 })

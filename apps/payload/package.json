@@ -17,6 +17,7 @@
     "payload": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload"
   },
   "dependencies": {
+    "@innovixx/payload-color-picker-field": "^1.1.1",
     "@payloadcms/bundler-webpack": "^1.0.7",
     "@payloadcms/db-mongodb": "^1.5.2",
     "@payloadcms/plugin-cloud": "^3.0.1",

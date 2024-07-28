@@ -8,7 +8,7 @@
 
 export interface Config {
   collections: {
-    pages: Page
+    locations: Page
     posts: Post
     projects: Project
     media: Media
@@ -40,7 +40,7 @@ export interface Page {
             type?: ('reference' | 'custom') | null
             newTab?: boolean | null
             reference?: {
-              relationTo: 'pages'
+              relationTo: 'locations'
               value: string | Page
             } | null
             url?: string | null
@@ -64,7 +64,7 @@ export interface Page {
                 type?: ('reference' | 'custom') | null
                 newTab?: boolean | null
                 reference?: {
-                  relationTo: 'pages'
+                  relationTo: 'locations'
                   value: string | Page
                 } | null
                 url?: string | null
@@ -91,7 +91,7 @@ export interface Page {
                 type?: ('reference' | 'custom') | null
                 newTab?: boolean | null
                 reference?: {
-                  relationTo: 'pages'
+                  relationTo: 'locations'
                   value: string | Page
                 } | null
                 url?: string | null
@@ -216,7 +216,7 @@ export interface Post {
             type?: ('reference' | 'custom') | null
             newTab?: boolean | null
             reference?: {
-              relationTo: 'pages'
+              relationTo: 'locations'
               value: string | Page
             } | null
             url?: string | null
@@ -240,7 +240,7 @@ export interface Post {
                 type?: ('reference' | 'custom') | null
                 newTab?: boolean | null
                 reference?: {
-                  relationTo: 'pages'
+                  relationTo: 'locations'
                   value: string | Page
                 } | null
                 url?: string | null
@@ -267,7 +267,7 @@ export interface Post {
                 type?: ('reference' | 'custom') | null
                 newTab?: boolean | null
                 reference?: {
-                  relationTo: 'pages'
+                  relationTo: 'locations'
                   value: string | Page
                 } | null
                 url?: string | null
@@ -341,7 +341,7 @@ export interface Post {
                     type?: ('reference' | 'custom') | null
                     newTab?: boolean | null
                     reference?: {
-                      relationTo: 'pages'
+                      relationTo: 'locations'
                       value: string | Page
                     } | null
                     url?: string | null
@@ -368,7 +368,7 @@ export interface Post {
                     type?: ('reference' | 'custom') | null
                     newTab?: boolean | null
                     reference?: {
-                      relationTo: 'pages'
+                      relationTo: 'locations'
                       value: string | Page
                     } | null
                     url?: string | null
@@ -471,7 +471,7 @@ export interface Project {
             type?: ('reference' | 'custom') | null
             newTab?: boolean | null
             reference?: {
-              relationTo: 'pages'
+              relationTo: 'locations'
               value: string | Page
             } | null
             url?: string | null
@@ -495,7 +495,7 @@ export interface Project {
                 type?: ('reference' | 'custom') | null
                 newTab?: boolean | null
                 reference?: {
-                  relationTo: 'pages'
+                  relationTo: 'locations'
                   value: string | Page
                 } | null
                 url?: string | null
@@ -522,7 +522,7 @@ export interface Project {
                 type?: ('reference' | 'custom') | null
                 newTab?: boolean | null
                 reference?: {
-                  relationTo: 'pages'
+                  relationTo: 'locations'
                   value: string | Page
                 } | null
                 url?: string | null
@@ -613,7 +613,7 @@ export interface Redirect {
     type?: ('reference' | 'custom') | null
     reference?:
       | ({
-          relationTo: 'pages'
+          relationTo: 'locations'
           value: string | Page
         } | null)
       | ({
@@ -666,7 +666,7 @@ export interface Header {
           type?: ('reference' | 'custom') | null
           newTab?: boolean | null
           reference?: {
-            relationTo: 'pages'
+            relationTo: 'locations'
             value: string | Page
           } | null
           url?: string | null
@@ -686,7 +686,7 @@ export interface Footer {
           type?: ('reference' | 'custom') | null
           newTab?: boolean | null
           reference?: {
-            relationTo: 'pages'
+            relationTo: 'locations'
             value: string | Page
           } | null
           url?: string | null

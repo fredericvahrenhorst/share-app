@@ -123,6 +123,9 @@ importers:
 
   apps/payload:
     dependencies:
+      '@innovixx/payload-color-picker-field':
+        specifier: ^1.1.1
+        version: 1.1.1(payload@2.23.1(encoding@0.1.13)(typescript@4.9.5)(webpack@5.93.0(@swc/core@1.6.1)(webpack-cli@4.10.0)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@payloadcms/bundler-webpack':
         specifier: ^1.0.7
         version: 1.0.7(@swc/core@1.6.1)(ajv@8.17.1)(payload@2.23.1(encoding@0.1.13)(typescript@4.9.5)(webpack@5.93.0(@swc/core@1.6.1)(webpack-cli@4.10.0)))(sass@1.69.4)
@@ -1555,6 +1558,12 @@ packages:
   '@hutson/parse-repository-url@3.0.2':
     resolution: {integrity: sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==}
     engines: {node: '>=6.9.0'}
+
+  '@innovixx/payload-color-picker-field@1.1.1':
+    resolution: {integrity: sha512-ye2TyzsTDJI+ImOjldP4D07JRXRq7O7WYeQL2cW2YCl8OV6SuJNDP3L7SlCC7oe4K6OYETIzzkdCJLm86IG/MA==}
+    peerDependencies:
+      payload: ^2.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
   '@intlify/core-base@9.13.1':
     resolution: {integrity: sha512-+bcQRkJO9pcX8d0gel9ZNfrzU22sZFSA0WVhfXrf5jdJOS24a+Bp8pozuS9sBI9Hk/tGz83pgKfmqcn/Ci7/8w==}
@@ -5569,6 +5578,12 @@ packages:
       react: '>=15.6.2'
       react-dom: '>=15.6.2'
 
+  react-colorful@5.6.1:
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   react-datepicker@4.16.0:
     resolution: {integrity: sha512-hNQ0PAg/LQoVbDUO/RWAdm/RYmPhN3cz7LuQ3hqbs24OSp69QCiKOJRrQ4jk1gv1jNR5oYu8SjjgfDh8q6Q1yw==}
     peerDependencies:
@@ -9047,6 +9062,14 @@ snapshots:
   '@humanwhocodes/object-schema@2.0.3': {}
 
   '@hutson/parse-repository-url@3.0.2': {}
+
+  '@innovixx/payload-color-picker-field@1.1.1(payload@2.23.1(encoding@0.1.13)(typescript@4.9.5)(webpack@5.93.0(@swc/core@1.6.1)(webpack-cli@4.10.0)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      payload: 2.23.1(encoding@0.1.13)(typescript@4.9.5)(webpack@5.93.0(@swc/core@1.6.1)(webpack-cli@4.10.0))
+      react: 18.3.1
+      react-colorful: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    transitivePeerDependencies:
+      - react-dom
 
   '@intlify/core-base@9.13.1':
     dependencies:
@@ -13893,6 +13916,11 @@ snapshots:
     dependencies:
       classnames: 2.5.1
       prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  react-colorful@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
