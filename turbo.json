@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [],
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"]
+    },
+    "ionic#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".output/**"]
+    },
+    "payload#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**"]
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "generate": {
+      "cache": false
+    },
+    "payload#generate": {
+      "outputs": ["types.d.ts"]
+    },
+    "ionic#generate": {
+      "dependsOn": ["payload#generate"],
+      "outputs": ["graphql/index.js", "graphql/possibleTypes.json"]
+    },
+    "lint": {},
+    "format": {}
+  }
+}

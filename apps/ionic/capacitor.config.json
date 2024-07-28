@@ -1,0 +1,19 @@
+{
+  "appId": "com.share-app.app",
+  "appName": "Wauz Miau",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "dist",
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
