@@ -32,7 +32,6 @@ const Media: CollectionConfig = {
         }
 	},
 	access: {
-		create: anyone,
 		read: anyone,
 	},
 	upload: {

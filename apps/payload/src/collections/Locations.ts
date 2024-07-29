@@ -2,8 +2,6 @@ import { CollectionConfig } from 'payload/types'
 import { slugField } from '../fields/slug'
 
 import { anyone } from '../access/anyone'
-import e from 'express'
-
 
 const Locations: CollectionConfig = {
   slug: 'locations',

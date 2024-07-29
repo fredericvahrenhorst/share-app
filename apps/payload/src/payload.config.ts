@@ -39,9 +39,6 @@ export default buildConfig({
   graphQL: {
     schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),
   },
-  csrf: [
-    'http://localhost:5173'
-  ],
   cors: [
     'http://localhost:5173'
 ],
