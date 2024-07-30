@@ -1,6 +1,6 @@
 {
   "appId": "com.share-app.app",
-  "appName": "Wauz Miau",
+  "appName": "Share App",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
