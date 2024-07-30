@@ -29,6 +29,7 @@
     "pinia": "^2.1.7",
     "vue": "^3.3.0",
     "vue-i18n": "^9.10.2",
+    "vue-mapbox-ts": "^0.9.10",
     "vue-router": "^4.2.0"
   },
   "devDependencies": {

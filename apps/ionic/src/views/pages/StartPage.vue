@@ -12,10 +12,7 @@
                 </ion-text>
 
                 <div class="container">
-                    {{ pins }}
-                    {{ geo }}
-
-                    <button @click="getGeoLocation">GET GEO</button>
+                    <location-map :pins="pins" />
                 </div>
 
                 <ion-text>
@@ -60,13 +57,13 @@ import { useAppStore } from '../../store/appStore';
 import { useLocationsStore } from '../../store/locationsStore';
 
 import PageHeader from '../../components/PageHeader.vue';
+import LocationMap from '../../components/LocationMap.vue';
 
 const userStore = useUserStore();
 const appStore = useAppStore();
 const locationsStore = useLocationsStore();
 
 const { authenticated } = storeToRefs(userStore);
-const { geo } = storeToRefs(appStore);
 
 const loading = ref(true);
 const pins = ref([]);
