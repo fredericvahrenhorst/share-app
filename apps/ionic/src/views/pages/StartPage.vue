@@ -1,41 +1,9 @@
 <template>
     <ion-page ref="page">
-        <page-header :title="$t( 'pages.start.title' )" :loading="loading" />
+        <!-- <page-header :title="$t( 'pages.start.title' )" :loading="loading" /> -->
         <ion-content :fullscreen="true">
-            <ion-refresher slot="fixed" @ionRefresh="handleRefresh($event)">
-                <ion-refresher-content></ion-refresher-content>
-            </ion-refresher>
 
-            <div class="my-4">
-                <ion-text>
-                    <h2 class="ion-padding m-0 text-base font-semibold">{{ $t( 'pages.start.welcome' ) }}</h2>
-                </ion-text>
-
-                <div class="container">
-                    <location-map :pins="pins" />
-                </div>
-
-                <ion-text>
-                    <p class="ion-padding">
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-                        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
-                        , no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-                        amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
-                        et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-                        sanctus est Lorem ipsum dolor sit amet.
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                        tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-                        vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
-                        , no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-                        amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
-                        et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-                        sanctus est Lorem ipsum dolor sit amet.
-                    </p>
-                </ion-text>
-            </div>
+            <location-map :pins="pins" />
 
         </ion-content>
     </ion-page>
@@ -45,9 +13,6 @@
 import {
     IonContent,
     IonPage,
-    IonRefresher,
-    IonRefresherContent,
-    IonText,
 } from '@ionic/vue';
 import { storeToRefs } from 'pinia'; // eslint-disable-line
 import { onMounted, ref } from 'vue';
@@ -56,7 +21,7 @@ import { useUserStore } from '../../store/userStore';
 import { useAppStore } from '../../store/appStore';
 import { useLocationsStore } from '../../store/locationsStore';
 
-import PageHeader from '../../components/PageHeader.vue';
+// import PageHeader from '../../components/PageHeader.vue';
 import LocationMap from '../../components/LocationMap.vue';
 
 const userStore = useUserStore();
@@ -82,12 +47,6 @@ onMounted(async() => {
 
     await getStartPageData();
 });
-
-const handleRefresh = async(event) => {
-    // Refresh Hander here
-
-    event.target.complete();
-};
 
 const getStartPageData = async() => {
     await Promise.all([

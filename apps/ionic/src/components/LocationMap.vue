@@ -1,14 +1,14 @@
 <template>
-    <div class=" h-[500px] w-full">
-        {{ center }}
-
+    <div
+        v-if="pins"
+        class=" w-full h-full" style="width: 100%; height: 100%;"
+    >
         <mapbox-map
-            v-if="ready"
-            ref="map"
             :accessToken="mapboxToken"
             :zoom="12"
             :mapStyle="'mapbox://styles/mapbox/standard'"
             :center="center"
+            :auto-resize="true"
             :scrollZoom="false"
             :flyToOptions="{ maxDuration: 2000, speed: 1.2 }"
         >
@@ -16,6 +16,7 @@
                 v-for="pin in pins"
                 :key="pin.id" :lngLat="pin.location"
                 @click="popupPin = pin"
+                class="asdasda"
             >
                 <template v-slot:icon>
                     <div>
@@ -65,7 +66,7 @@ const popupPin = ref(null);
 const ready = ref(false);
 
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
-const center = [geo.value.long, geo.value.lat];
+const center = [geo.value?.long || 0, geo.value?.lat || 0];
 
 defineProps({
     pins: {
@@ -75,7 +76,10 @@ defineProps({
 });
 
 onMounted(() => {
-    ready.value = true;
     console.log('mounted Map');
+    ready.value = true;
+    setTimeout(() => {
+        ready.value = true;
+    }, 1000);
 });
 </script>
