@@ -15,42 +15,43 @@ import Media from './collections/Media'
 import { Settings } from './globals/Settings'
 
 export default buildConfig({
-  admin: {
-    user: Users.slug,
-    bundler: webpackBundler(),
-  },
-  editor: slateEditor({
     admin: {
-      elements: [...elements],
-      leaves: [...leaves],
-    }
-  }),
-  collections: [
-    Locations,
-    Media,
-    Users,
-  ],
-  globals: [
-    Settings,
-  ],
-  typescript: {
-    outputFile: path.resolve(__dirname, 'payload-types.ts'),
-  },
-  graphQL: {
-    schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),
-  },
-  cors: [
-    'http://localhost:5173'
-],
-  upload: {
-    limits: {
-      fileSize: 20000000,
+        user: Users.slug,
+        bundler: webpackBundler(),
     },
-  },
-  plugins: [
-  ],
-  db: mongooseAdapter({
-    url: process.env.MONGODB_URI,
-  }),
+    editor: slateEditor({
+        admin: {
+            elements: [...elements],
+            leaves: [...leaves],
+        }
+    }),
+    collections: [
+        Locations,
+        Media,
+        Users,
+    ],
+    globals: [
+        Settings,
+    ],
+    typescript: {
+        outputFile: path.resolve(__dirname, 'payload-types.ts'),
+    },
+    graphQL: {
+        schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),
+    },
+    cors: [
+        'http://localhost:5173',
+        'http://localhost:8101'
+    ],
+    upload: {
+        limits: {
+            fileSize: 20000000,
+        },
+    },
+    plugins: [
+    ],
+    db: mongooseAdapter({
+        url: process.env.MONGODB_URI,
+    }),
 })
 

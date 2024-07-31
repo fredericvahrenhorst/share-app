@@ -1,22 +1,28 @@
 <template>
     <div
-        v-if="pins"
-        class=" w-full h-full" style="width: 100%; height: 100%;"
+        class=" w-full h-full transition-opacity" style="width: 100%; height: 100%;"
+        :class="{ 'opacity-0': !ready }"
     >
+        center: {{ center }}
+        zoom: {{ Math.round(zoom) }}
+        userLocation: {{ userLocation }}
         <mapbox-map
             :accessToken="mapboxToken"
-            :zoom="12"
+            :zoom="zoom"
             :mapStyle="'mapbox://styles/mapbox/standard'"
             :center="center"
             :auto-resize="true"
             :scrollZoom="false"
-            :flyToOptions="{ maxDuration: 2000, speed: 1.2 }"
+            :flyToOptions="{ maxDuration: 500, speed: .5 }"
+            @loaded="ready = true"
+            @update:center="mapUpdated({ center: $event})"
+            @update:zoom="mapUpdated({ zoom: $event})"
         >
             <mapbox-marker
                 v-for="pin in pins"
-                :key="pin.id" :lngLat="pin.location"
+                :key="pin.id"
+                :lngLat="pin.location"
                 @click="popupPin = pin"
-                class="asdasda"
             >
                 <template v-slot:icon>
                     <div>
@@ -29,6 +35,15 @@
                     </div>
                 </template>
             </mapbox-marker>
+
+            <mapbox-marker
+                :lngLat="userLocation"
+            >
+                <template v-slot:icon>
+                    <div class=" w-3 h-3 bg-primary-default rounded-full"></div>
+                </template>
+            </mapbox-marker>
+
             <mapbox-popup
                 v-if="popupPin"
                 :lngLat="popupPin.location"
@@ -40,21 +55,18 @@
                     <p>{{ popupPin.description }}</p>
                 </div>
             </mapbox-popup>
-
-            <mapbox-navigation-control position="bottom-right" />
         </mapbox-map>
     </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 // eslint-disable-next-line
 import {
     MapboxMap,
     MapboxMarker,
     MapboxPopup,
-    MapboxNavigationControl
 } from 'vue-mapbox-ts';
 
 import { useAppStore } from '../store/appStore';
@@ -62,11 +74,20 @@ import { useAppStore } from '../store/appStore';
 const appStore = useAppStore();
 const { geo } = storeToRefs(appStore);
 
+const defaultCenter = [10.485843, 51.330290];
+const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
+
 const popupPin = ref(null);
 const ready = ref(false);
+// const zoom = ref(geo.value?.length ? 12 : 4);
+const zoom = ref(12);
+const center = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
+const userLocation = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
 
-const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
-const center = [geo.value?.long || 0, geo.value?.lat || 0];
+const mapUpdated = (event) => {
+    if (event.center) center.value = event.center;
+    if (event.zoom) zoom.value = event.zoom;
+};
 
 defineProps({
     pins: {
@@ -75,11 +96,11 @@ defineProps({
     },
 });
 
-onMounted(() => {
-    console.log('mounted Map');
-    ready.value = true;
-    setTimeout(() => {
-        ready.value = true;
-    }, 1000);
+watch(geo, () => {
+    if (geo) {
+        center.value = [geo.value.long, geo.value.lat];
+        userLocation.value = [geo.value.long, geo.value.lat];
+    }
 });
+
 </script>

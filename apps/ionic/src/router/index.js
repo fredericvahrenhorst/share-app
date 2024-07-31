@@ -22,12 +22,12 @@ const routes = [
             {
                 path: 'page2',
                 name: 'Page2',
-                component: () => import('@/views/pages/StartPage.vue') /* eslint-disable-line */
+                component: () => import('@/views/pages/EmptyPage.vue') /* eslint-disable-line */
             },
             {
                 path: 'page3',
                 name: 'Page3',
-                component: () => import('@/views/pages/StartPage.vue') /* eslint-disable-line */
+                component: () => import('@/views/pages/EmptyPage.vue') /* eslint-disable-line */
             },
         ]
     },

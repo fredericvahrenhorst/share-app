@@ -3,6 +3,12 @@
         <!-- <page-header :title="$t( 'pages.start.title' )" :loading="loading" /> -->
         <ion-content :fullscreen="true">
 
+            <div
+                class="absolute z-50 top-4 right-4 flex justify-center items-center p-1 bg-light-default rounded-md"
+                @click="getGeoLocation"
+            >
+                <ion-icon aria-hidden="true" size="large" color="primary" :icon="navigateCircleOutline" />
+            </div>
             <location-map :pins="pins" />
 
         </ion-content>
@@ -13,9 +19,12 @@
 import {
     IonContent,
     IonPage,
+    IonIcon,
 } from '@ionic/vue';
 import { storeToRefs } from 'pinia'; // eslint-disable-line
 import { onMounted, ref } from 'vue';
+import { navigateCircleOutline } from 'ionicons/icons';
+
 import { Geolocation } from '@capacitor/geolocation'; // eslint-disable-line
 import { useUserStore } from '../../store/userStore';
 import { useAppStore } from '../../store/appStore';
