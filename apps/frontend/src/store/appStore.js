@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { defineStore } from 'pinia';
+import { Geolocation } from '@capacitor/geolocation'; // eslint-disable-line
 
 export const useAppStore = defineStore('app', {
     state: () => ({
@@ -36,6 +37,11 @@ export const useAppStore = defineStore('app', {
             };
 
             localStorage.setItem('geo', JSON.stringify(this.geo));
+        },
+
+        async getGeoLocation() {
+            const geoData = await Geolocation.getCurrentPosition();
+            this.setGeoLatLong(geoData);
         },
     },
 })

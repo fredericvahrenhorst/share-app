@@ -16,6 +16,7 @@ import { Favorites } from './collections/Favorites'
 import { Reports } from './collections/Reports'
 
 import { locationsEndpoint } from './endpoints/locations'
+import { searchEndpoint } from './endpoints/search'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -72,6 +73,7 @@ export default buildConfig({
         return Response.json({ message: 'Hallo Welt!' });
       },
     },
-    locationsEndpoint
+    locationsEndpoint,
+    searchEndpoint
   ]
 })

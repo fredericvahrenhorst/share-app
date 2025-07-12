@@ -20,14 +20,19 @@ const routes = [
                 component: () => import('@/views/StartPage.vue') /* eslint-disable-line */
             },
             {
-                path: 'page2',
-                name: 'Page2',
-                component: () => import('@/views/EmptyPage.vue') /* eslint-disable-line */
+                path: 'kategorien',
+                name: 'Kategorien',
+                component: () => import('@/views/CategoriesPage.vue') /* eslint-disable-line */
             },
             {
-                path: 'page3',
-                name: 'Page3',
-                component: () => import('@/views/EmptyPage.vue') /* eslint-disable-line */
+                path: 'favoriten',
+                name: 'Favoriten',
+                component: () => import('@/views/FavoritesPage.vue') /* eslint-disable-line */
+            },
+            {
+                path: 'profil',
+                name: 'Profil',
+                component: () => import('@/views/ProfilPage.vue') /* eslint-disable-line */
             },
         ]
     },

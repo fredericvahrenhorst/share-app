@@ -61,10 +61,20 @@
   --font-size-9xl-line-height: 0.92;
 
   /* Colors */
+
+  --color-current: currentColor;
+
   --color-primary: var(--ion-color-primary);
   --color-primary-contrast: var(--ion-color-primary-contrast);
   --color-primary-shade: var(--ion-color-primary-shade);
   --color-primary-tint: var(--ion-color-primary-tint);
+
+  --color-light-gray-8: rgba(23,27,28,0.08);
+  --color-light-gray-16: rgba(23,27,28,0.16);
+  --color-light-gray-32: rgba(23,27,28,0.32);
+  --color-light-gray-64: rgba(23,27,28,0.64);
+  --color-light-gray-96: rgba(23,27,28,0.96);
+  --color-light-gray-100: rgba(23,27,28,1.00);
 
   --color-secondary: var(--ion-color-secondary);
   --color-secondary-contrast: var(--ion-color-secondary-contrast);

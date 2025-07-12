@@ -2,7 +2,7 @@ import * as turf from '@turf/turf'
 
 export const locationsEndpoint = {
   path: '/search/locations/nearby',
-  method: 'get',
+  method: 'get' as const,
   handler: async (req: any) => {
     const { latitude, longitude, radius = 10, category } = req.query;
     if (!latitude || !longitude) {
@@ -25,7 +25,7 @@ export const locationsEndpoint = {
 
     // Zielpunkt als GeoJSON-Point
     const from = turf.point([lat, lng]);
-    const options = { units: 'kilometers' };
+    const options = { units: 'kilometers' as const };
 
     // Filtere und berechne die Distanz für jede Location
     const locationsWithDistance = locations.docs
@@ -54,4 +54,4 @@ export const locationsEndpoint = {
       total: locationsWithDistance.length
     });
   }
-}; 
+};
