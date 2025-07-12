@@ -1,0 +1,100 @@
+'use client';
+
+import { c as _c } from "react/compiler-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React, { Fragment, useCallback } from 'react';
+import { DeleteMany } from '../../../elements/DeleteMany/index.js';
+import { EditMany_v4 } from '../../../elements/EditMany/index.js';
+import { ListSelection_v4, ListSelectionButton } from '../../../elements/ListSelection/index.js';
+import { PublishMany_v4 } from '../../../elements/PublishMany/index.js';
+import { UnpublishMany_v4 } from '../../../elements/UnpublishMany/index.js';
+import { SelectAllStatus, useSelection } from '../../../providers/Selection/index.js';
+import { useTranslation } from '../../../providers/Translation/index.js';
+export const ListSelection = t0 => {
+  const $ = _c(14);
+  const {
+    collectionConfig,
+    disableBulkDelete,
+    disableBulkEdit,
+    label
+  } = t0;
+  const {
+    count,
+    getSelectedIds,
+    selectAll,
+    toggleAll,
+    totalDocs
+  } = useSelection();
+  const {
+    t
+  } = useTranslation();
+  let t1;
+  if ($[0] !== toggleAll) {
+    t1 = () => toggleAll(false);
+    $[0] = toggleAll;
+    $[1] = t1;
+  } else {
+    t1 = $[1];
+  }
+  const onActionSuccess = t1;
+  if (count === 0) {
+    return null;
+  }
+  let t2;
+  if ($[2] !== collectionConfig || $[3] !== count || $[4] !== disableBulkDelete || $[5] !== disableBulkEdit || $[6] !== getSelectedIds || $[7] !== label || $[8] !== onActionSuccess || $[9] !== selectAll || $[10] !== t || $[11] !== toggleAll || $[12] !== totalDocs) {
+    t2 = _jsx(ListSelection_v4, {
+      count,
+      ListActions: [selectAll !== SelectAllStatus.AllAvailable && count < totalDocs ? _jsx(ListSelectionButton, {
+        "aria-label": t("general:selectAll", {
+          count: `(${totalDocs})`,
+          label
+        }),
+        id: "select-all-across-pages",
+        onClick: () => toggleAll(true),
+        children: t("general:selectAll", {
+          count: `(${totalDocs})`,
+          label: ""
+        })
+      }, "select-all") : null].filter(Boolean),
+      SelectionActions: [!disableBulkEdit && _jsxs(Fragment, {
+        children: [_jsx(EditMany_v4, {
+          collection: collectionConfig,
+          count,
+          ids: getSelectedIds(),
+          onSuccess: onActionSuccess,
+          selectAll: selectAll === SelectAllStatus.AllAvailable
+        }), _jsx(PublishMany_v4, {
+          collection: collectionConfig,
+          count,
+          ids: getSelectedIds(),
+          onSuccess: onActionSuccess,
+          selectAll: selectAll === SelectAllStatus.AllAvailable
+        }), _jsx(UnpublishMany_v4, {
+          collection: collectionConfig,
+          count,
+          ids: getSelectedIds(),
+          onSuccess: onActionSuccess,
+          selectAll: selectAll === SelectAllStatus.AllAvailable
+        })]
+      }, "bulk-actions"), !disableBulkDelete && _jsx(DeleteMany, {
+        collection: collectionConfig
+      }, "bulk-delete")].filter(Boolean)
+    });
+    $[2] = collectionConfig;
+    $[3] = count;
+    $[4] = disableBulkDelete;
+    $[5] = disableBulkEdit;
+    $[6] = getSelectedIds;
+    $[7] = label;
+    $[8] = onActionSuccess;
+    $[9] = selectAll;
+    $[10] = t;
+    $[11] = toggleAll;
+    $[12] = totalDocs;
+    $[13] = t2;
+  } else {
+    t2 = $[13];
+  }
+  return t2;
+};
+//# sourceMappingURL=index.js.map
