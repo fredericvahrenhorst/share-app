@@ -3,23 +3,35 @@
         class=" relative w-full h-full transition-opacity" style="width: 100%; height: 100%;"
         :class="{ 'opacity-0': !ready }"
     >
+        <!-- Suchfeld in der Top-Bar -->
         <div
-            class="fixed top-2 left-2 right-2 w-auto z-50 shadow-lg h-18 p-1.5 gap-2
-            backdrop-blur-lg bg-light-gray-8 border border-light-gray-16/50
-            rounded-2xl"
+            id="search-bar"
+            class="fixed top-[calc(var(--ion-statusbar-padding)+2rem)] left-2 right-2 w-auto z-50"
         >
-            top search and filter bar
+            <ion-item class="flex gap-2 blur-bg-light text-light-gray-96" lines="none" color="transparent">
+                <ion-icon :icon="searchOutline" size="small" slot="start" class="text-current mr-2" />
+                <ion-input
+                    :placeholder="t('search.placeholder')"
+                    readonly
+                    @click="openSearchModal"
+                    class="cursor-pointer border-none"
+                    style="--border-width: 0px;"
+                />
+            </ion-item>
         </div>
 
         <div
             class="
-            fixed z-50 bottm-32 right-4 w-8 h-8
-            rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center
+            fixed z-50 bottom-36 right-4 w-8 h-8
+            rounded-full
+            flex items-center justify-center
+            blur-bg-light text-light-gray-96
             "
             @click="getGeoLocation"
         >
-            <ion-icon aria-hidden="true" size="large" color="light" :icon="navigateCircleOutline" />
+            <ion-icon aria-hidden="true" size="small" color="primary" :icon="navigateOutline" />
         </div>
+
         <mapbox-map
             :accessToken="mapboxToken"
             :zoom="zoom"
@@ -36,7 +48,7 @@
                 v-for="location in locations"
                 :key="location.id"
                 :lngLat="location.coordinates"
-                @click="popupLocation = location; center = location.coordinates;"
+                @click="handleLocationSelect(location)"
             >
                 <template v-slot:icon>
                     <div
@@ -67,12 +79,14 @@
 
         </mapbox-map>
 
+        <!-- Location Detail Modal -->
         <ion-modal
             ref="locationModal"
             :is-open="!!popupLocation"
             :breakpoints="[0, 1]"
             :initial-breakpoint="1"
             @didDismiss="popupLocation = null"
+            class="popupLocation"
         >
             <div v-if="popupLocation" class="p-4 max-h-[600px] overflow-scroll">
                 <h2 class="text-lg font-bold mb-2">{{ popupLocation.name }}</h2>
@@ -94,26 +108,39 @@
                 </div>
 
                 <ion-button expand="block" @click="modelDismiss()" class="mt-4">
-                    Schließen
+                    {{ t('misc.close') }}
                 </ion-button>
             </div>
         </ion-modal>
+
+        <!-- Search Modal -->
+        <SearchModal
+            :is-open="isSearchModalOpen"
+            @close="closeSearchModal"
+            @select-location="handleLocationSelect"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 // eslint-disable-next-line
 import {
     MapboxMap,
     MapboxMarker,
 } from 'vue-mapbox-ts';
-import { IonButton, IonModal } from '@ionic/vue';
-import { navigateCircleOutline, heartOutline } from 'ionicons/icons';
+import { IonButton, IonModal, IonItem, IonInput, IonIcon } from '@ionic/vue';
+import { navigateOutline, heartOutline, searchOutline, filterOutline } from 'ionicons/icons';
+import SearchModal from './SearchModal.vue';
 
 import { useAppStore } from '../store/appStore';
 
+// i18n
+const { t } = useI18n();
+
+// Store
 const appStore = useAppStore();
 const { geo } = storeToRefs(appStore);
 
@@ -122,13 +149,29 @@ const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 const popupLocation = ref(null);
 const ready = ref(false);
-// const zoom = ref(geo.value?.length ? 12 : 4);
-const zoom = ref(10);
+const isSearchModalOpen = ref(false);
+const zoom = ref(geo.value ? 10 : 5);
+// const zoom = ref(10);
 const center = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
 const userLocation = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
 const locationModal = ref(null);
 
 const modelDismiss = () => locationModal.value.$el.dismiss();
+
+// Search Modal Methods
+const openSearchModal = () => {
+    isSearchModalOpen.value = true;
+};
+
+const closeSearchModal = () => {
+    isSearchModalOpen.value = false;
+};
+
+const handleLocationSelect = (location) => {
+    // Klicke auf die Location auf der Karte
+    popupLocation.value = location;
+    center.value = location.coordinates;
+};
 
 // Wir setzen ein Timeout, damit das Update erst nach dem Beenden der Bewegung ausgeführt wird
 // let mapUpdateTimeout = null;
@@ -169,7 +212,7 @@ watch(geo, () => {
 </script>
 
 <style>
-  ion-modal {
+  ion-modal.popupLocation {
     --height: auto;
   }
 </style>

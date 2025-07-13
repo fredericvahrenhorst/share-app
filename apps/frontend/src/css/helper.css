@@ -1,0 +1,18 @@
+@layer utilities {
+    .blur-bg {
+        @apply backdrop-blur-lg bg-light-gray-8 border border-light-gray-16/50 rounded-2xl shadow-lg;
+    }
+
+    .blur-bg-light {
+        @apply backdrop-blur-lg bg-white/25 border border-light-gray-16/95 rounded-2xl shadow-lg;
+    }
+
+    .blur-bg-dark {
+        @apply backdrop-blur-lg bg-light-gray-32 border border-light-gray-64/50 rounded-2xl text-white shadow-lg;
+    }
+
+    .text-gradient-purple-blue {
+        @apply bg-gradient-to-br from-purple-500 to-blue-600 inline-block text-transparent bg-clip-text;
+    }
+}
+
