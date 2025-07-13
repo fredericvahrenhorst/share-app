@@ -38,6 +38,7 @@
             :mapStyle="'mapbox://styles/mapbox/standard'"
             :center="center"
             :auto-resize="true"
+            auto-resize-delay="300"
             :scrollZoom="true"
             :flyToOptions="{ maxDuration: 500, speed: .5 }"
             @loaded="ready = true"
@@ -52,7 +53,12 @@
             >
                 <template v-slot:icon>
                     <div
-                        class="w-9 h-9 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md"
+
+                        class="
+                            rounded-full flex items-center justify-center shadow-lg backdrop-blur-md
+                            transition-all duration-300
+                        "
+                        :class="currentMapData.zoom > 10 ? 'w-9 h-9' : 'w-4 h-4'"
                         :style="{
                             background: location.category && location.category.color
                                 ? `${location.category.color}80` // 50% opacity
@@ -61,6 +67,7 @@
                     >
 
                         <ion-icon
+                            v-if="currentMapData.zoom > 10"
                             aria-hidden="true"
                             :icon="heartOutline"
                             class="rounded-full p-2 h-4.5 w-4.5 text-light"
@@ -151,8 +158,12 @@ const popupLocation = ref(null);
 const ready = ref(false);
 const isSearchModalOpen = ref(false);
 const zoom = ref(geo.value ? 10 : 5);
-// const zoom = ref(10);
 const center = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
+const currentMapData = ref({
+    center: center.value,
+    zoom: zoom.value
+});
+
 const userLocation = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
 const locationModal = ref(null);
 
@@ -174,14 +185,17 @@ const handleLocationSelect = (location) => {
 };
 
 // Wir setzen ein Timeout, damit das Update erst nach dem Beenden der Bewegung ausgeführt wird
-// let mapUpdateTimeout = null;
+let mapUpdateTimeout = null;
 
-const mapUpdated = () => {
-    // if (mapUpdateTimeout) clearTimeout(mapUpdateTimeout);
-    // mapUpdateTimeout = setTimeout(() => {
-    //     if (event.center) center.value = event.center;
-    //     if (event.zoom) zoom.value = event.zoom;
-    // }, 400); // 400ms nach der letzten Bewegung wird aktualisiert
+const mapUpdated = (event) => {
+    const updateZoom = event.zoom || currentMapData.value.zoom;
+    const updateCenter = event.center || currentMapData.value.center;
+    currentMapData.value = {
+        center: updateCenter,
+        zoom: updateZoom
+    };
+
+    console.log('currentMapData: ', currentMapData.value);
 };
 
 const getGeoLocation = async() => {
@@ -214,5 +228,10 @@ watch(geo, () => {
 <style>
   ion-modal.popupLocation {
     --height: auto;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 100lvh;
   }
 </style>
