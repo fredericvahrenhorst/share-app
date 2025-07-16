@@ -110,60 +110,13 @@
                         : t('search.results_found') }}
                 </div>
 
-                <ion-card
-                    v-for="location in sortedSearchResults"
+                <LocationCard
+                    v-for="location in searchResults"
                     :key="location.id"
-                    class="blur-bg-light text-white"
-                    @click="selectLocation(location)"
-                >
-
-                    <ion-card-content>
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <ion-card-title class="text-lg font-semibold">
-                                    {{ location.name }}
-                                </ion-card-title>
-                                <ion-card-subtitle v-if="location.category" class="flex items-center mt-1">
-                                    <div
-                                        class="w-3 h-3 rounded-full mr-2"
-                                        :style="{ backgroundColor: location.category.color || '#6366F1' }"
-                                    ></div>
-                                    {{ location.category.name }}
-                                </ion-card-subtitle>
-                            </div>
-                            <!-- Distanz-Anzeige -->
-                            <div
-                                v-if="location.distance"
-                                class="text-xs text-light-gray-96 bg-blue-100 px-2 py-1 rounded-full"
-                            >
-                                {{ formatDistance(location.distance) }}
-                            </div>
-                        </div>
-
-                        <!-- Adresse -->
-                        <div v-if="location.address" class="mb-2 text-sm text-gray-600">
-                            <ion-icon :icon="locationOutline" class="mr-1" />
-                            {{ formatAddress(location.address) }}
-                        </div>
-
-                        <!-- Beschreibung -->
-                        <div v-if="location.description" class="text-sm text-gray-700 line-clamp-2">
-                            {{ stripHtml(location.description) }}
-                        </div>
-
-                        <!-- Tags -->
-                        <div v-if="location.tags && location.tags.length > 0" class="mt-2">
-                            <ion-chip
-                                v-for="tag in location.tags.slice(0, 3)"
-                                :key="tag.tag"
-                                size="small"
-                                color="primary"
-                            >
-                                {{ tag.tag }}
-                            </ion-chip>
-                        </div>
-                    </ion-card-content>
-                </ion-card>
+                    :location="location"
+                    :category-obj="location.category"
+                    @select="selectLocation"
+                />
 
                 <!-- Pagination -->
                 <div v-if="searchPagination.totalPages > 1" class="flex justify-center mt-6">
@@ -226,18 +179,11 @@ import {
     IonContent,
     IonItem,
     IonInput,
-    IonSpinner,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonCardContent,
-    IonChip
+    IonSpinner
 } from '@ionic/vue';
 import {
     searchOutline,
     closeOutline,
-    locationOutline,
     chevronBackOutline,
     chevronForwardOutline,
     chevronDownOutline
@@ -247,6 +193,7 @@ import { point } from '@turf/helpers';
 import { useI18n } from 'vue-i18n';
 import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
+import LocationCard from './LocationCard.vue';
 
 // Props
 const props = defineProps({
@@ -331,7 +278,7 @@ const performSearch = async () => {
     };
 
     try {
-        await locationsStore.searchLocations(query, filters, 1, 20);
+        await locationsStore.searchLocations(query, filters, 1, 20, userLocation.value);
     } catch (error) {
         console.error('Search error:', error);
     }
@@ -369,100 +316,10 @@ const loadPrevPage = async () => {
     }
 };
 
-const formatAddress = (address) => {
-    const parts = [];
-    if (address.street) parts.push(address.street);
-    if (address.postalCode && address.city) {
-        parts.push(`${address.postalCode} ${address.city}`);
-    } else if (address.city) {
-        parts.push(address.city);
-    }
-    return parts.join(', ');
-};
-
-const stripHtml = (html) => {
-    if (!html) return '';
-    // Einfache HTML-Strip-Funktion
-    return `${html.replace(/<[^>]*>/g, '').substring(0, 150)}...`;
-};
-
-const formatDistance = (distance) => {
-    if (distance < 1000) {
-        return `${distance.toFixed(0)} m`;
-    }
-    return `${(distance / 1000).toFixed(1)} km`;
-};
-
-
-
-const calculateDistances = (locations) => {
-    if (!userLocation.value || !locations.length) return locations;
-
-    const userPoint = point([userLocation.value.long, userLocation.value.lat]);
-
-    return locations.map(location => {
-        if (location.coordinates && Array.isArray(location.coordinates) && location.coordinates.length === 2) {
-            const locationPoint = point(location.coordinates);
-            const dist = distance(userPoint, locationPoint, { units: 'meters' });
-            return { ...location, distance: dist };
-        }
-        return location;
-    });
-};
-
-const sortedSearchResults = computed(() => {
-    const locationsWithDistance = calculateDistances(searchResults.value);
-    return locationsWithDistance.sort((a, b) => {
-        if (a.distance && b.distance) {
-            return a.distance - b.distance;
-        }
-        if (a.distance) return -1;
-        if (b.distance) return 1;
-        return 0;
-    });
-});
-
-// Load categories on mount
-onMounted(async () => {
-    try {
-        categories.value = await locationsStore.getCategories();
-        // Setze User-Location für Distanzberechnung
-        if (geo.value) {
-            userLocation.value = geo.value;
-        }
-    } catch (error) {
-        console.error('Error loading categories:', error);
-    }
-});
-
-// Watch für User-Location Updates
-watch(geo, (newGeo) => {
-    if (newGeo) {
-        userLocation.value = newGeo;
-    }
-});
-
-// Watch for prop changes
-watch(() => props.isOpen, (newValue) => {
-    if (newValue) {
-        // Modal wurde geöffnet - setze lokalen State zurück
-        searchQueryComputed.value = '';
-        selectedCategory.value = 'all';
-        locationsStore.clearSearch();
-        isCategoryDropdownOpen.value = false;
-        selectedCategoryObj.value = null;
-
-        // Fokussiere das Suchfeld nach kurzer Verzögerung
-        focusSearchInput();
-    }
-});
-
 const focusSearchInput = () => {
-    if (searchInput.value) {
-        setTimeout(() => {
-            searchInput.value.$el.querySelector('input').focus();
-        }, 150);
-    }
+    setTimeout(() => {
+        searchInput.value.$el.querySelector('input').focus();
+    }, 300);
 };
 
 const toggleCategoryDropdown = () => {
@@ -488,20 +345,44 @@ const handleClickOutside = (event) => {
     }
 };
 
-onMounted(() => {
+// Load categories on mount
+onMounted(async() => {
+    try {
+        categories.value = await locationsStore.getCategories();
+        // Setze User-Location für Distanzberechnung
+        if (geo.value) {
+            userLocation.value = geo.value;
+        }
+    } catch (error) {
+        console.error('Error loading categories:', error);
+    }
+
     document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside);
 });
-</script>
 
-<style scoped>
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>
+// Watch für User-Location Updates
+watch(geo, (newGeo) => {
+    if (newGeo) {
+        userLocation.value = newGeo;
+    }
+});
+
+// Watch for prop changes
+watch(() => props.isOpen, (newValue) => {
+    if (newValue) {
+        // Modal wurde geöffnet - setze lokalen State zurück
+        searchQueryComputed.value = '';
+        selectedCategory.value = 'all';
+        locationsStore.clearSearch();
+        isCategoryDropdownOpen.value = false;
+        selectedCategoryObj.value = null;
+
+        focusSearchInput();
+    }
+});
+
+</script>

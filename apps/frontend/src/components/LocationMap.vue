@@ -38,7 +38,7 @@
             :mapStyle="'mapbox://styles/mapbox/standard'"
             :center="center"
             :auto-resize="true"
-            auto-resize-delay="300"
+            :auto-resize-delay="300"
             :scrollZoom="true"
             :flyToOptions="{ maxDuration: 500, speed: .5 }"
             @loaded="ready = true"
@@ -87,38 +87,8 @@
         </mapbox-map>
 
         <!-- Location Detail Modal -->
-        <ion-modal
-            ref="locationModal"
-            :is-open="!!popupLocation"
-            :breakpoints="[0, 1]"
-            :initial-breakpoint="1"
-            @didDismiss="popupLocation = null"
-            class="popupLocation"
-        >
-            <div v-if="popupLocation" class="p-4 max-h-[600px] overflow-scroll">
-                <h2 class="text-lg font-bold mb-2">{{ popupLocation.name }}</h2>
-                <div v-if="popupLocation.image">
-                    <img :src="popupLocation.image.url" :alt="popupLocation.title" class="w-full rounded mb-2" />
-                </div>
-                <div v-if="popupLocation.coordinates" class="mb-2">
-                    <strong>Koordinaten:</strong> {{ popupLocation.coordinates }}
-                </div>
-                <div v-if="popupLocation.address" class="mb-2">
-                    <strong>Adresse:</strong><br />
-                    {{ popupLocation.address.street }}
-                    {{ popupLocation.address.postalCode }}
-                    {{ popupLocation.address.city }}
-                    {{ popupLocation.address.country }}
-                </div>
-                <div v-if="popupLocation.category">
-                    <strong>Kategorie:</strong> {{ popupLocation.category.name }} {{ popupLocation.category.icon }}
-                </div>
 
-                <ion-button expand="block" @click="modelDismiss()" class="mt-4">
-                    {{ t('misc.close') }}
-                </ion-button>
-            </div>
-        </ion-modal>
+        <LocationDetail />
 
         <!-- Search Modal -->
         <SearchModal
@@ -138,11 +108,12 @@ import {
     MapboxMap,
     MapboxMarker,
 } from 'vue-mapbox-ts';
-import { IonButton, IonModal, IonItem, IonInput, IonIcon } from '@ionic/vue';
-import { navigateOutline, heartOutline, searchOutline, filterOutline } from 'ionicons/icons';
+import { IonItem, IonInput, IonIcon } from '@ionic/vue';
+import { navigateOutline, heartOutline, searchOutline } from 'ionicons/icons';
 import SearchModal from './SearchModal.vue';
-
+import LocationDetail from './LocationDetail.vue';
 import { useAppStore } from '../store/appStore';
+import { useLocationsStore } from '../store/locationsStore';
 
 // i18n
 const { t } = useI18n();
@@ -151,10 +122,11 @@ const { t } = useI18n();
 const appStore = useAppStore();
 const { geo } = storeToRefs(appStore);
 
+const locationsStore = useLocationsStore();
+
 const defaultCenter = [13.354336, 52.477697];
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
-const popupLocation = ref(null);
 const ready = ref(false);
 const isSearchModalOpen = ref(false);
 const zoom = ref(geo.value ? 10 : 5);
@@ -165,9 +137,6 @@ const currentMapData = ref({
 });
 
 const userLocation = ref([geo.value?.long || defaultCenter[0], geo.value?.lat || defaultCenter[1]]);
-const locationModal = ref(null);
-
-const modelDismiss = () => locationModal.value.$el.dismiss();
 
 // Search Modal Methods
 const openSearchModal = () => {
@@ -179,13 +148,10 @@ const closeSearchModal = () => {
 };
 
 const handleLocationSelect = (location) => {
-    // Klicke auf die Location auf der Karte
-    popupLocation.value = location;
+    console.log('location: ', location);
+    locationsStore.setPopupLocation(location);
     center.value = location.coordinates;
 };
-
-// Wir setzen ein Timeout, damit das Update erst nach dem Beenden der Bewegung ausgeführt wird
-let mapUpdateTimeout = null;
 
 const mapUpdated = (event) => {
     const updateZoom = event.zoom || currentMapData.value.zoom;
@@ -226,10 +192,6 @@ watch(geo, () => {
 </script>
 
 <style>
-  ion-modal.popupLocation {
-    --height: auto;
-  }
-
   .map-container {
     width: 100%;
     height: 100lvh;

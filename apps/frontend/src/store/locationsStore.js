@@ -1,6 +1,8 @@
 /* eslint-disable */
 import { defineStore } from 'pinia';
 import apiCall from '../composables/apiCall';
+import { distance as turfDistance } from '@turf/distance';
+import { point } from '@turf/helpers';
 
 export const useLocationsStore = defineStore('locations', {
     state: () => ({
@@ -20,13 +22,14 @@ export const useLocationsStore = defineStore('locations', {
             totalDocs: 0,
             hasNextPage: false,
             hasPrevPage: false
-        }
+        },
+        popupLocation: null,
     }),
     getters: {
         // Getter für Suchstatus
         hasSearchResults: (state) => state.searchResults.length > 0,
         isSearching: (state) => state.searchLoading,
-        searchQueryEmpty: (state) => !state.searchQuery.trim()
+        searchQueryEmpty: (state) => !state.searchQuery.trim(),
     },
     actions: {
         async getLocationBySlug (slug) {
@@ -60,7 +63,7 @@ export const useLocationsStore = defineStore('locations', {
         },
 
         // Neue Action für die Suche
-        async searchLocations(query = '', filters = {}, page = 1, limit = 20) {
+        async searchLocations(query = '', filters = {}, page = 1, limit = 20, userLocation = null) {
             // Setze Loading-Status
             this.searchLoading = true;
             this.searchQuery = query;
@@ -79,7 +82,28 @@ export const useLocationsStore = defineStore('locations', {
                 });
 
                 if (response.success) {
-                    this.searchResults = response.data;
+                    let results = response.data;
+                    // Distanzberechnung und Sortierung
+                    if (userLocation && Array.isArray(results)) {
+                        const userPoint = point([userLocation.long, userLocation.lat]);
+                        results = results.map(location => {
+                            if (location.coordinates && Array.isArray(location.coordinates) && location.coordinates.length === 2) {
+                                const locationPoint = point(location.coordinates);
+                                const dist = turfDistance(userPoint, locationPoint, { units: 'meters' });
+                                return { ...location, distance: dist };
+                            }
+                            return location;
+                        });
+                        results = results.sort((a, b) => {
+                            if (a.distance && b.distance) {
+                                return a.distance - b.distance;
+                            }
+                            if (a.distance) return -1;
+                            if (b.distance) return 1;
+                            return 0;
+                        });
+                    }
+                    this.searchResults = results;
                     this.searchPagination = response.pagination;
                     this.searchFilters = { ...this.searchFilters, ...filters };
                 } else {
@@ -148,6 +172,13 @@ export const useLocationsStore = defineStore('locations', {
                     20
                 );
             }
+        },
+        setPopupLocation(location) {
+            // Vue reactivity verlangt, dass wir ein neues Objekt zuweisen, um Proxy-Probleme zu vermeiden
+            this.popupLocation = location ? { ...location } : null;
+        },
+        clearPopupLocation() {
+            this.popupLocation = null;
         }
     },
 })

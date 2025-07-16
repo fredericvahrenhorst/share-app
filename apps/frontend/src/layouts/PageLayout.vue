@@ -4,8 +4,8 @@
             <ion-router-outlet></ion-router-outlet>
             <ion-tab-bar
                 slot="bottom"
-                class="fixed bottom-10 left-2 right-2 w-auto z-50 shadow-lg h-18 p-1.5 gap-2
-                blur-bg-light text-light-gray-96"
+                class="fixed bottom-0 left-0 right-0 w-auto z-50 shadow-lg h-18 p-1.5 pb-6 gap-2
+                blur-bg-light text-light-gray-96 !rounded-none"
             >
                 <ion-tab-button
                     v-for="tab in tabs"
