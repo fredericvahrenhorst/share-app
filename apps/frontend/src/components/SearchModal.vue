@@ -188,8 +188,6 @@ import {
     chevronForwardOutline,
     chevronDownOutline
 } from 'ionicons/icons';
-import { distance } from '@turf/distance';
-import { point } from '@turf/helpers';
 import { useI18n } from 'vue-i18n';
 import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
