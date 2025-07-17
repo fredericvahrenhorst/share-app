@@ -9,12 +9,24 @@ import { onMounted } from 'vue';
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
-// Display content under transparent status bar
-StatusBar.setOverlaysWebView({ overlay: true });
+// StatusBar nur auf unterstützten Plattformen verwenden
+const isNative = () => {
+    return !!(window && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+};
 
 const setStatusBarStyleLight = async() => {
-    await StatusBar.setStyle({ style: Style.Light });
+    if (isNative()) {
+        try {
+            await StatusBar.setOverlaysWebView({ overlay: true });
+            await StatusBar.setStyle({ style: Style.Light });
+        } catch (e) {
+            // Fehler ignorieren, falls Plugin nicht verfügbar ist
+            // Optional: console.warn('StatusBar Plugin nicht verfügbar:', e);
+            console.warn('StatusBar Plugin nicht verfügbar:', e);
+        }
+    }
 };
+
 onMounted(() => {
     setStatusBarStyleLight();
 });

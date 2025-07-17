@@ -127,6 +127,8 @@ const locationsStore = useLocationsStore();
 const defaultCenter = [13.354336, 52.477697];
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
+console.log('process.env: ', import.meta.env);
+
 const ready = ref(false);
 const isSearchModalOpen = ref(false);
 const zoom = ref(geo.value ? 10 : 5);

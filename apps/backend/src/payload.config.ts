@@ -55,16 +55,16 @@ export default buildConfig({
     'http://localhost:5173',
     'http://localhost:8100',
     'http://localhost:3000',
+    'http://192.168.1.155:5173',
     'http://192.168.2.195:5173',
-    'http://192.168.1.155:5173'
   ],
   csrf: [
     process.env.FRONTEND_URL || 'http://localhost:8100',
     'http://localhost:5173',
     'http://localhost:8100',
     'http://localhost:3000',
+    'http://192.168.1.155:5173',
     'http://192.168.2.195:5173',
-    'http://192.168.1.155:5173'
   ],
   endpoints: [
     {
