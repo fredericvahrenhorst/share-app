@@ -39,9 +39,13 @@ export const useAppStore = defineStore('app', {
             localStorage.setItem('geo', JSON.stringify(this.geo));
         },
 
-        async getGeoLocation() {
-            const geoData = await Geolocation.getCurrentPosition();
-            this.setGeoLatLong(geoData);
+        async getGeoLocation(force = false) {
+            if (localStorage.getItem('geo') && !force) {
+                this.geo = JSON.parse(localStorage.getItem('geo'));
+            } else {
+                const geoData = await Geolocation.getCurrentPosition();
+                this.setGeoLatLong(geoData);
+            }
         },
     },
 })

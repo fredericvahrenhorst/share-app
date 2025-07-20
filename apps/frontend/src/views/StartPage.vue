@@ -1,7 +1,18 @@
 <template>
     <ion-page ref="page">
-        <!-- <page-header :title="$t( 'pages.start.title' )" :loading="loading" /> -->
         <ion-content :fullscreen="true">
+            <!-- Loading Overlay -->
+            <div
+                v-show="isLoading"
+                class="
+                    fixed top-0 left-0 w-full h-full z-50
+                    flex items-center justify-center
+                ">
+                <div class="w-auto h-auto p-6 blur-bg flex items-center justify-center gap-2">
+                    <ion-spinner name="crescent" />
+                    <span class="text-sm text-light-gray-96">{{ t('misc.is_loading') }}</span>
+                </div>
+            </div>
             <location-map :locations="locations" />
         </ion-content>
     </ion-page>
@@ -11,9 +22,11 @@
 import {
     IonContent,
     IonPage,
+    IonSpinner,
 } from '@ionic/vue';
 import { storeToRefs } from 'pinia'; // eslint-disable-line
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useUserStore } from '../store/userStore';
 import { useAppStore } from '../store/appStore';
@@ -22,19 +35,20 @@ import { useLocationsStore } from '../store/locationsStore';
 // import PageHeader from '../../components/PageHeader.vue';
 import LocationMap from '../components/LocationMap.vue';
 
+// i18n
+const { t } = useI18n();
+
 const userStore = useUserStore();
 const appStore = useAppStore();
 const locationsStore = useLocationsStore();
 
 const { authenticated } = storeToRefs(userStore);
+const { isLoading } = storeToRefs(locationsStore);
 
-const loading = ref(true);
 const locations = ref([]);
 
 onMounted(async() => {
     console.log('authenticated.value: ', authenticated.value);
-    loading.value = true;
-
     if (!appStore.geo || (appStore.geo.ts + 900000) - Date.now() < 0) {
         try {
             await appStore.getGeoLocation();
@@ -51,8 +65,6 @@ const getStartPageData = async() => {
         locationsStore.getAllLocations(),
     ]).then((values) => {
         locations.value = values[0]?.docs;
-
-        loading.value = false;
     });
 };
 </script>

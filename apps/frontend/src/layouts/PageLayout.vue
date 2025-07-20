@@ -23,7 +23,7 @@
                         :icon="tab.icon"
                         class="transition-colors duration-200 rounded-full p-2 h-4.5 w-4.5 mb-1"
                         :class="{
-                            'bg-gradient-to-br from-purple-500 to-blue-600 text-white ': $route.path === tab.href,
+                            'bg-gradient-purple-blue ': $route.path === tab.href,
                             'bg-gray-100 text-gray-500 hover:bg-gray-200': $route.path !== tab.href
                         }"
                     />

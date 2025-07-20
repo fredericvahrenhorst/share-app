@@ -2,7 +2,7 @@
     <ion-modal
         :is-open="isOpen"
         @didDismiss="handleDismiss"
-        :initial-breakpoint="0.5" :breakpoints="[0, 0.5, 0.75, 1]"
+        :initial-breakpoint="1" :breakpoints="[0, 0.5, 0.75, 1]"
     >
 
         <ion-header collapse="fade" translucent>
@@ -17,6 +17,26 @@
         </ion-header>
 
         <ion-content class="ion-padding">
+            <!-- Tab-Switch für lokale vs externe Suche -->
+            <div class="mb-4">
+                <ion-segment :value="searchMode" @ionChange="setSearchMode($event.detail.value)" class="bg-gradient-purple-blue">
+                    <ion-segment-button value="external">
+                        <div class="flex items-center gap-1 transition-colors"
+                        :class="{'text-light-gray-96': searchMode === 'external'}">
+                            <ion-icon :icon="globeOutline" class="h-4 w-4" />
+                            <ion-label>{{ t('search.external_places') }}</ion-label>
+                        </div>
+                    </ion-segment-button>
+                    <ion-segment-button class="my-2 mx-1" value="local">
+                        <div class="flex items-center gap-1 transition-colors"
+                        :class="{'text-light-gray-96': searchMode === 'local'}">
+                            <ion-icon :icon="locationOutline" class="h-4 w-4"/>
+                            <ion-label>{{ t('search.local_places') }}</ion-label>
+                        </div>
+                    </ion-segment-button>
+                </ion-segment>
+            </div>
+
             <!-- Suchfeld -->
             <div class="mb-4">
                 <ion-item class="blur-bg" lines="none">
@@ -24,7 +44,7 @@
                     <ion-input
                         ref="searchInput"
                         v-model="searchQuery"
-                        :placeholder="t('search.placeholder')"
+                        :placeholder="searchMode === 'local' ? t('search.placeholder-local') : t('search.placeholder_external')"
                         @ionInput="handleSearchInput"
                         @keydown.enter="handleEnterKey"
                         clear-input
@@ -32,8 +52,8 @@
                 </ion-item>
             </div>
 
-            <!-- Kategorie-Filter -->
-            <div class="mb-4">
+            <!-- Kategorie-Filter (nur für lokale Suche) -->
+            <div v-if="searchMode === 'local'" class="mb-4">
                 <div class="relative">
                     <!-- Dropdown Trigger -->
                     <button
@@ -103,23 +123,43 @@
             </div>
 
             <!-- Suchergebnisse -->
-            <div v-else-if="hasSearchResults" class="space-y-3">
+            <div v-else-if="hasSearchResults || mapboxResults.length > 0" class="space-y-3">
                 <div class="text-sm text-gray-600 mb-4">
-                    {{ searchPagination.totalDocs }}
+                    {{ searchMode === 'local' ? searchPagination.totalDocs : mapboxResults.length }}
                     {{ searchPagination.totalDocs !== 1 ? t('search.results_found_plural')
                         : t('search.results_found') }}
                 </div>
 
-                <LocationCard
-                    v-for="location in searchResults"
-                    :key="location.id"
-                    :location="location"
-                    :category-obj="location.category"
-                    @select="selectLocation"
-                />
+                <!-- Lokale Orte -->
+                <template v-if="searchMode === 'local'">
+                    <LocationCard
+                        v-for="location in searchResults"
+                        :key="location.id"
+                        :location="location"
+                        :category-obj="location.category"
+                        @select="selectLocation"
+                    />
+                </template>
 
-                <!-- Pagination -->
-                <div v-if="searchPagination.totalPages > 1" class="flex justify-center mt-6">
+                <!-- Externe Orte (Mapbox) -->
+                <template v-else>
+                    <ion-card
+                        v-for="place in mapboxResults"
+                        :key="place.id"
+                        class="blur-bg-light"
+                        @click="selectExternalPlace(place)"
+                        :aria-label="place.place_name_de || place.place_name"
+                    >
+                        <ion-card-content class="!p-3 imte">
+                            <div class="text-sm text-dark font-semibold flex items-center">
+                                <ion-icon :icon="locationOutline" class="mr-2 h-4.5 w-4.5 shrink-0" />
+                                {{ place.place_name_de || place.place_name }}
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </template>
+                <!-- Pagination (nur für lokale Suche) -->
+                <div v-if="searchMode === 'local' && searchPagination.totalPages > 1" class="flex justify-center mt-6">
                     <ion-button
                         :disabled="!searchPagination.hasPrevPage"
                         @click="loadPrevPage"
@@ -149,16 +189,18 @@
                 <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
                 <h3 class="text-lg font-medium text-gray-600 mb-2">{{ t('search.no_results_title') }}</h3>
                 <p class="text-sm text-gray-500">
-                    {{ t('search.no_results_description') }}
+                    {{ searchMode === 'local' ? t('search.no_results_description') : t('search.no_results_description_external') }}
                 </p>
             </div>
 
             <!-- Start-Zustand -->
             <div v-else class="text-center py-12">
                 <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
-                <h3 class="text-lg font-medium text-gray-600 mb-2">{{ t('search.start_title') }}</h3>
+                <h3 class="text-lg font-medium text-gray-600 mb-2">
+                    {{ searchMode === 'local' ? t('search.start_title') : t('search.start_title_external') }}
+                </h3>
                 <p class="text-sm text-gray-500">
-                    {{ t('search.start_description') }}
+                    {{ searchMode === 'local' ? t('search.start_description') : t('search.start_description_external') }}
                 </p>
             </div>
         </ion-content>
@@ -166,7 +208,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import {
+    ref,
+    computed,
+    watch,
+    onMounted,
+    onUnmounted
+} from 'vue';
 import { storeToRefs } from 'pinia';
 import {
     IonModal,
@@ -179,14 +227,21 @@ import {
     IonContent,
     IonItem,
     IonInput,
-    IonSpinner
+    IonSpinner,
+    IonCard,
+    IonCardContent,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
 } from '@ionic/vue';
 import {
     searchOutline,
     closeOutline,
     chevronBackOutline,
     chevronForwardOutline,
-    chevronDownOutline
+    chevronDownOutline,
+    locationOutline,
+    globeOutline
 } from 'ionicons/icons';
 import { useI18n } from 'vue-i18n';
 import { useLocationsStore } from '../store/locationsStore';
@@ -221,29 +276,34 @@ const {
 const { geo } = storeToRefs(appStore);
 
 // Local state
-const searchQueryLocal = ref('');
 const selectedCategory = ref('all');
 const categories = ref([]);
-const userLocation = ref(null);
+
 const searchInput = ref(null);
 const isCategoryDropdownOpen = ref(false);
 const selectedCategoryObj = ref(null);
+const searchMode = ref('external'); // 'local' oder 'external'
+const mapboxResults = ref([]);
+const isMapboxSearching = ref(false);
+
+// Mapbox API Token
+const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 // Debouncing für Live-Suche
 let searchTimeout = null;
 
-// Computed
-const searchQueryComputed = computed({
-    get: () => searchQueryLocal.value,
-    set: (value) => {
-        searchQueryLocal.value = value;
-    }
-});
-
 // Methods
+const setSearchMode = (mode) => {
+    searchMode.value = mode;
+
+    // Focus auf Input setzen
+    focusSearchInput(100);
+
+    performSearch();
+};
+
 const handleSearchInput = (event) => {
     const query = event.target.value;
-    searchQueryComputed.value = query;
 
     // Debouncing: 300ms warten nach dem letzten Tippen
     if (searchTimeout) {
@@ -262,33 +322,92 @@ const handleEnterKey = () => {
     }
 };
 
-
-const performSearch = async () => {
-    const query = searchQueryComputed.value.trim();
+const performSearch = async() => {
+    const query = searchQuery.value;
 
     // Nur suchen wenn mindestens 3 Zeichen eingegeben wurden
     if (query.length < 3) {
         return;
     }
 
+    if (searchMode.value === 'local') {
+        await performLocalSearch(query);
+    } else {
+        await performMapboxSearch(query);
+    }
+};
+
+const performLocalSearch = async (query) => {
     const filters = {
         category: selectedCategory.value
     };
 
     try {
-        await locationsStore.searchLocations(query, filters, 1, 20, userLocation.value);
+        await locationsStore.searchLocations(query, filters, 1, 20);
     } catch (error) {
-        console.error('Search error:', error);
+        console.error('Local search error:', error);
     }
 };
 
-const handleDismiss = () => {
+const performMapboxSearch = async (query) => {
+    if (!mapboxToken) {
+        console.error('Mapbox token not found');
+        return;
+    }
+
+    isMapboxSearching.value = true;
+
+    try {
+        // Mapbox Geocoding API aufrufen
+        const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
+            `access_token=${mapboxToken}&` +
+            `country=DE&` + // Deutschland bevorzugen
+            `language=de&` + // Deutsche Sprache
+            `limit=10&` + // Max 10 Ergebnisse
+            `types=place,address,poi` // Orte, Adressen und Points of Interest
+        );
+
+        if (!response.ok) {
+            throw new Error(`Mapbox API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        mapboxResults.value = data.features || [];
+    } catch (error) {
+        console.error('Mapbox search error:', error);
+        mapboxResults.value = [];
+    } finally {
+        isMapboxSearching.value = false;
+    }
+};
+
+const selectExternalPlace = (place) => {
+    console.log('place: ', place);
+    // Konvertiere Mapbox-Ergebnis in Location-Format
+    // this.geo = {
+    //             lat: geoData.coords.latitude,
+    //             long: geoData.coords.longitude,
+    //             ts: geoData.timestamp
+    //         };
+    appStore.setGeoLatLong({
+        coords: {
+            latitude: place.center[1],
+            longitude: place.center[0]
+        },
+        timestamp: Date.now()
+    });
+
+    const location = {
+        coordinates: place.center, // [longitude, latitude]
+        isExternal: true,
+        mapboxData: place // Original Mapbox-Daten für weitere Verwendung
+    };
+
     emit('close');
-    locationsStore.clearSearch();
-    searchQueryComputed.value = '';
-    selectedCategory.value = 'all';
-    isCategoryDropdownOpen.value = false;
-    selectedCategoryObj.value = null;
+    setTimeout(() => {
+        emit('select-location', location, true);
+    }, 150);
 };
 
 const selectLocation = (location) => {
@@ -296,6 +415,17 @@ const selectLocation = (location) => {
     setTimeout(() => {
         emit('select-location', location);
     }, 150);
+};
+
+const handleDismiss = () => {
+    emit('close');
+    locationsStore.clearSearch();
+    mapboxResults.value = [];
+    searchQuery.value = '';
+    selectedCategory.value = 'all';
+    isCategoryDropdownOpen.value = false;
+    selectedCategoryObj.value = null;
+    searchMode.value = 'external';
 };
 
 const loadNextPage = async () => {
@@ -314,10 +444,10 @@ const loadPrevPage = async () => {
     }
 };
 
-const focusSearchInput = () => {
+const focusSearchInput = (timeout) => {
     setTimeout(() => {
         searchInput.value.$el.querySelector('input').focus();
-    }, 300);
+    }, timeout);
 };
 
 const toggleCategoryDropdown = () => {
@@ -329,8 +459,8 @@ const selectCategory = (categoryId) => {
     selectedCategoryObj.value = categories.value.find(cat => cat.id === categoryId) || null;
     isCategoryDropdownOpen.value = false;
 
-    focusSearchInput();
-    if (searchQueryComputed.value.length > 2) {
+    focusSearchInput(0);
+    if (searchQuery.value.length > 2) {
         performSearch();
     }
 };
@@ -347,10 +477,6 @@ const handleClickOutside = (event) => {
 onMounted(async() => {
     try {
         categories.value = await locationsStore.getCategories();
-        // Setze User-Location für Distanzberechnung
-        if (geo.value) {
-            userLocation.value = geo.value;
-        }
     } catch (error) {
         console.error('Error loading categories:', error);
     }
@@ -362,25 +488,26 @@ onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside);
 });
 
-// Watch für User-Location Updates
-watch(geo, (newGeo) => {
-    if (newGeo) {
-        userLocation.value = newGeo;
-    }
-});
-
 // Watch for prop changes
 watch(() => props.isOpen, (newValue) => {
     if (newValue) {
         // Modal wurde geöffnet - setze lokalen State zurück
-        searchQueryComputed.value = '';
+        searchQuery.value = '';
         selectedCategory.value = 'all';
         locationsStore.clearSearch();
+        mapboxResults.value = [];
         isCategoryDropdownOpen.value = false;
         selectedCategoryObj.value = null;
+        searchMode.value = 'external';
 
-        focusSearchInput();
+        focusSearchInput(300);
     }
 });
 
 </script>
+
+<style scoped>
+  ion-segment-button {
+    margin: 0.25rem 0.25rem;
+  }
+</style>

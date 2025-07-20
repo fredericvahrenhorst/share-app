@@ -49,7 +49,6 @@ import { locationOutline } from 'ionicons/icons';
 const props = defineProps({
     location: { type: Object, required: true },
     categoryObj: { type: Object, default: null },
-    onClick: { type: Function, default: null },
 });
 
 const emit = defineEmits(['select']);
@@ -80,6 +79,5 @@ const formatAddress = (address) => {
 
 function handleClick() {
     emit('select', props.location);
-    if (props.onClick) props.onClick(props.location);
 }
 </script>

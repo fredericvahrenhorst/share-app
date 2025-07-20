@@ -1,8 +1,6 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": ["VITE_TEST"],
-  "globalPassThroughEnv": ["VITE_TEST"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

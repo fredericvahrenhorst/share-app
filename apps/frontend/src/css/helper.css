@@ -14,5 +14,9 @@
     .text-gradient-purple-blue {
         @apply bg-gradient-to-br from-purple-500 to-blue-600 inline-block text-transparent bg-clip-text;
     }
+
+    .bg-gradient-purple-blue {
+        @apply bg-gradient-to-br from-purple-500 to-blue-600 text-white;
+    }
 }
 
