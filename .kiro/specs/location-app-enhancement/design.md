@@ -4,6 +4,23 @@
 
 The ShareApp is a map-first mobile application built with Ionic Vue 3 that enables users to discover and share sustainable resources in their community. The application follows a modern design philosophy with blur backgrounds, rounded corners, and smooth micro-animations to create an engaging user experience focused on sustainability and community sharing.
 
+## Development Workflow
+
+### Code Change Approval Process
+**IMPORTANT**: Before making any code changes, the following process must be followed:
+
+1. **Create Step-by-Step Plan**: Always create a detailed, step-by-step plan for any code modifications
+2. **Present Plan for Approval**: Present the plan to the user and wait for explicit approval
+3. **No Changes Without Approval**: Never make code changes without user approval of the plan
+4. **Document Reasoning**: Include reasoning for each step in the plan
+5. **Consider Impact**: Assess potential impact on existing functionality
+
+This process ensures:
+- Transparency in development decisions
+- User control over code modifications  
+- Prevention of unwanted changes
+- Better collaboration and understanding
+
 ## Architecture
 
 ### Frontend Architecture

@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "README Package Updater",
+  "description": "Automatically extends the README with meaningful packages whenever package.json files change, focusing only on important packages",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "package.json",
+      "apps/*/package.json",
+      "packages/*/package.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A package.json file has been modified. Please analyze the changes and update the README.md file to include information about important new packages that have been added. Focus only on significant dependencies that users should know about (frameworks, major libraries, tools) and ignore common utilities, dev dependencies, or internal packages. Provide a brief description of what each important package does and how it fits into the project architecture. Update the existing README sections or create new ones as appropriate."
+  }
+}

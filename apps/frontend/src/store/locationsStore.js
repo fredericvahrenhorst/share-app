@@ -12,6 +12,7 @@ const { geo } = storeToRefs(appStore);
 export const useLocationsStore = defineStore('locations', {
     state: () => ({
         locations: [],
+        nearbyLocations: [],
         visitedlocations: JSON.parse(localStorage.getItem('visitedlocations')),
         favorites: [],
         isLoading: false,
@@ -57,7 +58,22 @@ export const useLocationsStore = defineStore('locations', {
             let response = null;
 
             try {
-                response = await apiCall ('locations', {
+                // Optimize API call for map markers: fetch all locations without pagination
+                // and only include fields needed for map display
+                const params = new URLSearchParams({
+                    limit: '9999', // Get all locations without pagination
+                    'select[id]': 'true',
+                    'select[name]': 'true',
+                    'select[coordinates]': 'true',
+                    'select[category.name]': 'true',
+                    'select[category.icon]': 'true',
+                    'select[category.color]': 'true',
+                    'select[category.id]': 'true',
+                    'select[status]': 'true',
+                    'select[createdAt]': 'true'
+                });
+
+                response = await apiCall(`locations?${params.toString()}`, {
                     method: 'GET'
                 });
 
@@ -65,7 +81,7 @@ export const useLocationsStore = defineStore('locations', {
                     const { docs } = response;
 
                     docs.forEach(location => {
-                        if (!this.locations.find(e => e.slug === location.slug)) {
+                        if (!this.locations.find(e => e.id === location.id)) {
                             this.locations.push(location);
                         }
                     });
@@ -73,6 +89,59 @@ export const useLocationsStore = defineStore('locations', {
             } catch (error) {
                 console.error('Error loading locations:', error);
                 return [];
+            } finally {
+                this.isLoading = false;
+            }
+
+            return response;
+        },
+
+        /**
+         * Holt alle Standorte in der Nähe des aktuellen Standorts des Nutzers.
+         * Optional kann ein Radius (in km) und eine Kategorie übergeben werden.
+         * Gibt ein Array von Standorten mit Distanz zurück.
+         *
+         * @param {Object} options - Optionen für die Suche
+         * @param {number} [options.radius] - Radius in km (optional, Standard aus appStore)
+         * @param {string} [options.category] - Kategorie-Slug (optional)
+         * @returns {Promise<Array>} - Array von Standorten mit Distanz
+         */
+        async getNearbyLocations({ radius, category } = {}) {
+            this.isLoading = true;
+            let response = null;
+
+            try {
+                // Hole aktuellen Standort aus appStore
+                const appStore = useAppStore();
+                const geo = appStore.geo;
+
+                if (!geo || !geo.lat || !geo.long) {
+                    throw new Error('Kein Standort verfügbar');
+                }
+
+                const params = new URLSearchParams({
+                    latitude: geo.lat,
+                    longitude: geo.long,
+                    radius: (radius || appStore.radius || 5).toString()
+                });
+
+                if (category) {
+                    params.append('category', category);
+                }
+
+                response = await apiCall(`search/locations/nearby?${params.toString()}`, {
+                    method: 'GET'
+                });
+
+                if (response.success) {
+                    // response.data enthält die Standorte mit Distanz
+                    this.nearbyLocations = response.data;
+                } else {
+                    this.nearbyLocations = [];
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Standorte in der Nähe:', error);
+                this.nearbyLocations = [];
             } finally {
                 this.isLoading = false;
             }

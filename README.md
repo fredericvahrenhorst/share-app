@@ -1,157 +1,207 @@
-# Turborepo starter
+# ShareApp - Location-based Resource Sharing Application
 
-This Turborepo starter is maintained by the Turborepo core team.
+A sustainable resource sharing application built as a Turborepo monorepo with Payload CMS backend and Ionic Vue frontend. The app enables users to discover and share free resources in their community through an interactive map interface.
 
-## Using this example
+## Prerequisites
 
-Run the following command:
+- **Node.js**: v20 or higher
+- **pnpm**: v9.0.0 or higher
+- **MongoDB**: For local development
 
-```sh
-npx create-turbo@latest
+## Quick Start
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development servers
+pnpm dev
+
+# Start both frontend and backend together
+pnpm start:all
 ```
 
-## What's inside?
+## Project Structure
 
 This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `apps/frontend`: [Ionic Vue](https://ionicframework.com/docs/vue/overview) mobile application with TypeScript
+- `apps/backend`: [Payload CMS](https://payloadcms.com/) with [Next.js](https://nextjs.org/) API backend
+- `packages/shared`: Common types and utilities shared across applications
+- `packages/ui`: React component library (stub)
+- `packages/eslint-config`: ESLint configurations for consistent code style
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/) with strict type checking enabled.
 
-### Utilities
+## Key Technologies
 
-This Turborepo has some additional tools already setup for you:
+### Frontend (apps/frontend)
+- **[Ionic Vue 8](https://ionicframework.com/docs/vue/overview)**: Cross-platform mobile framework with Vue 3
+- **[Vite](https://vitejs.dev/)**: Fast build tool and development server
+- **[Pinia](https://pinia.vuejs.org/)**: State management for Vue applications
+- **[Capacitor](https://capacitorjs.com/)**: Native mobile deployment for iOS/Android
+- **[Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/)**: Interactive maps and location services
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Backend (apps/backend)
+- **[Payload CMS 3.46.0](https://payloadcms.com/)**: Headless CMS with admin interface
+- **[Next.js 15](https://nextjs.org/)**: React framework for API and server-side rendering
+- **[MongoDB](https://www.mongodb.com/)**: Document database with Mongoose adapter
+- **[Sharp](https://sharp.pixelplumbing.com/)**: High-performance image processing
+
+### Development Tools
+- **[Turborepo](https://turborepo.com/)**: Monorepo build system with intelligent caching
+- **[TypeScript](https://www.typescriptlang.org/)**: Static type checking across all packages
+- **[ESLint](https://eslint.org/)**: Code linting with Vue and React plugins
+- **[Prettier](https://prettier.io)**: Consistent code formatting
+- **[Vitest](https://vitest.dev/)**: Unit testing framework
+- **[Playwright](https://playwright.dev/)**: End-to-end testing
+
+## Development Commands
 
 ### Build
 
-To build all apps and packages, run the following command:
+Build all apps and packages:
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+pnpm build
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+Build specific apps:
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+```bash
+# Build frontend only
+turbo build --filter=frontend
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+# Build backend only  
+turbo build --filter=backend
 ```
 
-### Develop
+### Development
 
-To develop all apps and packages, run the following command:
+Start all development servers:
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+pnpm dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+Start specific apps:
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+```bash
+# Frontend only (Ionic Vue app)
+pnpm --filter ./apps/frontend dev
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+# Backend only (Payload CMS + Next.js)
+pnpm --filter ./apps/backend dev
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# Both frontend and backend together
+pnpm start:all
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Testing
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+```bash
+# Run all tests
+pnpm test
 
+# Backend integration tests
+cd apps/backend && pnpm test:int
+
+# Backend E2E tests  
+cd apps/backend && pnpm test:e2e
+
+# Frontend unit tests
+cd apps/frontend && pnpm test:unit
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### Code Quality
+
+```bash
+# Lint all packages
+pnpm lint
+
+# Format code
+pnpm format
+
+# Type checking
+pnpm check-types
+```
+
+## Application URLs
+
+- **Frontend**: http://localhost:8100 (Ionic development server)
+- **Backend**: http://localhost:3000 (Payload CMS admin + API)
+- **Alternative Frontend**: http://localhost:5173 (Vite fallback)
+
+## Environment Setup
+
+1. Copy environment files:
+   ```bash
+   cp apps/frontend/.env.example apps/frontend/.env
+   cp apps/backend/.env.example apps/backend/.env
+   ```
+
+2. Configure MongoDB connection in `apps/backend/.env`:
+   ```
+   DATABASE_URI=mongodb://localhost:27017/shareapp
+   PAYLOAD_SECRET=your-secret-key
+   ```
+
+3. Start MongoDB locally or use Docker:
+   ```bash
+   cd apps/backend
+   docker-compose up -d
+   ```
+
+## Mobile Development
+
+The frontend is built with Ionic and can be deployed to mobile devices:
+
+```bash
+cd apps/frontend
+
+# Add mobile platforms
+npx cap add ios
+npx cap add android
+
+# Build and sync
+pnpm build
+npx cap sync
+
+# Open in native IDEs
+npx cap open ios
+npx cap open android
+```
+
+## Core Features
+
+- **Interactive Map Interface**: Discover resources through clustered map markers
+- **Resource Categories**: Organize locations by type (food sharing, clothing, water sources)
+- **Community Contributions**: Add new resources with step-by-step wizard
+- **User Profiles**: Favorites, contributions, and community reputation
+- **Reviews & Ratings**: User-generated feedback for locations
+- **Offline Support**: IndexedDB caching for core functionality
+- **Mobile-First Design**: Responsive UI optimized for mobile devices
+
+## Architecture
+
+The application follows a map-first UX approach where users primarily interact through an interactive map to find resources like food sharing fridges, free clothing exchanges, water sources, and other community resources.
+
+### Shared Packages
+
+- **packages/shared**: Common TypeScript types and utilities used across frontend and backend
+- **packages/ui**: Reusable React components (development stub)
+- **packages/eslint-config**: Shared ESLint configurations for consistent code style
+
+Import shared utilities:
+```typescript
+import { greet, User } from '@test/shared';
 ```
 
 ## Useful Links
 
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
-
----
-
-### **Zentrale Umgebungsvariablen**
-- Die `.env` im Root ist bereits die zentrale Stelle.
-- In Vite (Frontend) kannst du z.B. `import.meta.env.VITE_API_URL` nutzen.
-- In Payload (Backend) kannst du z.B. `process.env.PAYLOAD_SECRET` nutzen.
-- Falls du weitere Variablen brauchst, einfach in die `.env` im Root eintragen.
-
----
-
-### **Gemeinsame Komponenten/Utils**
-- Du kannst jetzt in `packages/shared/index.ts` beliebige Funktionen, Typen oder Komponenten ablegen.
-- Im Frontend/Backend importierst du sie einfach:
-  ```ts
-  import { greet, User } from '@test/shared';
-  ```
-
----
-
-**Möchtest du ein Beispiel für die Nutzung im Frontend oder Backend sehen?  
-Oder soll ich noch etwas an der Struktur oder den Imports anpassen?**
+- [Ionic Vue Documentation](https://ionicframework.com/docs/vue/overview)
+- [Payload CMS Documentation](https://payloadcms.com/docs)
+- [Turborepo Documentation](https://turborepo.com/docs)
+- [Project Specification](.kiro/specs/location-app-enhancement/spec.md)

@@ -1,0 +1,13 @@
+{
+  "name": "README Package Update Hook",
+  "description": "Erweitere meine Readme mit sinnvollen Packages immer wenn sich ein der package.json ändert. Aber nur für wichtige Packages",
+  "trigger": {
+    "type": "file_change",
+    "patterns": ["**/package.json"]
+  },
+  "action": {
+    "type": "agent_execution",
+    "prompt": "Analysiere die Änderungen in der package.json Datei und aktualisiere die README.md mit wichtigen neuen Packages. Fokussiere dich nur auf bedeutsame Dependencies, die für Entwickler relevant sind - ignoriere interne Tools, Build-Dependencies oder sehr spezifische Packages. Füge eine kurze Beschreibung hinzu, wofür das Package verwendet wird. Behalte die bestehende Struktur der README bei und erweitere sie sinnvoll."
+  },
+  "enabled": true
+}

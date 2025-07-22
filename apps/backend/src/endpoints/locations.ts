@@ -17,7 +17,7 @@ export const locationsEndpoint = {
     // Alle Locations holen
     const locations = await payload.find({
       collection: 'locations',
-      limit: 1000, // ggf. anpassen, falls mehr erwartet werden
+      limit: 9999, // ggf. anpassen, falls mehr erwartet werden
       where: category
         ? { category: { equals: category } }
         : {},
@@ -30,7 +30,7 @@ export const locationsEndpoint = {
     // Filtere und berechne die Distanz für jede Location
     const locationsWithDistance = locations.docs
       .map((location: any) => {
-        console.log(location.coordinates);
+        // console.log(location.coordinates);
         if (
           location.coordinates &&
           Array.isArray(location.coordinates) &&

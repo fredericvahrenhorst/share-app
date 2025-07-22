@@ -1,0 +1,87 @@
+---
+description: Diese Datei enthält alle projektweiten Regeln, Standards und Best Practices für die Entwicklung der ShareApp. Sie ist die zentrale Referenz für Architektur, Technologie-Stack, Entwicklungs-Workflow, UI/UX, Testing, Security, Automatisierung und alle wichtigen Akzeptanzkriterien. Die Regeln sind verbindlich für alle Teammitglieder und AI-gestützte Entwicklung. Änderungen an Kernfunktionen, Architektur oder Workflows müssen immer mit Step-by-Step-Plan und User-Approval erfolgen. Die Datei ist versioniert und wird von Cursor automatisch für alle AI-Operationen im Projekt angewendet.
+alwaysApply: false
+---
+# === Projektstruktur & Architektur ===
+- Das Projekt ist ein Turborepo-Monorepo mit den Hauptverzeichnissen:
+  - apps/frontend: Ionic Vue 3 App (mobile-first, Mapbox, Pinia, Tailwind)
+  - apps/backend: Payload CMS + Next.js API (MongoDB, Mongoose)
+  - packages/shared: Gemeinsame Typen & Utilities
+  - packages/ui: React-Komponenten (Stub)
+  - packages/eslint-config: Gemeinsame ESLint-Konfiguration
+
+- Frontend-Komponenten, Stores, Composables, Views und CSS folgen den Namenskonventionen aus .kiro/steering/structure.md:
+  - Vue-Komponenten: PascalCase
+  - Stores: camelCase + "Store"
+  - CSS: kebab-case
+
+- Backend Collections: PascalCase, Endpoints: kebab-case
+
+# === Technologiestack & Tools ===
+- pnpm als Package Manager, Node.js v18+, TypeScript v5.8.3
+- Frontend: Ionic Vue 8, Vite, Tailwind CSS 4, Pinia, Mapbox GL JS, Capacitor 7, Vitest, ESLint (Vue)
+- Backend: Payload CMS 3.46.0, Next.js 15, MongoDB, Sharp, Playwright, Vitest, cross-env
+- Shared: Types/Utils in packages/shared
+
+# === Entwicklungs-Workflow ===
+- Neue Features in den jeweiligen App-Ordnern anlegen
+- Geteilte Logik in packages/shared
+- Datenbankänderungen in Payload-Collections + Typen-Generierung
+- API-Änderungen: Backend-Endpunkte + Frontend-API-Calls synchronisieren
+- Tests in tests/-Verzeichnissen
+- Codeänderungen: Step-by-Step-Plan erstellen, User-Approval einholen, Reasoning dokumentieren (siehe .kiro/specs/location-app-enhancement/design.md)
+- **WICHTIG:** Vor jeder Codeänderung einen Step-by-Step-Plan erstellen, User-Approval abwarten, Reasoning dokumentieren, Auswirkungen auf bestehende Funktionalität prüfen.
+
+# === Automatisierung & Hooks ===
+- README wird automatisch um wichtige Packages erweitert, wenn package.json geändert wird (siehe .kiro/hooks)
+- Nur bedeutsame Dependencies dokumentieren, keine Dev- oder internen Tools
+- Automatisierungs-Hooks aus .kiro/hooks beachten (z.B. readme-update-hook.json, readme-package-updater.kiro.hook)
+
+# === UI/UX & Designsystem ===
+- Tailwind CSS mit Sustainability-Farbpalette (siehe Design-Dokument)
+- Blur-Backgrounds, abgerundete Ecken, Micro-Animations (GSAP/VueUse)
+- Responsive, mobile-first, große Touch-Targets, WCAG AA, i18n (mind. Deutsch)
+- Map-first UX: Interaktive Mapbox-Karte mit Clustering, Custom-Markern, Zoom-abhängiger Detailtiefe
+- Modale/Sheet-Interfaces für Details, Suche, Einstellungen, Onboarding
+- Onboarding: Max. 3 animierte Screens, Privacy-Fokus, Consent-Flows
+- Accessibility: Mind. WCAG 2.1 AA, große Touch-Targets, ARIA-Labels, Keyboard-Navigation
+
+# === Funktionale Kernfeatures & Akzeptanzkriterien ===
+- Ressourcen-Entdeckung über Map (Cluster, Filter, Suche, Radius, Auto-Complete, Zoom-abhängige Marker)
+- Kategorien, Favoriten, User-Profile, Reviews, Community-Features
+- Ressourcen-Detailansicht mit Bildern, Regeln, Badges, Aktionen (Favorit, Teilen, Melden, Route)
+- Ressourcen-Hinzufügen: Step-by-Step-Wizard mit Map-Picker, Kategorie, Beschreibung, Bild-Upload, Success-Animation
+- Offline-Support: IndexedDB, Caching, Service Worker
+- Fehlerbehandlung: Loading-States, Retry, Offline-Queue, User-Feedback
+- Community-Features: Badges, Reputation, Moderation, Reporting, Upvotes/Downvotes
+- Onboarding, Hilfesystem, Kontextuelle Tooltips
+
+# === API & Datenmodell ===
+- RESTful Endpunkte mit /api/-Prefix, Geodaten, Filter, Pagination
+- Resource, Category, User, Rating, Review, Badge, Media als zentrale Modelle (siehe Design-Dokument)
+- Geodaten: [lng, lat], Adressdaten, Status, Tags, Timestamps
+- API-Fehlerbehandlung: Validierung, Logging, User-Feedback
+
+# === Sicherheit & Datenschutz ===
+- JWT-Auth, Rollen, Session-Management, Passwort-Hashing
+- Input-Sanitization, CORS, Rate-Limiting, Verschlüsselung
+- Minimaler Location-Storage, Consent-Flows, GDPR-Konformität
+- Privacy by Design: Nur notwendige Daten speichern, User-Consent einholen
+
+# === Testing & Qualität ===
+- Test-First-Ansatz, hohe Testabdeckung für kritische Pfade
+- Unit-, Integration-, E2E-, Visual-, Accessibility-Tests (Vitest, Playwright)
+- Linting, Formatting, Type-Checking, Performanceziele (FCP <2s, LCP <3s)
+- Accessibility- und Performance-Tests sind Pflicht
+- Fehlerbehandlung: Loading, Retry, Offline, User-Feedback
+
+# === Sonstiges ===
+- Environment-Variablen: Root-.env für global, VITE_-Prefix für Frontend, Standard für Backend
+- Ports: Frontend 8100, Backend 3000, Vite-Fallback 5173
+- Dokumentation: Siehe .kiro/specs/location-app-enhancement/* für Requirements, Design, Tasks
+- Tab Leerzeichen: 4
+- Verwende Single Quotes für Strings
+
+# === Regel für Cursor-AI ===
+- Halte dich strikt an diese Regeln und hole bei größeren Änderungen immer User-Feedback ein!
+- Dokumentiere Reasoning und Auswirkungen bei jedem Step.

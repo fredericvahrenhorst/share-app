@@ -40,6 +40,10 @@
             "next": "Weiter"
         }
     },
+    "radius": {
+        "unit": "km",
+        "label": "Radius"
+    },
     "misc": {
         "close": "Schließen",
         "cancel": "Abbrechen",
@@ -47,5 +51,48 @@
         "to": "bis",
         "oclock": "Uhr",
         "is_loading": "Daten laden …"
+    },
+    "addResource": {
+        "title": "Ressource hinzufügen",
+        "steps": {
+            "location": "Standort",
+            "category": "Kategorie",
+            "details": "Details"
+        },
+        "step1": {
+            "title": "Wo befindet sich die Ressource?",
+            "searchPlaceholder": "Adresse oder Ort suchen...",
+            "useCurrentLocation": "Aktuellen Standort verwenden"
+        },
+        "step2": {
+            "title": "Was für eine Art von Ressource ist es?"
+        },
+        "step3": {
+            "title": "Erzähle uns mehr über die Ressource",
+            "name": "Name der Ressource",
+            "namePlaceholder": "z.B. Foodsharing-Kühlschrank Mitte",
+            "description": "Beschreibung",
+            "descriptionPlaceholder": "Beschreibe die Ressource und wie sie genutzt werden kann...",
+            "rules": "Regeln & Hinweise",
+            "rulesPlaceholder": "z.B. Bitte kein Fleisch einlegen, nur haltbare Lebensmittel",
+            "is24_7": "24/7 verfügbar",
+            "tags": "Tags"
+        },
+        "submit": "Ressource hinzufügen",
+        "success": {
+            "title": "Erfolgreich hinzugefügt!",
+            "message": "Deine Ressource wurde erfolgreich hinzugefügt und wird nach Prüfung freigeschaltet."
+        },
+        "error": {
+            "title": "Fehler",
+            "message": "Beim Hinzufügen der Ressource ist ein Fehler aufgetreten. Bitte versuche es erneut."
+        }
+    },
+    "common": {
+        "ok": "OK",
+        "back": "Zurück",
+        "next": "Weiter",
+        "cancel": "Abbrechen",
+        "save": "Speichern"
     }
 }

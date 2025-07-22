@@ -67,14 +67,6 @@ export default buildConfig({
     'http://192.168.2.195:5173',
   ],
   endpoints: [
-    {
-      path: '/hello',
-      method: 'get',
-      handler: async (req) => {
-        console.log(req);
-        return Response.json({ message: 'Hallo Welt!' });
-      },
-    },
     locationsEndpoint,
     searchEndpoint
   ]

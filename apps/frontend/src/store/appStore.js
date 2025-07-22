@@ -7,6 +7,7 @@ export const useAppStore = defineStore('app', {
         walkthroughVisited: JSON.parse(localStorage.getItem('walkthroughVisited')),
         theme: localStorage.getItem('theme'),
         geo: JSON.parse(localStorage.getItem('geo')),
+        radius: parseInt(localStorage.getItem('radius')) || 5,
         shelterFavs: JSON.parse(localStorage.getItem('shelterFavs')),
     }),
     actions: {
