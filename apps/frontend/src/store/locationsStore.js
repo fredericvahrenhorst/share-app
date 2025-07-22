@@ -77,7 +77,6 @@ export const useLocationsStore = defineStore('locations', {
                 this.isLoading = false;
             }
 
-            this.isLoading = false;
             return response;
         },
 
