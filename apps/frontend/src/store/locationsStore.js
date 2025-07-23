@@ -65,10 +65,7 @@ export const useLocationsStore = defineStore('locations', {
                     'select[id]': 'true',
                     'select[name]': 'true',
                     'select[coordinates]': 'true',
-                    'select[category.name]': 'true',
-                    'select[category.icon]': 'true',
-                    'select[category.color]': 'true',
-                    'select[category.id]': 'true',
+                    'select[category]': 'true',
                     'select[status]': 'true',
                     'select[createdAt]': 'true'
                 });
@@ -175,7 +172,7 @@ export const useLocationsStore = defineStore('locations', {
 
                     if (geo.value && Array.isArray(results)) {
                         results = this.addDistanceToLocations(results);
-                        // results = this.sortLocationsByDistance(results);
+                        results = this.sortLocationsByDistance(results);
                     }
                     this.searchResults = results;
                     this.searchPagination = response.pagination;

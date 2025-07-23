@@ -17,7 +17,7 @@
     "search": {
         "title": "Suche",
         "placeholder": "Standort, POI oder Adresse suchen...",
-        "placeholder-local": "POI suchen...",
+        "placeholder-local": "Point of Interest suchen...",
         "placeholder_external": "Ort oder Adresse suchen...",
         "local_places": "POI finden",
         "external_places": "Dein Standort",
@@ -29,7 +29,7 @@
         "no_results_title": "Keine Ergebnisse gefunden",
         "no_results_description": "Versuche andere Suchbegriffe oder ändere die Kategorie",
         "no_results_description_external": "Versuche andere Suchbegriffe oder eine andere Schreibweise",
-        "start_title": "POIs durchsuchen",
+        "start_title": "Point of Interests durchsuchen",
         "start_title_external": "Deinen Standort suchen",
         "start_description": "Gib einen Suchbegriff ein, um POIs zu finden",
         "start_description_external": "Gib einen Ort oder eine Adresse ein",
@@ -42,7 +42,8 @@
     },
     "radius": {
         "unit": "km",
-        "label": "Radius"
+        "label": "Radius",
+        "searchHere": "Hier suchen"
     },
     "misc": {
         "close": "Schließen",

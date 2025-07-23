@@ -84,12 +84,12 @@
 
             <!-- Radius Circle -->
             <mapbox-geogeometry-circle
-                v-if="userLocation && radius && currentMapData.zoom < 12"
+                v-if="userLocation && radius"
                 :center="userLocation"
                 :radius="radius"
                 fillColor="#2b7fff"
                 outlineColor="#155dfc"
-                :opacity="0.15"
+                :opacity="dynamicCircleOpacity"
                 :edges="64"
             />
         </mapbox-map>
@@ -99,9 +99,25 @@
             <!-- Radius Info -->
             <div
                 v-if="geo"
-                class="px-3 py-1 rounded-full blur-bg-light text-xs text-gray-600"
+                class="px-3 py-1 rounded-full blur-bg-light text-xs text-gray-600
+                       flex items-center justify-center gap-2"
             >
-                {{ radius }}{{ t('radius.unit') }} {{ t('radius.label') }}
+                <span>
+                    {{ radius }}{{ t('radius.unit') }} {{ t('radius.label') }}
+                </span>
+                –
+                <span
+                    class="text-blue-500 cursor-pointer"
+                    @click="setGeoLatLong({
+                        coords: {
+                            latitude: currentMapData.center[1],
+                            longitude: currentMapData.center[0]
+                        },
+                        timestamp: Date.now()
+                    })"
+                >
+                    {{ t('radius.searchHere') }}
+                </span>
             </div>
 
             <div
@@ -141,6 +157,13 @@ import LocationDetail from './LocationDetail.vue';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';
 
+defineProps({
+    locations: {
+        type: Array,
+        required: true,
+    },
+});
+
 // i18n
 const { t } = useI18n();
 
@@ -164,21 +187,36 @@ const currentMapData = ref({
     center: center.value,
     zoom: zoom.value,
 });
-
 const userLocation = ref([
     geo.value?.long || defaultCenter[0],
     geo.value?.lat || defaultCenter[1],
 ]);
+const mapInstance = ref(null);
 
-const props = defineProps({
-    locations: {
-        type: Array,
-        required: true,
-    },
+const dynamicCircleOpacity = computed(() => {
+    // Dynamische Berechnung der Opazität zwischen 0.2 (Zoom 10) und 0 (Zoom 16+)
+    const minZoom = 8;
+    const maxZoom = 13;
+    const minOpacity = 0;
+    const maxOpacity = 0.2;
+
+    const zoomLevel = currentMapData.value.zoom;
+    if (zoomLevel <= minZoom) {
+        return maxOpacity;
+    }
+    if (zoomLevel >= maxZoom) {
+        return minOpacity;
+    }
+    // Linear interpolieren zwischen maxOpacity und minOpacity
+    const opacity = maxOpacity - ((zoomLevel - minZoom) / (maxZoom - minZoom)) * (maxOpacity - minOpacity);
+
+    console.log('opacity: ', opacity);
+    console.log('zoomLevel: ', zoomLevel);
+    return opacity;
 });
 
-// Map instance reference for radius circle
-const mapInstance = ref(null);
+const baseZoom = 11;
+const baseRadius = 5; // in km
 
 // Search Modal Methods
 const openSearchModal = () => {
@@ -199,13 +237,83 @@ const handleLocationSelect = (location) => {
 };
 
 // Setup radius circle when map is loaded
-const onMapLoaded = () => {
+const onMapLoaded = (map) => {
     ready.value = true;
+    mapInstance.value = map;
+    setRadiusDynamically();
+
+    // Double-Click/Doppeltippen nur bei Ein-Finger-Interaktion für Geo-Setzen
+    let lastTap = 0;
+
+    let touchMoved = false;
+    let touchEndTimeout = null;
+
+    map.on('dblclick', (e) => {
+        // Nur bei Maus (nicht Touch) Geo setzen
+        if (!e.originalEvent || e.originalEvent.pointerType === 'mouse') {
+            setGeoLatLong({
+                coords: {
+                    latitude: e.lngLat.lat,
+                    longitude: e.lngLat.lng
+                },
+                timestamp: Date.now()
+            });
+        }
+    });
+
+    map.on('touchmove', (e) => {
+        // Sobald sich der Finger bewegt, merken wir uns das
+        touchMoved = true;
+        // Falls ein Timeout läuft, abbrechen
+        if (touchEndTimeout) {
+            clearTimeout(touchEndTimeout);
+            touchEndTimeout = null;
+        }
+    });
+
+    map.on('touchend', (e) => {
+        // Prüfe, ob nur ein Finger verwendet wurde
+        if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 0) {
+            // Noch Finger auf dem Screen, kein Tap-Ende
+            return;
+        }
+        if (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches.length > 1) {
+            // Mehr als ein Finger: kein Doppeltap
+            return;
+        }
+
+        // Wenn sich der Finger bewegt hat, nicht sofort ausführen
+        if (touchMoved) {
+            // Warte kurz ab, ob der Finger still steht (z.B. 200ms)
+            touchEndTimeout = setTimeout(() => {
+                touchMoved = false;
+                touchEndTimeout = null;
+            }, 200);
+            lastTap = Date.now();
+            return;
+        }
+
+        const currentTime = Date.now();
+        if (currentTime - lastTap < 400) {
+            // Doppeltippen erkannt, nur bei Ein-Finger-Touch und ohne Bewegung
+            setGeoLatLong({
+                coords: {
+                    latitude: e.lngLat.lat,
+                    longitude: e.lngLat.lng
+                },
+                timestamp: currentTime
+            });
+        }
+        lastTap = currentTime;
+    });
 };
 
 const mapUpdated = (event) => {
     const updateZoom = event.zoom || currentMapData.value.zoom;
     const updateCenter = event.center || currentMapData.value.center;
+
+    setRadiusDynamically(true);
+
     currentMapData.value = {
         center: updateCenter,
         zoom: updateZoom,
@@ -216,6 +324,42 @@ const mapUpdated = (event) => {
 
 const getGeoLocation = async(force = false) => {
     await appStore.getGeoLocation(force);
+};
+
+const setGeoLatLong = (geoData) => {
+    radius.value = baseRadius;
+    zoom.value = baseZoom;
+    appStore.setGeoLatLong(geoData);
+};
+
+const setRadiusDynamically = (growOnly = false) => {
+    // Dynamischer Radius basierend auf Zoom-Level berechnen
+    // Bei Zoom-Level 11 entspricht der Radius 5km
+    // Erklärung der Formel:
+    // Der Radius (in km) wird dynamisch anhand des aktuellen Zoom-Levels der Karte berechnet.
+    // Bei Zoom-Level 11 beträgt der Radius 5 km (das ist unser Basiswert).
+    // Für jede Änderung des Zoom-Levels um 1 verdoppelt oder halbiert sich der Radius:
+    // - Wenn man herauszoomt (Zoom-Level kleiner), wird der Radius größer (sichtbarer Bereich wächst).
+    // - Wenn man hineinzoomt (Zoom-Level größer), wird der Radius kleiner (sichtbarer Bereich schrumpft).
+    // Die Formel lautet: radius = 5 * 2^(11 - zoom)
+    // Beispiel:
+    //   - zoom = 11: radius = 5 * 2^(11-11) = 5 * 1 = 5 km
+    //   - zoom = 10: radius = 5 * 2^(11-10) = 5 * 2 = 10 km
+    //   - zoom = 12: radius = 5 * 2^(11-12) = 5 * 0.5 = 2.5 km
+    // (Jede Zoomstufe halbiert/verdoppelt die sichtbare Fläche)
+
+    let dynamicRadius = baseRadius * 2 ** (baseZoom - currentMapData.value.zoom);
+    if (dynamicRadius < baseRadius) {
+        dynamicRadius = baseRadius;
+    }
+
+    if (growOnly) {
+        if (dynamicRadius > radius.value) {
+            radius.value = Math.round(dynamicRadius);
+        }
+    } else {
+        radius.value = Math.round(dynamicRadius);
+    }
 };
 
 watch([center, zoom, userLocation, geo], () => {
