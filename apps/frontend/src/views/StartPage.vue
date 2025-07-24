@@ -13,7 +13,7 @@
                     <span class="text-sm text-light-gray-96">{{ t('misc.is_loading') }}</span>
                 </div>
             </div>
-            <location-map :locations="filteredLocations" />
+            <location-map :locations="filteredLocationsByRadius" :all-locations="locations" />
         </ion-content>
     </ion-page>
 </template>
@@ -50,10 +50,10 @@ const { isLoading } = storeToRefs(locationsStore);
 const locations = ref([]);
 // Berechnet eine gefilterte Liste von Standorten, die im Umkreis des Nutzers liegen.
 // Die Filterung basiert auf dem aktuellen Standort (appStore.geo) und dem eingestellten Radius (appStore.radius).
-const filteredLocations = computed(() => {
-    if (!locations.value || !appStore.geo) return [];
+const filteredLocationsByRadius = computed(() => {
+    if (!locations.value || !appStore.mapGeo) return [];
 
-    const userPoint = point([appStore.geo.long, appStore.geo.lat]);
+    const userPoint = point([appStore.mapGeo.long, appStore.mapGeo.lat]);
 
     // Filtere alle Standorte, die Koordinaten haben und innerhalb des Radius liegen
     return locations.value.filter((loc) => {
@@ -65,8 +65,6 @@ const filteredLocations = computed(() => {
 
         // Berechne die Distanz zwischen Nutzer und Standort in Kilometern
         const dist = distance(userPoint, locPoint, { units: 'kilometers' });
-
-        console.log(dist);
 
         // Nur Standorte innerhalb des eingestellten Radius zurückgeben
         return dist <= appStore.radius;

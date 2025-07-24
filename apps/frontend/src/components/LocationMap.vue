@@ -45,7 +45,7 @@
         >
             <!-- Location Markers -->
             <mapbox-marker
-                v-for="location in locations"
+                v-for="location in filteredAllLocations"
                 :key="`marker-${location.id}`"
                 :lngLat="location.coordinates"
                 @click="handleLocationSelect(location)"
@@ -53,9 +53,9 @@
                 <template v-slot:icon>
                     <div
                         class="rounded-full flex items-center justify-center shadow-lg backdrop-blur-md transition-all duration-300"
-                        :class="
-                            currentMapData.zoom > 10 ? 'w-9 h-9' : 'w-4 h-4'
-                        "
+                        :class="[
+                            currentMapData.zoom > 10 ? 'w-9 h-9' : 'w-4 h-4',
+                        ]"
                         :style="{
                             background:
                                 location.category && location.category.color
@@ -84,8 +84,8 @@
 
             <!-- Radius Circle -->
             <mapbox-geogeometry-circle
-                v-if="userLocation && radius"
-                :center="userLocation"
+                v-if="userLocation && radius && currentMapData.zoom >= 9"
+                :center="[mapGeo.long, mapGeo.lat]"
                 :radius="radius"
                 fillColor="#2b7fff"
                 outlineColor="#155dfc"
@@ -157,8 +157,12 @@ import LocationDetail from './LocationDetail.vue';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';
 
-defineProps({
+const props = defineProps({
     locations: {
+        type: Array,
+        required: true,
+    },
+    allLocations: {
         type: Array,
         required: true,
     },
@@ -169,7 +173,7 @@ const { t } = useI18n();
 
 // Store
 const appStore = useAppStore();
-const { geo, radius } = storeToRefs(appStore);
+const { geo, mapGeo, radius } = storeToRefs(appStore);
 
 const locationsStore = useLocationsStore();
 
@@ -178,10 +182,10 @@ const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 const ready = ref(false);
 const isSearchModalOpen = ref(false);
-const zoom = ref(geo.value ? (radius.value > 10 ? 9 : 11) : 5);
+const zoom = ref(mapGeo.value ? (radius.value > 10 ? 9 : 11) : 5);
 const center = ref([
-    geo.value?.long || defaultCenter[0],
-    geo.value?.lat || defaultCenter[1],
+    mapGeo.value?.long || defaultCenter[0],
+    mapGeo.value?.lat || defaultCenter[1],
 ]);
 const currentMapData = ref({
     center: center.value,
@@ -192,6 +196,13 @@ const userLocation = ref([
     geo.value?.lat || defaultCenter[1],
 ]);
 const mapInstance = ref(null);
+
+// Array für unclustered Pins (Einzelpunkte)
+const unclusteredFeatures = ref([]);
+const filteredAllLocations = computed(
+    () => props.allLocations.filter((loc) => unclusteredFeatures.value.includes(loc.id))
+);
+
 
 const dynamicCircleOpacity = computed(() => {
     // Dynamische Berechnung der Opazität zwischen 0.2 (Zoom 10) und 0 (Zoom 16+)
@@ -236,19 +247,52 @@ const handleLocationSelect = (location) => {
     center.value = location.coordinates;
 };
 
-// Setup radius circle when map is loaded
+// ###################################
+// ######## Mapbox-Map-Events ########
+// ###################################
 const onMapLoaded = (map) => {
     ready.value = true;
     mapInstance.value = map;
     setRadiusDynamically();
 
-    // Double-Click/Doppeltippen nur bei Ein-Finger-Interaktion für Geo-Setzen
-    let lastTap = 0;
+    // Double-Click/Doppeltippen nur bei Ein-Finger-Interaktion für Geo-Setzen – auskommentier weil nicht nötig
+    // setupDoubleClickHandlers(map);
 
+    addClusterSourceAndLayers(map);
+};
+
+const mapUpdated = (event) => {
+    const updateZoom = event.zoom || currentMapData.value.zoom;
+    const updateCenter = event.center || currentMapData.value.center;
+
+    setRadiusDynamically();
+
+    currentMapData.value = {
+        center: updateCenter,
+        zoom: updateZoom,
+    };
+
+    appStore.setMapGeoLatLong({
+        coords: {
+            latitude: updateCenter[1],
+            longitude: updateCenter[0]
+        },
+        timestamp: Date.now()
+    });
+
+    console.log('currentMapData: ', currentMapData.value);
+};
+
+const setupDoubleClickHandlers = (map) => {
+    let lastTap = 0;
     let touchMoved = false;
     let touchEndTimeout = null;
 
-    map.on('dblclick', (e) => {
+    map.on('dblclick', handleDoubleClick);
+    map.on('touchmove', handleTouchMove);
+    map.on('touchend', handleTouchEnd);
+
+    function handleDoubleClick(e) {
         // Nur bei Maus (nicht Touch) Geo setzen
         if (!e.originalEvent || e.originalEvent.pointerType === 'mouse') {
             setGeoLatLong({
@@ -259,9 +303,9 @@ const onMapLoaded = (map) => {
                 timestamp: Date.now()
             });
         }
-    });
+    }
 
-    map.on('touchmove', (e) => {
+    function handleTouchMove() {
         // Sobald sich der Finger bewegt, merken wir uns das
         touchMoved = true;
         // Falls ein Timeout läuft, abbrechen
@@ -269,9 +313,9 @@ const onMapLoaded = (map) => {
             clearTimeout(touchEndTimeout);
             touchEndTimeout = null;
         }
-    });
+    }
 
-    map.on('touchend', (e) => {
+    function handleTouchEnd(e) {
         // Prüfe, ob nur ein Finger verwendet wurde
         if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 0) {
             // Noch Finger auf dem Screen, kein Tap-Ende
@@ -305,21 +349,7 @@ const onMapLoaded = (map) => {
             });
         }
         lastTap = currentTime;
-    });
-};
-
-const mapUpdated = (event) => {
-    const updateZoom = event.zoom || currentMapData.value.zoom;
-    const updateCenter = event.center || currentMapData.value.center;
-
-    setRadiusDynamically(true);
-
-    currentMapData.value = {
-        center: updateCenter,
-        zoom: updateZoom,
-    };
-
-    console.log('currentMapData: ', currentMapData.value);
+    }
 };
 
 const getGeoLocation = async(force = false) => {
@@ -361,6 +391,178 @@ const setRadiusDynamically = (growOnly = false) => {
         radius.value = Math.round(dynamicRadius);
     }
 };
+
+// Mapbox-Cluster-Integration für Locations
+// Annahme: mapInstance ist die Mapbox-Instanz (ref), locations ist ein Array mit { lat, lng, ... }
+
+const clusterSourceId = 'locations';
+const clusterLayerId = 'clusters';
+const unclusteredLayerId = 'unclustered-point';
+
+const clusterMaxZoom = 10; // Bis Zoom 8 clustern, ab 9 keine Cluster mehr
+const clusterRadius = 50; // Pixel
+
+const geoJsonFromLocations = () => {
+    if (!props.allLocations) return { type: 'FeatureCollection', features: [] };
+
+    return {
+        type: 'FeatureCollection',
+        features: props.allLocations.map((loc) => ({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [loc.coordinates[0], loc.coordinates[1]]
+            },
+            properties: {
+                // Weitere Properties für Popup etc.
+                ...loc
+            }
+        }))
+    };
+};
+
+const addClusterSourceAndLayers = (map) => {
+    // Quelle entfernen, falls schon vorhanden
+    if (map.getSource(clusterSourceId)) {
+        if (map.getLayer(clusterLayerId)) map.removeLayer(clusterLayerId);
+        if (map.getLayer('cluster-count')) map.removeLayer('cluster-count');
+        if (map.getLayer(unclusteredLayerId)) map.removeLayer(unclusteredLayerId);
+        map.removeSource(clusterSourceId);
+    }
+
+    map.addSource(clusterSourceId, {
+        type: 'geojson',
+        data: geoJsonFromLocations(),
+        cluster: true,
+        clusterMaxZoom,
+        clusterRadius
+    });
+
+    // Cluster-Layer
+    map.addLayer({
+        id: clusterLayerId,
+        type: 'circle',
+        source: clusterSourceId,
+        filter: ['has', 'point_count'],
+        paint: {
+            'circle-color': '#51bbd6',
+            'circle-radius': [
+                'step',
+                ['get', 'point_count'],
+                20, 10,
+                30, 30,
+                40
+            ],
+            'circle-opacity': 0.7
+        }
+    });
+
+    // Cluster-Zähler
+    map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: clusterSourceId,
+        filter: ['has', 'point_count'],
+        layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 14
+        }
+    });
+
+    // // Einzelpunkt-Layer
+    // map.addLayer({
+    //     id: unclusteredLayerId,
+    //     type: 'circle',
+    //     source: clusterSourceId,
+    //     filter: ['!', ['has', 'point_count']],
+    //     paint: {
+    //         'circle-color': '#f28cb1',
+    //         'circle-radius': 8,
+    //         'circle-stroke-width': 1,
+    //         'circle-stroke-color': '#fff'
+    //     }
+    // });
+
+    // Nach jedem Layer-Update die unclustered Features aktualisieren
+    map.on('render', () => {
+        updateUnclusteredFeatures(map);
+    });
+
+    // Auch initial nach dem Hinzufügen der Layer
+    updateUnclusteredFeatures(map);
+
+    // Optional: Wenn sich die Locations ändern, erneut aktualisieren
+    // (z.B. falls du ein watch auf locations hast)
+    // watch(locations, () => {
+    //     if (map) updateUnclusteredFeatures(map);
+    // });
+
+    // Cluster-Klick: auf Cluster zoomen
+    map.on('click', clusterLayerId, (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+            layers: [clusterLayerId]
+        });
+        const clusterId = features[0].properties.cluster_id;
+        map.getSource(clusterSourceId).getClusterExpansionZoom(
+            clusterId,
+            (err, nextZoom) => {
+                if (err) return;
+                map.easeTo({
+                    center: features[0].geometry.coordinates,
+                    zoom: nextZoom
+                });
+            }
+        );
+    });
+
+    // Einzelpunkt-Klick: z.B. Popup öffnen (hier nur Konsolenausgabe)
+    map.on('click', unclusteredLayerId, (e) => {
+        const feature = e.features[0];
+        console.log('Einzelpunkt geklickt:', feature.properties);
+        // Hier könnte ein Popup geöffnet werden
+    });
+
+    // Cursor-Style
+    map.on('mouseenter', clusterLayerId, () => {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', clusterLayerId, () => {
+        map.getCanvas().style.cursor = '';
+    });
+};
+
+// Hilfsfunktion, um unclustered Features aus der Map zu holen
+function updateUnclusteredFeatures(map) {
+    if (!map || !map.isStyleLoaded()) return;
+    // Features ohne 'point_count' sind Einzelpunkte
+    const features = map.querySourceFeatures(clusterSourceId, {
+        sourceLayer: undefined,
+        filter: ['!', ['has', 'point_count']]
+    });
+    // Nur die properties.id speichern
+    unclusteredFeatures.value = features
+        .map((feature) => feature.properties && feature.properties.id)
+        .filter((id) => id !== undefined && id !== null);
+}
+
+// Beispiel für Verwendung im onMounted-Hook:
+/*
+onMounted(() => {
+    mapInstance.value.on('load', () => {
+        addClusterSourceAndLayers(mapInstance.value, locations.value);
+    });
+});
+*/
+
+// Wenn sich locations ändern, kann man die Quelle aktualisieren:
+/*
+watch(locations, newLocs => {
+    if (mapInstance.value && mapInstance.value.getSource(clusterSourceId)) {
+        mapInstance.value.getSource(clusterSourceId).setData(getGeoJsonFromLocations(newLocs));
+    }
+});
+*/
 
 watch([center, zoom, userLocation, geo], () => {
     console.log('center: ', center.value);

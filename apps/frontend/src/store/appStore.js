@@ -7,6 +7,7 @@ export const useAppStore = defineStore('app', {
         walkthroughVisited: JSON.parse(localStorage.getItem('walkthroughVisited')),
         theme: localStorage.getItem('theme'),
         geo: JSON.parse(localStorage.getItem('geo')),
+        mapGeo: JSON.parse(localStorage.getItem('mapGeo')),
         radius: parseInt(localStorage.getItem('radius')) || 5,
         shelterFavs: JSON.parse(localStorage.getItem('shelterFavs')),
     }),
@@ -38,6 +39,7 @@ export const useAppStore = defineStore('app', {
             };
 
             localStorage.setItem('geo', JSON.stringify(this.geo));
+            this.setMapGeoLatLong(geoData);
         },
 
         async getGeoLocation(force = false) {
@@ -48,5 +50,24 @@ export const useAppStore = defineStore('app', {
                 this.setGeoLatLong(geoData);
             }
         },
+
+        setMapGeoLatLong(geoData) {
+            this.mapGeo = {
+                lat: geoData.coords.latitude,
+                long: geoData.coords.longitude,
+                ts: geoData.timestamp
+            };
+            localStorage.setItem('mapGeo', JSON.stringify(this.mapGeo));
+        },
+
+        async getMapGeoLocation(force = false) {
+            if (localStorage.getItem('mapGeo') && !force) {
+                this.mapGeo = JSON.parse(localStorage.getItem('mapGeo'));
+            } else {
+                const geoData = await Geolocation.getCurrentPosition();
+                this.setMapGeo(geoData);
+            }
+        },
+
     },
 })
