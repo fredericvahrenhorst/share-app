@@ -2,7 +2,8 @@
     <ion-modal
         :is-open="isOpen"
         @didDismiss="handleDismiss"
-        :initial-breakpoint="1" :breakpoints="[0, 0.5, 0.75, 1]"
+        :initial-breakpoint="1"
+        :breakpoints="[0, 0.5, 0.75, 1]"
     >
 
         <ion-header collapse="fade" translucent>
@@ -271,13 +272,13 @@ const {
     searchPagination,
     hasSearchResults,
     isSearching,
-    searchQueryEmpty
+    searchQueryEmpty,
+    categories
 } = storeToRefs(locationsStore);
 const { geo } = storeToRefs(appStore);
 
 // Local state
 const selectedCategory = ref('all');
-const categories = ref([]);
 
 const searchInput = ref(null);
 const isCategoryDropdownOpen = ref(false);
@@ -473,14 +474,8 @@ const handleClickOutside = (event) => {
     }
 };
 
-// Load categories on mount
+// Load
 onMounted(async() => {
-    try {
-        categories.value = await locationsStore.getCategories();
-    } catch (error) {
-        console.error('Error loading categories:', error);
-    }
-
     document.addEventListener('click', handleClickOutside);
 });
 

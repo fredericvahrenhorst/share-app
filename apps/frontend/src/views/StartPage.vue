@@ -13,7 +13,7 @@
                     <span class="text-sm text-light-gray-96">{{ t('misc.is_loading') }}</span>
                 </div>
             </div>
-            <location-map :locations="filteredLocationsByRadius" :all-locations="locations" />
+            <location-map :all-locations="locations" />
         </ion-content>
     </ion-page>
 </template>
@@ -25,10 +25,10 @@ import {
     IonSpinner,
 } from '@ionic/vue';
 import { storeToRefs } from 'pinia'; // eslint-disable-line
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { distance } from "@turf/distance";
-import { point } from '@turf/helpers';
+// import { distance } from "@turf/distance";
+// import { point } from '@turf/helpers';
 
 import { useUserStore } from '../store/userStore';
 import { useAppStore } from '../store/appStore';
@@ -50,26 +50,26 @@ const { isLoading } = storeToRefs(locationsStore);
 const locations = ref([]);
 // Berechnet eine gefilterte Liste von Standorten, die im Umkreis des Nutzers liegen.
 // Die Filterung basiert auf dem aktuellen Standort (appStore.geo) und dem eingestellten Radius (appStore.radius).
-const filteredLocationsByRadius = computed(() => {
-    if (!locations.value || !appStore.mapGeo) return [];
+// const filteredLocationsByRadius = computed(() => {
+//     if (!locations.value || !appStore.mapGeo) return [];
 
-    const userPoint = point([appStore.mapGeo.long, appStore.mapGeo.lat]);
+//     const userPoint = point([appStore.mapGeo.long, appStore.mapGeo.lat]);
 
-    // Filtere alle Standorte, die Koordinaten haben und innerhalb des Radius liegen
-    return locations.value.filter((loc) => {
-        // Standort muss gültige Koordinaten (Array mit 2 Werten) haben
-        if (!loc.coordinates || loc.coordinates.length !== 2) return false;
+//     // Filtere alle Standorte, die Koordinaten haben und innerhalb des Radius liegen
+//     return locations.value.filter((loc) => {
+//         // Standort muss gültige Koordinaten (Array mit 2 Werten) haben
+//         if (!loc.coordinates || loc.coordinates.length !== 2) return false;
 
-        // Erstelle einen GeoJSON-Punkt für den Standort
-        const locPoint = point([loc.coordinates[0], loc.coordinates[1]]);
+//         // Erstelle einen GeoJSON-Punkt für den Standort
+//         const locPoint = point([loc.coordinates[0], loc.coordinates[1]]);
 
-        // Berechne die Distanz zwischen Nutzer und Standort in Kilometern
-        const dist = distance(userPoint, locPoint, { units: 'kilometers' });
+//         // Berechne die Distanz zwischen Nutzer und Standort in Kilometern
+//         const dist = distance(userPoint, locPoint, { units: 'kilometers' });
 
-        // Nur Standorte innerhalb des eingestellten Radius zurückgeben
-        return dist <= appStore.radius;
-    });
-});
+//         // Nur Standorte innerhalb des eingestellten Radius zurückgeben
+//         return dist <= appStore.radius;
+//     });
+// });
 
 onMounted(async() => {
     console.log('authenticated.value: ', authenticated.value);

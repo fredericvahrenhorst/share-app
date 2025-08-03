@@ -8,6 +8,7 @@ export const useAppStore = defineStore('app', {
         theme: localStorage.getItem('theme'),
         geo: JSON.parse(localStorage.getItem('geo')),
         mapGeo: JSON.parse(localStorage.getItem('mapGeo')),
+        mapZoom: parseInt(localStorage.getItem('mapZoom')) || 11,
         radius: parseInt(localStorage.getItem('radius')) || 5,
         shelterFavs: JSON.parse(localStorage.getItem('shelterFavs')),
     }),
@@ -58,6 +59,11 @@ export const useAppStore = defineStore('app', {
                 ts: geoData.timestamp
             };
             localStorage.setItem('mapGeo', JSON.stringify(this.mapGeo));
+        },
+
+        setMapZoom(zoom) {
+            this.mapZoom = zoom;
+            localStorage.setItem('mapZoom', zoom.toString());
         },
 
         async getMapGeoLocation(force = false) {

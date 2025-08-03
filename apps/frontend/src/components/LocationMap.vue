@@ -7,10 +7,11 @@
         <!-- Suchfeld in der Top-Bar -->
         <div
             id="search-bar"
-            class="fixed top-[calc(var(--ion-statusbar-padding)+2rem)] left-2 right-2 w-auto z-50"
+            class="fixed top-[calc(var(--ion-statusbar-padding)+2rem)] left-2 right-2 w-auto z-50
+            flex items-center gap-2"
         >
             <ion-item
-                class="flex gap-2 blur-bg-light text-light-gray-96"
+                class="flex gap-2 grow blur-bg-light text-light-gray-96"
                 lines="none"
                 color="transparent"
             >
@@ -24,10 +25,23 @@
                     :placeholder="t('search.placeholder')"
                     readonly
                     @click="openSearchModal"
-                    class="cursor-pointer border-none"
+                    class="cursor-pointer border-none flex-1"
                     style="--border-width: 0px"
                 />
             </ion-item>
+
+            <ion-button
+                @click="openFilterModal"
+                fill="clear"
+                class="p-0 shrink-0 blur-bg-light min-h-11 text-light-gray-96"
+                size="small"
+            >
+                <ion-icon
+                    :icon="funnelOutline"
+                    size="small"
+                    class="text-current"
+                />
+            </ion-button>
         </div>
 
         <mapbox-map
@@ -45,7 +59,7 @@
         >
             <!-- Location Markers -->
             <mapbox-marker
-                v-for="location in filteredAllLocations"
+                v-for="location in unclusteredFeatures"
                 :key="`marker-${location.id}`"
                 :lngLat="location.coordinates"
                 @click="handleLocationSelect(location)"
@@ -57,10 +71,9 @@
                             currentMapData.zoom > 10 ? 'w-9 h-9' : 'w-4 h-4',
                         ]"
                         :style="{
-                            background:
-                                location.category && location.category.color
-                                    ? `${location.category.color}80` // 50% opacity
-                                    : 'rgba(99,102,241,0.5)', // fallback: Indigo-500
+                            background: location.category && location.category.color
+                                ? `${location.category.color}80` // 50% opacity
+                                : 'rgba(99,102,241,0.5)', // fallback: Indigo-500
                         }"
                     >
                         <ion-icon
@@ -77,16 +90,16 @@
             <mapbox-marker :lngLat="userLocation">
                 <template v-slot:icon>
                     <div
-                        class="w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-lg"
+                        class="w-4 h-4 rounded-full translate-y-1/2 bg-blue-500 border-4 border-white shadow-lg"
                     ></div>
                 </template>
             </mapbox-marker>
 
             <!-- Radius Circle -->
             <mapbox-geogeometry-circle
-                v-if="userLocation && radius && currentMapData.zoom >= 9"
-                :center="[mapGeo.long, mapGeo.lat]"
-                :radius="radius"
+                v-if="userLocation && filterState.radius"
+                :center="[geo.long, geo.lat]"
+                :radius="filterState.radius"
                 fillColor="#2b7fff"
                 outlineColor="#155dfc"
                 :opacity="dynamicCircleOpacity"
@@ -95,7 +108,7 @@
         </mapbox-map>
 
         <!-- Button Bar -->
-        <div class="fixed z-50 bottom-28 left-2 right-2 flex items-center justify-between">
+        <div v-if="filterState.radius" class="fixed z-50 bottom-28 left-2 right-2 flex items-center justify-between">
             <!-- Radius Info -->
             <div
                 v-if="geo"
@@ -103,7 +116,7 @@
                        flex items-center justify-center gap-2"
             >
                 <span>
-                    {{ radius }}{{ t('radius.unit') }} {{ t('radius.label') }}
+                    {{ filterState.radius }}{{ t('radius.unit') }} {{ t('radius.label') }}
                 </span>
                 –
                 <span
@@ -142,26 +155,32 @@
             @close="closeSearchModal"
             @select-location="handleLocationSelect"
         />
+
+        <!-- Filter Modal -->
+        <LocationFilter
+            :is-open="isFilterModalOpen"
+            @close="closeFilterModal"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue';
+import { distance as turfDistance } from '@turf/distance';
+import { point } from '@turf/helpers';
+
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { MapboxMap, MapboxMarker, MapboxGeogeometryCircle } from 'vue-mapbox-ts';
-import { IonItem, IonInput, IonIcon } from '@ionic/vue';
-import { navigate, heartOutline, searchOutline } from 'ionicons/icons';
+import { IonItem, IonInput, IonIcon, IonButton } from '@ionic/vue';
+import { navigate, searchOutline, funnelOutline, heartOutline } from 'ionicons/icons';
 import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
+import LocationFilter from './LocationFilter.vue';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';
 
 const props = defineProps({
-    locations: {
-        type: Array,
-        required: true,
-    },
     allLocations: {
         type: Array,
         required: true,
@@ -173,16 +192,18 @@ const { t } = useI18n();
 
 // Store
 const appStore = useAppStore();
-const { geo, mapGeo, radius } = storeToRefs(appStore);
+const { geo, mapGeo, radius, mapZoom } = storeToRefs(appStore);
 
 const locationsStore = useLocationsStore();
+const { filterState, filteredLocations } = storeToRefs(locationsStore);
 
 const defaultCenter = [13.354336, 52.477697];
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 const ready = ref(false);
 const isSearchModalOpen = ref(false);
-const zoom = ref(mapGeo.value ? (radius.value > 10 ? 9 : 11) : 5);
+// Use saved mapZoom or calculate based on radius
+const zoom = ref(mapZoom.value || (mapGeo.value ? (radius.value > 10 ? 9 : 11) : 5));
 const center = ref([
     mapGeo.value?.long || defaultCenter[0],
     mapGeo.value?.lat || defaultCenter[1],
@@ -199,11 +220,14 @@ const mapInstance = ref(null);
 
 // Array für unclustered Pins (Einzelpunkte)
 const unclusteredFeatures = ref([]);
-const filteredAllLocations = computed(
-    () => props.allLocations.filter((loc) => unclusteredFeatures.value.includes(loc.id))
-);
+// Load locations from props into store when component mounts
+watch(() => props.allLocations, (newLocations) => {
+    if (newLocations && newLocations.length > 0) {
+        locationsStore.setLocationsFromProps(newLocations);
+    }
+}, { immediate: true });
 
-
+// Auskommentiert weil nicht mehr verwendet – Berechnung für die Opacity für den Radius
 const dynamicCircleOpacity = computed(() => {
     // Dynamische Berechnung der Opazität zwischen 0.2 (Zoom 10) und 0 (Zoom 16+)
     const minZoom = 8;
@@ -238,6 +262,17 @@ const closeSearchModal = () => {
     isSearchModalOpen.value = false;
 };
 
+// Filter Modal Methods
+const isFilterModalOpen = ref(false);
+
+const openFilterModal = () => {
+    isFilterModalOpen.value = true;
+};
+
+const closeFilterModal = () => {
+    isFilterModalOpen.value = false;
+};
+
 const handleLocationSelect = (location) => {
     console.log('location: ', location);
     if (!location.isExternal) {
@@ -253,7 +288,9 @@ const handleLocationSelect = (location) => {
 const onMapLoaded = (map) => {
     ready.value = true;
     mapInstance.value = map;
-    setRadiusDynamically();
+
+    // auskommentier weil nicht nötig
+    // setRadiusDynamically();
 
     // Double-Click/Doppeltippen nur bei Ein-Finger-Interaktion für Geo-Setzen – auskommentier weil nicht nötig
     // setupDoubleClickHandlers(map);
@@ -265,12 +302,16 @@ const mapUpdated = (event) => {
     const updateZoom = event.zoom || currentMapData.value.zoom;
     const updateCenter = event.center || currentMapData.value.center;
 
-    setRadiusDynamically();
+    // auskommentier weil nicht nötig
+    // setRadiusDynamically();
 
     currentMapData.value = {
         center: updateCenter,
         zoom: updateZoom,
     };
+
+    // Save map zoom to localStorage
+    appStore.setMapZoom(updateZoom);
 
     appStore.setMapGeoLatLong({
         coords: {
@@ -283,117 +324,130 @@ const mapUpdated = (event) => {
     console.log('currentMapData: ', currentMapData.value);
 };
 
-const setupDoubleClickHandlers = (map) => {
-    let lastTap = 0;
-    let touchMoved = false;
-    let touchEndTimeout = null;
+// setup funktion für die Double click Abfrage – auskommentier weil nicht nötig
+// const setupDoubleClickHandlers = (map) => {
+//     let lastTap = 0;
+//     let touchMoved = false;
+//     let touchEndTimeout = null;
 
-    map.on('dblclick', handleDoubleClick);
-    map.on('touchmove', handleTouchMove);
-    map.on('touchend', handleTouchEnd);
+//     map.on('dblclick', handleDoubleClick);
+//     map.on('touchmove', handleTouchMove);
+//     map.on('touchend', handleTouchEnd);
 
-    function handleDoubleClick(e) {
-        // Nur bei Maus (nicht Touch) Geo setzen
-        if (!e.originalEvent || e.originalEvent.pointerType === 'mouse') {
-            setGeoLatLong({
-                coords: {
-                    latitude: e.lngLat.lat,
-                    longitude: e.lngLat.lng
-                },
-                timestamp: Date.now()
-            });
-        }
-    }
+//     function handleDoubleClick(e) {
+//         // Nur bei Maus (nicht Touch) Geo setzen
+//         if (!e.originalEvent || e.originalEvent.pointerType === 'mouse') {
+//             setGeoLatLong({
+//                 coords: {
+//                     latitude: e.lngLat.lat,
+//                     longitude: e.lngLat.lng
+//                 },
+//                 timestamp: Date.now()
+//             });
+//         }
+//     }
 
-    function handleTouchMove() {
-        // Sobald sich der Finger bewegt, merken wir uns das
-        touchMoved = true;
-        // Falls ein Timeout läuft, abbrechen
-        if (touchEndTimeout) {
-            clearTimeout(touchEndTimeout);
-            touchEndTimeout = null;
-        }
-    }
+//     function handleTouchMove() {
+//         // Sobald sich der Finger bewegt, merken wir uns das
+//         touchMoved = true;
+//         // Falls ein Timeout läuft, abbrechen
+//         if (touchEndTimeout) {
+//             clearTimeout(touchEndTimeout);
+//             touchEndTimeout = null;
+//         }
+//     }
 
-    function handleTouchEnd(e) {
-        // Prüfe, ob nur ein Finger verwendet wurde
-        if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 0) {
-            // Noch Finger auf dem Screen, kein Tap-Ende
-            return;
-        }
-        if (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches.length > 1) {
-            // Mehr als ein Finger: kein Doppeltap
-            return;
-        }
+//     function handleTouchEnd(e) {
+//         // Prüfe, ob nur ein Finger verwendet wurde
+//         if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 0) {
+//             // Noch Finger auf dem Screen, kein Tap-Ende
+//             return;
+//         }
+//         if (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches.length > 1) {
+//             // Mehr als ein Finger: kein Doppeltap
+//             return;
+//         }
 
-        // Wenn sich der Finger bewegt hat, nicht sofort ausführen
-        if (touchMoved) {
-            // Warte kurz ab, ob der Finger still steht (z.B. 200ms)
-            touchEndTimeout = setTimeout(() => {
-                touchMoved = false;
-                touchEndTimeout = null;
-            }, 200);
-            lastTap = Date.now();
-            return;
-        }
+//         // Wenn sich der Finger bewegt hat, nicht sofort ausführen
+//         if (touchMoved) {
+//             // Warte kurz ab, ob der Finger still steht (z.B. 200ms)
+//             touchEndTimeout = setTimeout(() => {
+//                 touchMoved = false;
+//                 touchEndTimeout = null;
+//             }, 200);
+//             lastTap = Date.now();
+//             return;
+//         }
 
-        const currentTime = Date.now();
-        if (currentTime - lastTap < 400) {
-            // Doppeltippen erkannt, nur bei Ein-Finger-Touch und ohne Bewegung
-            setGeoLatLong({
-                coords: {
-                    latitude: e.lngLat.lat,
-                    longitude: e.lngLat.lng
-                },
-                timestamp: currentTime
-            });
-        }
-        lastTap = currentTime;
-    }
-};
+//         const currentTime = Date.now();
+//         if (currentTime - lastTap < 400) {
+//             // Doppeltippen erkannt, nur bei Ein-Finger-Touch und ohne Bewegung
+//             setGeoLatLong({
+//                 coords: {
+//                     latitude: e.lngLat.lat,
+//                     longitude: e.lngLat.lng
+//                 },
+//                 timestamp: currentTime
+//             });
+//         }
+//         lastTap = currentTime;
+//     }
+// };
 
 const getGeoLocation = async(force = false) => {
     await appStore.getGeoLocation(force);
+
+    // Update cluster source with new geo location for radius filtering
+    updateClusterSource();
 };
 
 const setGeoLatLong = (geoData) => {
     radius.value = baseRadius;
-    zoom.value = baseZoom;
+    // Use saved mapZoom or default zoom
+    zoom.value = mapZoom.value || baseZoom;
     appStore.setGeoLatLong(geoData);
+
+    // Update cluster source with new geo location for radius filtering
+    updateClusterSource();
 };
 
-const setRadiusDynamically = (growOnly = false) => {
-    // Dynamischer Radius basierend auf Zoom-Level berechnen
-    // Bei Zoom-Level 11 entspricht der Radius 5km
-    // Erklärung der Formel:
-    // Der Radius (in km) wird dynamisch anhand des aktuellen Zoom-Levels der Karte berechnet.
-    // Bei Zoom-Level 11 beträgt der Radius 5 km (das ist unser Basiswert).
-    // Für jede Änderung des Zoom-Levels um 1 verdoppelt oder halbiert sich der Radius:
-    // - Wenn man herauszoomt (Zoom-Level kleiner), wird der Radius größer (sichtbarer Bereich wächst).
-    // - Wenn man hineinzoomt (Zoom-Level größer), wird der Radius kleiner (sichtbarer Bereich schrumpft).
-    // Die Formel lautet: radius = 5 * 2^(11 - zoom)
-    // Beispiel:
-    //   - zoom = 11: radius = 5 * 2^(11-11) = 5 * 1 = 5 km
-    //   - zoom = 10: radius = 5 * 2^(11-10) = 5 * 2 = 10 km
-    //   - zoom = 12: radius = 5 * 2^(11-12) = 5 * 0.5 = 2.5 km
-    // (Jede Zoomstufe halbiert/verdoppelt die sichtbare Fläche)
+// Funktion für das setzten der Radius Größer dynamisch nach Zoom Level – auskommentier weil nicht nötig
+// const setRadiusDynamically = (growOnly = false) => {
+//     // Dynamischer Radius basierend auf Zoom-Level berechnen
+//     // Bei Zoom-Level 11 entspricht der Radius 5km
+//     // Erklärung der Formel:
+//     // Der Radius (in km) wird dynamisch anhand des aktuellen Zoom-Levels der Karte berechnet.
+//     // Bei Zoom-Level 11 beträgt der Radius 5 km (das ist unser Basiswert).
+//     // Für jede Änderung des Zoom-Levels um 1 verdoppelt oder halbiert sich der Radius:
+//     // - Wenn man herauszoomt (Zoom-Level kleiner), wird der Radius größer (sichtbarer Bereich wächst).
+//     // - Wenn man hineinzoomt (Zoom-Level größer), wird der Radius kleiner (sichtbarer Bereich schrumpft).
+//     // Die Formel lautet: radius = 5 * 2^(11 - zoom)
+//     // Beispiel:
+//     //   - zoom = 11: radius = 5 * 2^(11-11) = 5 * 1 = 5 km
+//     //   - zoom = 10: radius = 5 * 2^(11-10) = 5 * 2 = 10 km
+//     //   - zoom = 12: radius = 5 * 2^(11-12) = 5 * 0.5 = 2.5 km
+//     // (Jede Zoomstufe halbiert/verdoppelt die sichtbare Fläche)
 
-    let dynamicRadius = baseRadius * 2 ** (baseZoom - currentMapData.value.zoom);
-    if (dynamicRadius < baseRadius) {
-        dynamicRadius = baseRadius;
-    }
+//     let dynamicRadius = baseRadius * 2 ** (baseZoom - currentMapData.value.zoom);
+//     if (dynamicRadius < baseRadius) {
+//         dynamicRadius = baseRadius;
+//     }
 
-    if (growOnly) {
-        if (dynamicRadius > radius.value) {
-            radius.value = Math.round(dynamicRadius);
-        }
-    } else {
-        radius.value = Math.round(dynamicRadius);
-    }
-};
+//     if (growOnly) {
+//         if (dynamicRadius > radius.value) {
+//             radius.value = Math.round(dynamicRadius);
+//         }
+//     } else {
+//         radius.value = Math.round(dynamicRadius);
+//     }
+// };
 
 // Mapbox-Cluster-Integration für Locations
 // Annahme: mapInstance ist die Mapbox-Instanz (ref), locations ist ein Array mit { lat, lng, ... }
+
+// ############################################
+// ######## Mapbox-Cluster-Integration ########
+// ############################################
 
 const clusterSourceId = 'locations';
 const clusterLayerId = 'clusters';
@@ -402,12 +456,12 @@ const unclusteredLayerId = 'unclustered-point';
 const clusterMaxZoom = 10; // Bis Zoom 8 clustern, ab 9 keine Cluster mehr
 const clusterRadius = 50; // Pixel
 
-const geoJsonFromLocations = () => {
-    if (!props.allLocations) return { type: 'FeatureCollection', features: [] };
+const geoJsonFromLocations = (locations) => {
+    if (!locations) return { type: 'FeatureCollection', features: [] };
 
     return {
         type: 'FeatureCollection',
-        features: props.allLocations.map((loc) => ({
+        features: locations.map((loc) => ({
             type: 'Feature',
             geometry: {
                 type: 'Point',
@@ -432,7 +486,7 @@ const addClusterSourceAndLayers = (map) => {
 
     map.addSource(clusterSourceId, {
         type: 'geojson',
-        data: geoJsonFromLocations(),
+        data: geoJsonFromLocations(filteredLocations.value),
         cluster: true,
         clusterMaxZoom,
         clusterRadius
@@ -490,7 +544,7 @@ const addClusterSourceAndLayers = (map) => {
     });
 
     // Auch initial nach dem Hinzufügen der Layer
-    updateUnclusteredFeatures(map);
+    // updateUnclusteredFeatures(map);
 
     // Optional: Wenn sich die Locations ändern, erneut aktualisieren
     // (z.B. falls du ein watch auf locations hast)
@@ -533,18 +587,22 @@ const addClusterSourceAndLayers = (map) => {
 };
 
 // Hilfsfunktion, um unclustered Features aus der Map zu holen
-function updateUnclusteredFeatures(map) {
+const updateUnclusteredFeatures = (map) => {
     if (!map || !map.isStyleLoaded()) return;
     // Features ohne 'point_count' sind Einzelpunkte
     const features = map.querySourceFeatures(clusterSourceId, {
         sourceLayer: undefined,
         filter: ['!', ['has', 'point_count']]
     });
-    // Nur die properties.id speichern
-    unclusteredFeatures.value = features
+
+    // Get unclustered IDs from map features
+    const unclusteredIds = features
         .map((feature) => feature.properties && feature.properties.id)
         .filter((id) => id !== undefined && id !== null);
-}
+
+    // Map IDs back to full location objects using filtered locations from store
+    unclusteredFeatures.value = filteredLocations.value.filter((location) => unclusteredIds.includes(location.id));
+};
 
 // Beispiel für Verwendung im onMounted-Hook:
 /*
@@ -555,14 +613,22 @@ onMounted(() => {
 });
 */
 
-// Wenn sich locations ändern, kann man die Quelle aktualisieren:
-/*
-watch(locations, newLocs => {
+// Update cluster source when filters change
+const updateClusterSource = () => {
     if (mapInstance.value && mapInstance.value.getSource(clusterSourceId)) {
-        mapInstance.value.getSource(clusterSourceId).setData(getGeoJsonFromLocations(newLocs));
+        const geoJsonData = geoJsonFromLocations(filteredLocations.value);
+        mapInstance.value.getSource(clusterSourceId).setData(geoJsonData);
+
+        updateUnclusteredFeatures(mapInstance.value);
     }
-});
-*/
+};
+
+// Watch for filter changes and update cluster source
+watch(filterState, () => {
+    console.log('filterState changed');
+    locationsStore.updateFilteredLocations();
+    updateClusterSource();
+}, { deep: true });
 
 watch([center, zoom, userLocation, geo], () => {
     console.log('center: ', center.value);
@@ -576,6 +642,10 @@ watch(geo, () => {
         center.value = [geo.value.long, geo.value.lat];
         userLocation.value = [geo.value.long, geo.value.lat];
         // updateRadiusCircle();
+
+        // Update filtered locations and cluster source when geo location changes
+        locationsStore.updateFilteredLocations();
+        updateClusterSource();
     }
 });
 </script>

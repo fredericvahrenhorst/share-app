@@ -31,6 +31,26 @@ export const useLocationsStore = defineStore('locations', {
             hasPrevPage: false
         },
         popupLocation: null,
+        // Filter State
+        categories: [],
+        filteredLocations: [],
+        filterState: (() => {
+            // Try to load filters from localStorage on store initialization
+            try {
+                const savedFilters = localStorage.getItem('locationFilters');
+                if (savedFilters) {
+                    return JSON.parse(savedFilters);
+                }
+            } catch (error) {
+                console.error('Error loading filters from localStorage on init:', error);
+            }
+
+            // Default values if no saved filters
+            return {
+                categories: [],
+                radius: 0,
+            };
+        })(),
     }),
     getters: {
         // Getter für Suchstatus
@@ -67,7 +87,8 @@ export const useLocationsStore = defineStore('locations', {
                     'select[coordinates]': 'true',
                     'select[category]': 'true',
                     'select[status]': 'true',
-                    'select[createdAt]': 'true'
+                    'select[createdAt]': 'true',
+                    'select[openingHours]': 'true'
                 });
 
                 response = await apiCall(`locations?${params.toString()}`, {
@@ -82,6 +103,10 @@ export const useLocationsStore = defineStore('locations', {
                             this.locations.push(location);
                         }
                     });
+
+                    // Load categories from locations and filters
+                    this.loadCategoriesFromLocations();
+                    this.loadFiltersFromLocalStorage();
                 }
             } catch (error) {
                 console.error('Error loading locations:', error);
@@ -206,18 +231,7 @@ export const useLocationsStore = defineStore('locations', {
             };
         },
 
-        // Kategorien für Filter laden
-        async getCategories() {
-            try {
-                const response = await apiCall('categories', {
-                    method: 'GET'
-                });
-                return response.docs || [];
-            } catch (error) {
-                console.error('Error loading categories:', error);
-                return [];
-            }
-        },
+
 
         // Nächste Seite laden (für Pagination)
         async loadNextPage() {
@@ -269,6 +283,135 @@ export const useLocationsStore = defineStore('locations', {
         },
         clearPopupLocation() {
             this.popupLocation = null;
+        },
+
+        loadCategoriesFromLocations() {
+            // Extrahiere unique Kategorien aus den Locations
+            const categoryMap = new Map();
+
+            this.locations.forEach(location => {
+                if (location.category) {
+                    const categoryId = location.category.id || location.category;
+                    const categoryName = location.category.name || 'Unbekannte Kategorie';
+                    const categoryColor = location.category.color || '#6366F1';
+                    const categoryIcon = location.category.icon || 'location-outline';
+
+                    if (!categoryMap.has(categoryId)) {
+                        categoryMap.set(categoryId, {
+                            id: categoryId,
+                            name: categoryName,
+                            color: categoryColor,
+                            icon: categoryIcon,
+                            description: location.category.description || ''
+                        });
+                    }
+                }
+            });
+
+            this.categories = Array.from(categoryMap.values());
+        },
+
+        applyFilters(filterOptions) {
+            // Update filter state
+            this.filterState = { ...this.filterState, ...filterOptions };
+
+            // Save to local storage
+            localStorage.setItem('locationFilters', JSON.stringify(this.filterState));
+
+            // Update filtered locations
+            this.updateFilteredLocations();
+        },
+
+        clearFilters() {
+            this.filterState = {
+                categories: [],
+                radius: 0,
+            };
+
+            localStorage.removeItem('locationFilters');
+
+            // Update filtered locations
+            this.updateFilteredLocations();
+        },
+
+        // Load filters from local storage on app start
+        loadFiltersFromLocalStorage() {
+            try {
+                const savedFilters = localStorage.getItem('locationFilters');
+                if (savedFilters) {
+                    const parsedFilters = JSON.parse(savedFilters);
+                    // Only update if we have valid data
+                    if (parsedFilters && typeof parsedFilters === 'object') {
+                        this.filterState = { ...this.filterState, ...parsedFilters };
+                        console.log('Filters loaded from localStorage:', this.filterState);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading filters from localStorage:', error);
+            }
+        },
+
+        // Methode um Locations aus Props in den Store zu laden
+        setLocationsFromProps(locations) {
+            this.locations = [...locations];
+
+            // Lade Kategorien aus den Locations
+            this.loadCategoriesFromLocations();
+
+            // Lade gespeicherte Filter aus localStorage
+            this.loadFiltersFromLocalStorage();
+
+            // Update filtered locations
+            this.updateFilteredLocations();
+        },
+
+        // Update filtered locations based on current filter state
+        updateFilteredLocations() {
+            let locations = this.locations;
+
+            // Apply filters if any are set
+            if (this.filterState.categories.length > 0
+            || (this.filterState.radius && this.filterState.radius !== 0)) {
+                console.log('Applying filters to locations...');
+
+                locations = locations.filter((loc) => {
+                    // Category filter
+                    if (this.filterState.categories.length > 0) {
+                        const categoryId = loc.category?.id || loc.category;
+
+                        if (!this.filterState.categories.includes(categoryId)) {
+                            return false;
+                        }
+                    }
+
+                    // Radius filter (if geo is available)
+                    if (this.filterState.radius && this.filterState.radius !== 0) {
+                        const appStore = useAppStore();
+                        const geo = appStore.geo;
+
+                        if (geo && loc.coordinates && Array.isArray(loc.coordinates)) {
+                            const userPoint = point([geo.long, geo.lat]);
+                            const locationPoint = point(loc.coordinates);
+                            const distance = turfDistance(userPoint, locationPoint, { units: 'meters' });
+                            const maxDistance = this.filterState.radius * 1000; // Convert to meters
+
+                            if (distance > maxDistance) {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+
+                console.log('Filtered locations count:', locations.length);
+            } else {
+                console.log('No filters applied, showing all locations');
+            }
+
+            this.filteredLocations = locations;
         }
     },
 })

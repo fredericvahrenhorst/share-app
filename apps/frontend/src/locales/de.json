@@ -40,18 +40,31 @@
             "next": "Weiter"
         }
     },
+    "filter": {
+        "title": "Filter",
+        "categories": "Kategorien",
+        "radius": "Radius",
+        "availability": "Verfügbarkeit",
+        "all": "Alle",
+        "open": "Geöffnet",
+        "closed": "Geschlossen",
+        "all_distances": "Alle Entfernungen",
+        "1_km": "1 km",
+        "5_km": "5 km",
+        "10_km": "10 km",
+        "25_km": "25 km",
+        "50_km": "50 km",
+        "apply": "Filter anwenden",
+        "reset": "Filter zurücksetzen",
+        "clear_all": "Alle Filter zurücksetzen",
+        "radius_label": "Radius",
+        "locations_found": "Standorte gefunden",
+        "locations_found_plural": "Standorte gefunden"
+    },
     "radius": {
         "unit": "km",
         "label": "Radius",
         "searchHere": "Hier suchen"
-    },
-    "misc": {
-        "close": "Schließen",
-        "cancel": "Abbrechen",
-        "back": "Zurück",
-        "to": "bis",
-        "oclock": "Uhr",
-        "is_loading": "Daten laden …"
     },
     "addResource": {
         "title": "Ressource hinzufügen",
@@ -95,5 +108,14 @@
         "next": "Weiter",
         "cancel": "Abbrechen",
         "save": "Speichern"
+    },
+    "misc": {
+        "close": "Schließen",
+        "cancel": "Abbrechen",
+        "back": "Zurück",
+        "to": "bis",
+        "oclock": "Uhr",
+        "is_loading": "Daten laden …",
+        "apply": "Anwenden"
     }
 }
