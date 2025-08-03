@@ -517,11 +517,11 @@ const addClusterSourceAndLayers = (map) => {
     });
 
     // Einzelpunkt-Klick: z.B. Popup öffnen (hier nur Konsolenausgabe)
-    map.on('click', unclusteredLayerId, (e) => {
-        const feature = e.features[0];
-        console.log('Einzelpunkt geklickt:', feature.properties);
-        // Hier könnte ein Popup geöffnet werden
-    });
+    // map.on('click', unclusteredLayerId, (e) => {
+    //     const feature = e.features[0];
+    //     console.log('Einzelpunkt geklickt:', feature.properties);
+    //     // Hier könnte ein Popup geöffnet werden
+    // });
 
     // Cursor-Style
     map.on('mouseenter', clusterLayerId, () => {
