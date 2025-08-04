@@ -1,30 +1,59 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Kategorien</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Kategorien</ion-title>
-        </ion-toolbar>
-      </ion-header>
+    <ion-page>
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>Kategorien</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content :fullscreen="true">
+            <ion-header collapse="condense">
+                <ion-toolbar>
+                    <ion-title size="large">Kategorien</ion-title>
+                </ion-toolbar>
+            </ion-header>
 
-      <div class="container">
-        <ion-list>
-          <ion-item v-for="category in categories" :key="category.id" button @click="selectCategory(category)">
-            <ion-icon :icon="category.icon" slot="start"></ion-icon>
-            <ion-label>
-              <h2>{{ category.name }}</h2>
-              <p>{{ category.description }}</p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </div>
-    </ion-content>
-  </ion-page>
+            <div class="p-4">
+                <div v-if="isLoading" class="text-center py-16 text-gray-500">
+                    <ion-spinner name="crescent"></ion-spinner>
+                    <p class="mt-4">Lade Kategorien...</p>
+                </div>
+
+                <div v-else-if="categories.length === 0" class="text-center py-16 text-gray-500">
+                    <ion-icon :icon="gridOutline" size="large" class="text-6xl mb-4"></ion-icon>
+                    <h2 class="text-xl font-semibold mb-2">Keine Kategorien</h2>
+                    <p class="text-sm">Es sind noch keine Kategorien verfügbar.</p>
+                </div>
+
+                <div v-else class="grid grid-cols-2 gap-4 mb-6">
+                    <div
+                        v-for="category in categories"
+                        :key="category.id"
+                        class="bg-white rounded-xl p-5 text-center shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                        @click="selectCategory(category)"
+                    >
+                        <div
+                            class="w-15 h-15 rounded-full flex items-center justify-center mx-auto mb-3"
+                            :style="{ background: category.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }"
+                        >
+                            <ion-icon :icon="getCategoryIcon(category.icon)" class="text-2xl text-white"></ion-icon>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-800 mb-2">{{ category.name }}</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">{{ category.description }}</p>
+                    </div>
+                </div>
+
+                <ion-button
+                    v-if="categories.length > 0"
+                    expand="block"
+                    class="mt-4 rounded-xl py-4"
+                    :style="{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }"
+                    @click="showAllCategories"
+                >
+                    Alle Kategorien anzeigen
+                </ion-button>
+            </div>
+        </ion-content>
+    </ion-page>
 </template>
 
 <script setup>
@@ -34,92 +63,60 @@ import {
     IonToolbar,
     IonTitle,
     IonContent,
-    IonList,
-    IonItem,
+    IonButton,
     IonIcon,
-    IonLabel,
+    IonSpinner,
 } from '@ionic/vue';
 import {
+    gridOutline,
+    bookOutline,
+    constructOutline,
+    leafOutline,
+    settingsOutline,
     restaurantOutline,
+    shirtOutline,
     carOutline,
-    homeOutline,
-    storefrontOutline,
-    schoolOutline,
-    medkitOutline,
-    cartOutline,
-    cafeOutline,
+    bulbOutline,
 } from 'ionicons/icons';
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useLocationsStore } from '../store/locationsStore';
 
-const categories = ref([
-    {
-        id: 1,
-        name: 'Restaurants',
-        description: 'Restaurants und Gastronomie',
-        icon: restaurantOutline,
-    },
-    {
-        id: 2,
-        name: 'Transport',
-        description: 'Öffentlicher Verkehr und Taxis',
-        icon: carOutline,
-    },
-    {
-        id: 3,
-        name: 'Unterkünfte',
-        description: 'Hotels und Pensionen',
-        icon: homeOutline,
-    },
-    {
-        id: 4,
-        name: 'Geschäfte',
-        description: 'Einkaufsmöglichkeiten',
-        icon: storefrontOutline,
-    },
-    {
-        id: 5,
-        name: 'Bildung',
-        description: 'Schulen und Universitäten',
-        icon: schoolOutline,
-    },
-    {
-        id: 6,
-        name: 'Gesundheit',
-        description: 'Ärzte und Apotheken',
-        icon: medkitOutline,
-    },
-    {
-        id: 7,
-        name: 'Einkaufen',
-        description: 'Shopping und Einzelhandel',
-        icon: cartOutline,
-    },
-    {
-        id: 8,
-        name: 'Cafés',
-        description: 'Cafés und Bars',
-        icon: cafeOutline,
-    },
-]);
+const locationsStore = useLocationsStore();
+
+// Computed properties für reaktive Daten
+const categories = computed(() => locationsStore.categories);
+const isLoading = computed(() => locationsStore.isLoading);
+
+// Icon mapping für Kategorien
+const iconMap = {
+    'book-outline': bookOutline,
+    'construct-outline': constructOutline,
+    'leaf-outline': leafOutline,
+    'settings-outline': settingsOutline,
+    'restaurant-outline': restaurantOutline,
+    'shirt-outline': shirtOutline,
+    'car-outline': carOutline,
+    'bulb-outline': bulbOutline,
+};
+
+function getCategoryIcon(iconName) {
+    return iconMap[iconName] || gridOutline;
+}
 
 function selectCategory(category) {
     console.log('Category selected:', category.name);
-  // Hier können Sie die Navigation zur Karte mit Filter implementieren
+    // Hier können Sie die Navigation zur Karte mit Filter implementieren
 }
+
+function showAllCategories() {
+    console.log('Show all categories');
+    // Navigation zu allen Kategorien
+}
+
+onMounted(async() => {
+    // Lade Locations und Kategorien wenn noch nicht geladen
+    if (locationsStore.locations.length === 0) {
+        await locationsStore.getAllLocations();
+    }
+});
 </script>
-
-<style scoped>
-.container {
-  padding: 16px;
-}
-
-ion-item {
-  margin-bottom: 8px;
-  border-radius: 8px;
-}
-
-ion-icon {
-  font-size: 24px;
-  color: var(--ion-color-primary);
-}
-</style>
