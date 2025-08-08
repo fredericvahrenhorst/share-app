@@ -117,6 +117,12 @@ pnpm test:e2e
 - Vue-Komponenten Import-Fehler (TypeScript Konfiguration)
 - Backend CORS-Einstellungen prüfen
 
+## 🧩 Coding Conventions
+
+- Projektweite Regeln: siehe Root-Datei `.cursor/rules/coding-conventions.mdc`.
+- Vue-spezifisch: Composition API mit `script setup`, typisierte Props/Emits, Pinia für Shared State.
+- Style/Format: `pnpm format`, `pnpm lint`, `pnpm check-types`.
+
 ## 📚 Dokumentation
 
 - [Ionic Vue Docs](https://ionicframework.com/docs/vue/overview)

@@ -2,6 +2,10 @@
 description: Diese Datei enthält alle projektweiten Regeln, Standards und Best Practices für die Entwicklung der ShareApp. Sie ist die zentrale Referenz für Architektur, Technologie-Stack, Entwicklungs-Workflow, UI/UX, Testing, Security, Automatisierung und alle wichtigen Akzeptanzkriterien. Die Regeln sind verbindlich für alle Teammitglieder und AI-gestützte Entwicklung. Änderungen an Kernfunktionen, Architektur oder Workflows müssen immer mit Step-by-Step-Plan und User-Approval erfolgen. Die Datei ist versioniert und wird von Cursor automatisch für alle AI-Operationen im Projekt angewendet.
 alwaysApply: false
 ---
+## === Coding Conventions ===
+- Siehe `./coding-conventions.mdc` (alwaysApply: true) für Formatierung, Linting, TypeScript, Benennung und Framework-spezifische Leitlinien.
+- Um Stil sicherzustellen: `pnpm format`, `pnpm lint`, `pnpm check-types`.
+
 # === Projektstruktur & Architektur ===
 - Das Projekt ist ein Turborepo-Monorepo mit den Hauptverzeichnissen:
   - apps/frontend: Ionic Vue 3 App (mobile-first, Mapbox, Pinia, Tailwind)
@@ -79,8 +83,6 @@ alwaysApply: false
 - Environment-Variablen: Root-.env für global, VITE_-Prefix für Frontend, Standard für Backend
 - Ports: Frontend 8100, Backend 3000, Vite-Fallback 5173
 - Dokumentation: Siehe .kiro/specs/location-app-enhancement/* für Requirements, Design, Tasks
-- Tab Leerzeichen: 4
-- Verwende Single Quotes für Strings
 
 # === Regel für Cursor-AI ===
 - Halte dich strikt an diese Regeln und hole bei größeren Änderungen immer User-Feedback ein!

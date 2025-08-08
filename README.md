@@ -128,6 +128,14 @@ pnpm format
 pnpm check-types
 ```
 
+## Coding Conventions
+
+- Project-wide rules: see `.cursor/rules/coding-conventions.mdc` (applied automatically in Cursor).
+- Enforce locally with:
+  - `pnpm format`
+  - `pnpm lint`
+  - `pnpm check-types`
+
 ## Application URLs
 
 - **Frontend**: http://localhost:8100 (Ionic development server)
