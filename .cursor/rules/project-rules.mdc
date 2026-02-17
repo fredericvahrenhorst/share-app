@@ -17,12 +17,13 @@ alwaysApply: false
 - Frontend-Komponenten, Stores, Composables, Views und CSS folgen den Namenskonventionen aus .kiro/steering/structure.md:
   - Vue-Komponenten: PascalCase
   - Stores: camelCase + "Store"
+  - Composables: camelCase mit `use`-Präfix (z. B. `useApi`, `useMapbox`)
   - CSS: kebab-case
 
 - Backend Collections: PascalCase, Endpoints: kebab-case
 
 # === Technologiestack & Tools ===
-- pnpm als Package Manager, Node.js v18+, TypeScript v5.8.3
+- pnpm als Package Manager, Node.js >=20 (siehe engines in Root-package.json), TypeScript v5.8.3
 - Frontend: Ionic Vue 8, Vite, Tailwind CSS 4, Pinia, Mapbox GL JS, Capacitor 7, Vitest, ESLint (Vue)
 - Backend: Payload CMS 3.46.0, Next.js 15, MongoDB, Sharp, Playwright, Vitest, cross-env
 - Shared: Types/Utils in packages/shared
@@ -84,6 +85,13 @@ alwaysApply: false
 - Ports: Frontend 8100, Backend 3000, Vite-Fallback 5173
 - Dokumentation: Siehe .kiro/specs/location-app-enhancement/* für Requirements, Design, Tasks
 
+# === Backend – Payload CMS Admin-UI ===
+- Admin-UI übersichtlich halten: `type: 'row'` für zusammengehörige Felder, `admin.width` für Spalten (z. B. 20%/30%/50%)
+- Bedingte Felder: `admin.condition` mit `(data, siblingData)` für dynamische Sichtbarkeit (z. B. Varianten)
+- Wiederverwendbare Field-Funktionen für Links, Buttons, Uploads; keine Duplikation in Collections
+
 # === Regel für Cursor-AI ===
 - Halte dich strikt an diese Regeln und hole bei größeren Änderungen immer User-Feedback ein!
 - Dokumentiere Reasoning und Auswirkungen bei jedem Step.
+- In .js- und .vue-Dateien keine TypeScript-Syntax verwenden (siehe coding-conventions.mdc).
+- Antworte auf Deutsch.

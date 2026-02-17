@@ -43,6 +43,7 @@ Einheitliche Coding Conventions für das gesamte Monorepo. Diese Regeln gelten b
 - Type-only imports: `import type { Foo } from '…'`
 - Pfad-Aliase nutzen (gemäß `tsconfig.json`) statt tiefer relativer Pfade
 - Geteilte Typen in `packages/shared`
+- **In .js und .vue Dateien**: Keine TypeScript-Syntax verwenden; JSDoc bei Bedarf für Typ-Hinweise
 
 ## Benennung
 - Aussagekräftige, vollständige Namen; keine kryptischen Abkürzungen
@@ -76,6 +77,21 @@ Einheitliche Coding Conventions für das gesamte Monorepo. Diese Regeln gelten b
 - Komponenten-Dateinamen PascalCase (`LocationMap.vue`)
 - Events im Template `kebab-case`; wohldefinierte Payloads
 - Mapbox: Keine Tokens im Code; Env nutzen (`MAPBOX_ACCESS_TOKEN`). Teure `render`-Listener vermeiden/debouncen
+- Optional Chaining bei API- und dynamischen Daten verwenden (`resource?.title`, `list?.length`)
+
+## Komponenten-Erweiterungen (Frontend)
+- Props für Flexibilität: Neue Props hinzufügen, um Varianten abzubilden (z. B. `centered`, `variant`)
+- Rückwärtskompatibilität: Neue Props mit sinnvollen Defaults, damit bestehender Code weiterläuft
+- Layout-Optionen als Props (z. B. zentrierte Ausrichtung, Sichtbarkeit von Aktionen)
+
+## CSS & Styling (Tailwind)
+- Utility-first: Direkte Tailwind-Klassen verwenden; eigene CSS-Klassen vermeiden
+- Custom-Klassen nur in `src/css/inc/` oder `apps/frontend/src/css/` wenn: komplexe Komponenten-Systeme, häufig wiederkehrende Kombinationen, Animationen/Transitions
+- Priorität: Inline Tailwind > Custom-Klassen > CSS-Variablen
+
+## Tailwind-Klassen-Reihenfolge
+- Strukturierte Reihenfolge im Markup: 1. Custom, 2. Layout (flex, grid, relative), 3. Box-Modell (size, w, h, p, m, gap), 4. Positionierung (inset, top, left), 5. Interaktivität (cursor, pointer-events), 6. Styling (bg, text, border, rounded, shadow), 7. Animation (animate, transition), 8. States (hover:, focus:, active:), 9. Responsive (sm:, md:, lg:)
+- Vorteile: Lesbarkeit, konsistente Struktur, einfachere Wartung
 
 ## React – UI Paket (packages/ui)
 - Funktionskomponenten mit TS-Props-Interfaces
@@ -110,6 +126,9 @@ Einheitliche Coding Conventions für das gesamte Monorepo. Diese Regeln gelten b
 ## Accessibility
 - Sinnvolle ARIA-Attribute; Tastaturbedienbarkeit
 - Ausreichende Kontraste (Tailwind-Farbwahl)
+- Keyboard-Navigation für Menüs und Modals (Escape, Pfeiltasten, ggf. Home/End)
+- Focus-Management für Dropdowns, Modals und Sheet-Interfaces
+- Screen-Reader-freundliche Labels und Descriptions
 
 ## Git & PRs
 - Commits: Imperativ, kurz, Fokus auf das Warum
