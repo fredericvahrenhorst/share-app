@@ -149,6 +149,9 @@
   /* Mapbox Variables */
   --mapbox-token: '';
   --mapbox-style: 'mapbox://styles/mapbox/streets-v12';
+
+  /* Layout Variables */
+  --tab-bar-height: 112px;
 }
 
 /* Dark Mode Variables */
@@ -220,4 +223,4 @@
   .backdrop-blur-xs {
     backdrop-filter: blur(2px);
   }
-} 
+}

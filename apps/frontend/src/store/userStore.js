@@ -78,6 +78,46 @@ export const useUserStore = defineStore('user', {
                 return { success: false, errors };
             }
         },
+        async forgotPassword(email) {
+            try {
+                await apiCall('users/forgot-password', {
+                    method: 'POST',
+                    data: { email },
+                });
+                return { success: true };
+            } catch (error) {
+                const data = error.response?.data;
+                const errors = [];
+                if (data?.errors) {
+                    data.errors.forEach((e) => {
+                        if (e.message) errors.push(e.message);
+                    });
+                }
+                if (data?.message) errors.push(data.message);
+                if (errors.length === 0) errors.push('Anfrage fehlgeschlagen. Bitte E-Mail prüfen.');
+                return { success: false, errors };
+            }
+        },
+        async resetPassword(token, password) {
+            try {
+                await apiCall('users/reset-password', {
+                    method: 'POST',
+                    data: { token, password },
+                });
+                return { success: true };
+            } catch (error) {
+                const data = error.response?.data;
+                const errors = [];
+                if (data?.errors) {
+                    data.errors.forEach((e) => {
+                        if (e.message) errors.push(e.message);
+                    });
+                }
+                if (data?.message) errors.push(data.message);
+                if (errors.length === 0) errors.push('Passwort-Reset fehlgeschlagen.');
+                return { success: false, errors };
+            }
+        },
         async logout() {
             try {
                 await apiCall('users/logout', {
@@ -90,13 +130,22 @@ export const useUserStore = defineStore('user', {
             }
         },
         async getUserData() {
-            const response = await apiCall(`users/${this.userId}`, {
+            const response = await apiCall(`users/${this.userId}?depth=1`, {
                 method: 'GET',
             });
 
             this.user = response.user || response;
 
             return response;
+        },
+        async updateUser(data) {
+            if (!this.userId) return { success: false, errors: ['Nicht angemeldet'] }
+            const response = await apiCall(`users/${this.userId}`, {
+                method: 'PATCH',
+                data,
+            })
+            this.user = response.user || response.doc || response
+            return { success: true }
         },
         clearUserData() {
             this.authenticated = false;

@@ -20,7 +20,7 @@ export const useReviewsStore = defineStore('reviews', {
             try {
                 // Lade aktive Reviews für den Standort, sortiert nach Datum (neueste zuerst)
                 const response = await apiCall(
-                    `reviews?where[location][equals]=${locationId}&where[status][equals]=active&sort=-createdAt&depth=1`
+                    `reviews?where[location][equals]=${locationId}&where[status][equals]=active&sort=-createdAt&depth=2`
                 )
                 // Speichere die Reviews im State
                 this.reviewsByLocation[locationId] = response.docs || []

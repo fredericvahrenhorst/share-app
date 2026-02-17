@@ -162,7 +162,15 @@
         "favorites_count": "Favoriten",
         "visited_count": "Besucht",
         "reviews_count": "Bewertungen",
-        "in_development": "In Entwicklung"
+        "in_development": "In Entwicklung",
+        "edit_title": "Profil bearbeiten",
+        "edit_name": "Name",
+        "edit_bio": "Über mich",
+        "edit_bio_placeholder": "Kurz etwas über dich …",
+        "edit_avatar_hint": "Tippen zum Ändern des Profilbilds",
+        "edit_name_required": "Bitte gib einen Namen ein.",
+        "edit_success": "Profil gespeichert.",
+        "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen."
     },
     "locationDetail": {
         "reviews_coming_soon": "Bewertungen kommen bald",
@@ -180,6 +188,8 @@
         "accessible_toilet": "Behindertengerechtes WC",
         "accessible_parking": "Behindertenparkplatz",
         "verified": "Verifiziert",
-        "status_pending": "In Bearbeitung"
+        "status_pending": "In Bearbeitung",
+        "slider_previous": "Vorheriges Bild",
+        "slider_next": "Nächstes Bild"
     }
 }

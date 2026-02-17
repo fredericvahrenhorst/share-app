@@ -12,7 +12,7 @@
                 </ion-toolbar>
             </ion-header>
 
-            <div class="p-4">
+            <div class="p-4" style="padding-bottom: var(--tab-bar-height)">
                 <div v-if="isLoading" class="text-center py-16 text-gray-500">
                     <ion-spinner name="crescent"></ion-spinner>
                     <p class="mt-4">Lade Kategorien...</p>
@@ -79,8 +79,10 @@ import {
     bulbOutline,
 } from 'ionicons/icons';
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useLocationsStore } from '../store/locationsStore';
 
+const router = useRouter();
 const locationsStore = useLocationsStore();
 
 // Computed properties für reaktive Daten
@@ -105,16 +107,24 @@ function getCategoryIcon(iconName) {
 
 function selectCategory(category) {
     console.log('Category selected:', category.name);
-    // Hier können Sie die Navigation zur Karte mit Filter implementieren
+    // Filter setzen und zur Karte navigieren
+    locationsStore.applyFilters({ categories: [category.id] });
+    router.push('/home');
 }
 
 function showAllCategories() {
     console.log('Show all categories');
-    // Navigation zu allen Kategorien
+    // Filter zurücksetzen und zur Karte navigieren
+    locationsStore.clearFilters();
+    router.push('/home');
 }
 
 onMounted(async() => {
-    // Lade Locations und Kategorien wenn noch nicht geladen
+    // Kategorien von API (sortOrder, isActive); bei Bedarf zuerst Locations für Fallback
+    if (locationsStore.categories.length === 0) {
+        await locationsStore.fetchCategories();
+    }
+    // Zuerst ggf. Locations laden (Fallback für Kategorien), dann Kategorien von API
     if (locationsStore.locations.length === 0) {
         await locationsStore.getAllLocations();
     }

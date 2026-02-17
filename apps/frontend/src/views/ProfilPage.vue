@@ -12,7 +12,7 @@
                 </ion-toolbar>
             </ion-header>
 
-            <div class="p-4">
+            <div class="p-4" style="padding-bottom: var(--tab-bar-height)">
                 <!-- Gast-Zustand -->
                 <div
                     v-if="!isAuthenticated"
@@ -45,6 +45,10 @@
                         </ion-avatar>
                         <h2 class="text-xl font-semibold text-gray-800 m-0 mb-1">{{ user?.name || '–' }}</h2>
                         <p class="text-sm text-gray-600 m-0">{{ user?.email || '–' }}</p>
+                        <ion-button fill="outline" size="small" class="mt-3" @click="openEditProfile">
+                            <ion-icon :icon="createOutline" slot="start" />
+                            {{ t('profile.edit_title') }}
+                        </ion-button>
                     </div>
 
                     <!-- Profil Optionen -->
@@ -136,7 +140,10 @@ import {
     chevronForward,
     logOut,
     personCircleOutline,
+    createOutline,
 } from 'ionicons/icons'
+import { modalController } from '@ionic/vue'
+import EditProfileModal from '../components/EditProfileModal.vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
@@ -145,6 +152,7 @@ import { toastController } from '@ionic/vue'
 
 import { useUserStore } from '../store/userStore'
 import { useFavoritesStore } from '../store/favoritesStore'
+import useAvatarUrl from '../composables/useAvatarUrl'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -156,13 +164,7 @@ const { favorites } = storeToRefs(favoritesStore)
 
 const favoritesCount = computed(() => favorites.value?.length ?? 0)
 
-const avatarUrl = computed(() => {
-    const av = user.value?.avatar
-    if (!av) return ''
-    const url = av?.url || (typeof av === 'object' ? av?.url : null)
-    if (!url) return ''
-    return url.startsWith('http') ? url : `${(process.env.API_URL || '').replace(/\/api\/?$/, '')}${url}`
-})
+const avatarUrl = computed(() => useAvatarUrl(user.value?.avatar))
 
 function goToLogin() {
     router.push({ name: 'Login', query: { redirect: '/profil' } })
@@ -205,6 +207,17 @@ function openHelp() {
 
 function openAbout() {
     showInDevelopmentToast()
+}
+
+async function openEditProfile() {
+    const modal = await modalController.create({
+        component: EditProfileModal,
+    })
+    await modal.present()
+    const { data } = await modal.onWillDismiss()
+    if (data) {
+        await userStore.getUserData()
+    }
 }
 
 onMounted(async () => {

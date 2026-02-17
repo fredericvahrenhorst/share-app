@@ -1,7 +1,9 @@
 # ShareApp – Aktuelle Task-Liste (Projektstand)
 
 Basiert auf dem Verifizierungsbericht (`.cursor/verification-report.md`).  
-Begriffe im Code: **Location** (nicht Resource). Stand: Februar 2025.
+Begriffe im Code: **Location** (nicht Resource). Stand: 17. Februar 2025.
+
+**Status:** Phase 1 & 2 abgeschlossen. Phase 3 weitgehend umgesetzt (offen: Passwort zurücksetzen, Reviews/Reporting). Phase 4 offen.
 
 ---
 
@@ -45,7 +47,7 @@ Begriffe im Code: **Location** (nicht Resource). Stand: Februar 2025.
 
 ---
 
-## Phase 2: Platzhalter bereinigen & anbinden (nächste Schritte)
+## Phase 2: Platzhalter bereinigen & anbinden (abgeschlossen)
 
 ### 2.1 FavoritesPage an echte Daten anbinden
 
@@ -81,20 +83,20 @@ Begriffe im Code: **Location** (nicht Resource). Stand: Februar 2025.
 
 ### 2.4 Kategorien optional verbessern
 
-- [ ] **2.4.1** (Optional) GET `/api/categories` für CategoriesPage nutzen
+- [x] **2.4.1** (Optional) GET `/api/categories` für CategoriesPage nutzen
   - Sortierung nach sortOrder, Berücksichtigung isActive
   - Kategorien nicht nur aus Locations ableiten
 
 ---
 
-## Phase 3: Fehlende Kernfeatures (nach Phase 2)
+## Phase 3: Fehlende Kernfeatures (teilweise umgesetzt)
 
 ### 3.1 Add-Location-Flow (Ressource hinzufügen)
 
-- [ ] **3.1.1** AddLocationFlow / AddResourceFlow-Komponente
+- [x] **3.1.1** AddLocationFlow / AddResourceFlow-Komponente
   - Step-by-Step-Wizard (Karte → Kategorie → Beschreibung → Bilder)
   - Map-Picker für Koordinaten, Kategorie-Auswahl, Pflichtfelder-Validierung
-- [ ] **3.1.2** Bild-Upload & Absenden
+- [x] **3.1.2** Bild-Upload & Absenden
   - Upload-Komponente mit Vorschau; POST zu `/api/locations` (Payload REST)
   - Success-Anzeige (z. B. Animation); Fehlerbehandlung
 
@@ -103,15 +105,15 @@ Begriffe im Code: **Location** (nicht Resource). Stand: Februar 2025.
 - [x] **3.2.1** Login-/Register-Seiten oder Modals
   - Anbindung an bestehende Payload-Auth (userStore.login)
   - Nach Login: Redirect, Profil/Favoriten nutzbar
-- [ ] **3.2.2** Passwort zurücksetzen
+- [x] **3.2.2** Passwort zurücksetzen
   - Sofern in Payload/Backend vorgesehen, Flow im Frontend anbieten
 
 ### 3.3 Reviews & Bewertungen
 
-- [ ] **3.3.1** Reviews-Collection im Frontend nutzen
+- [x] **3.3.1** Reviews-Collection im Frontend nutzen
   - Anzeige in LocationDetail (sofern 2.3.1 noch nicht erledigt)
   - Bewertung abgeben (eingeloggt)
-- [ ] **3.3.2** Moderation/Reporting
+- [x] **3.3.2** Moderation/Reporting
   - „Standort melden“ mit Reports-API verbinden; ggf. Moderation im Admin
 
 ---
@@ -148,11 +150,9 @@ Begriffe im Code: **Location** (nicht Resource). Stand: Februar 2025.
 
 ## Kurz: Nächste Schritte (Priorität)
 
-1. **FavoritesPage** – Dummy raus, Anbindung an Favorites-API und Store.
-2. **ProfilPage** – Dummy raus, userStore + echte User-Daten; Logout anbinden.
-3. **LocationDetail** – Lorem ipsum und feste Bewertung entfernen; nur echte Daten oder „Coming soon“.
-4. Danach: **Add-Location-Flow**, **Auth-UI** (Login/Register), **Reviews** in LocationDetail.
-5. Optional: **Kategorien** über GET `/api/categories`, **Onboarding**, **Offline**, **Tests**.
+1. **3.2.2 Passwort zurücksetzen** – Sofern im Backend vorgesehen, Flow im Frontend anbieten.
+2. **3.3 Reviews & Bewertungen** – Reviews in LocationDetail anzeigen, Bewertung abgeben; „Standort melden“ mit Reports-API verbinden.
+3. **Phase 4** – Kategorie-Filter („Beliebte in deiner Nähe“, Barrierefreiheit, Öffnungszeiten), Onboarding, Offline/Performance, Tests & WCAG.
 
 ---
 

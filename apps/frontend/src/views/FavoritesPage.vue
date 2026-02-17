@@ -12,7 +12,7 @@
                 </ion-toolbar>
             </ion-header>
 
-            <div class="p-4">
+            <div class="p-4" style="padding-bottom: var(--tab-bar-height)">
                 <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-gray-500">
                     <ion-spinner name="crescent" />
                     <p class="mt-4">{{ t('favorites.loading') }}</p>
@@ -150,10 +150,11 @@ function formatAddress(address) {
     return parts.join(', ')
 }
 
-function openFavorite(favorite) {
+async function openFavorite(favorite) {
     const loc = getLocation(favorite)
-    if (loc) {
+    if (loc?.id) {
         locationsStore.setPopupLocation(loc)
+        await locationsStore.fetchLocationById(loc.id)
         router.push({ name: 'Home' })
     }
 }

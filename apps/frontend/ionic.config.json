@@ -1,6 +1,8 @@
 {
     "name": "ionic-app-base",
-    "integrations": {},
+    "integrations": {
+        "capacitor": {}
+    },
     "type": "vue-vite",
     "mode": "ios"
 }

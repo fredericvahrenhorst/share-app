@@ -158,7 +158,7 @@ import { useLocationsStore } from '../store/locationsStore';
 const { t } = useI18n();
 
 // Props
-defineProps({
+const props = defineProps({
     isOpen: {
         type: Boolean,
         default: false
@@ -176,11 +176,13 @@ const { categories } = storeToRefs(locationsStore);
 const selectedCategories = ref([...locationsStore.filterState.categories]);
 const selectedRadius = ref(locationsStore.filterState.radius === 'all' ? 0 : locationsStore.filterState.radius);
 
-// Watch for changes in store filterState and update local state
-// watch(() => locationsStore.filterState, (newFilterState) => {
-//     selectedCategories.value = [...newFilterState.categories];
-//     selectedRadius.value = newFilterState.radius === 'all' ? 0 : newFilterState.radius;
-// }, { deep: true });
+// Watch for changes in isOpen to sync with store
+watch(() => props.isOpen, (isOpen) => {
+    if (isOpen) {
+        selectedCategories.value = [...locationsStore.filterState.categories];
+        selectedRadius.value = locationsStore.filterState.radius === 'all' ? 0 : locationsStore.filterState.radius;
+    }
+});
 
 // Watch for changes in local filter states and apply filters immediately
 watch([selectedCategories, selectedRadius], () => {

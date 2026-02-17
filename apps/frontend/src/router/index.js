@@ -17,6 +17,16 @@ const routes = [
         component: () => import('@/views/RegisterPage.vue') /* eslint-disable-line */
     },
     {
+        path: '/forgot-password',
+        name: 'ForgotPassword',
+        component: () => import('@/views/ForgotPasswordPage.vue') /* eslint-disable-line */
+    },
+    {
+        path: '/reset-password',
+        name: 'ResetPassword',
+        component: () => import('@/views/ResetPasswordPage.vue') /* eslint-disable-line */
+    },
+    {
         path: '/add-location',
         name: 'AddLocation',
         component: () => import('@/views/AddLocationPage.vue') /* eslint-disable-line */

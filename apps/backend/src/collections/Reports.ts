@@ -1,15 +1,17 @@
 import type { CollectionConfig } from 'payload'
 
+import { adminOnlyFieldUpdate, isAdmin, isAuthenticated } from '../accessControl'
+
 export const Reports: CollectionConfig = {
   slug: 'reports',
   admin: {
     useAsTitle: 'id',
   },
   access: {
-    read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: () => true,
+    read: isAdmin,
+    create: isAuthenticated,
+    update: isAdmin,
+    delete: isAdmin,
   },
   fields: [
     {
@@ -25,6 +27,7 @@ export const Reports: CollectionConfig = {
       relationTo: 'users',
       required: true,
       label: 'Gemeldet von',
+      access: { update: adminOnlyFieldUpdate },
     },
     {
       name: 'reason',
@@ -48,6 +51,7 @@ export const Reports: CollectionConfig = {
       name: 'status',
       type: 'select',
       label: 'Status',
+      access: { update: adminOnlyFieldUpdate },
       options: [
         { label: 'Offen', value: 'open' },
         { label: 'In Bearbeitung', value: 'in_progress' },
@@ -60,6 +64,7 @@ export const Reports: CollectionConfig = {
       name: 'adminNotes',
       type: 'textarea',
       label: 'Admin Notizen',
+      access: { update: adminOnlyFieldUpdate },
     },
     {
       name: 'createdAt',

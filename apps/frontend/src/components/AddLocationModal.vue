@@ -1,11 +1,18 @@
 <template>
-    <ion-page>
+    <ion-modal
+        ref="modal"
+        :is-open="isOpen"
+        @didDismiss="handleDismiss"
+        class="add-location-modal"
+    >
         <ion-header>
             <ion-toolbar>
-                <ion-buttons slot="start">
-                    <ion-back-button default-href="/home" />
-                </ion-buttons>
                 <ion-title>{{ t('addResource.title') }}</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button @click="closeModal">
+                        <ion-icon :icon="closeOutline" />
+                    </ion-button>
+                </ion-buttons>
             </ion-toolbar>
             <ion-toolbar>
                 <ion-segment :value="currentStep.toString()">
@@ -27,7 +34,9 @@
             <div v-if="currentStep === 1" class="h-full flex flex-col">
                 <div class="text-center mb-4">
                     <h2 class="text-lg font-semibold">{{ t('addResource.step1.title') }}</h2>
-                    <p class="text-sm text-gray-500">{{ t('addResource.step1.searchPlaceholder') }}</p>
+                    <p class="text-sm text-gray-500">
+                        Verschiebe den Pin oder klicke auf die Karte, um den Standort festzulegen.
+                    </p>
                 </div>
 
                 <div class="flex-grow relative rounded-xl overflow-hidden border border-gray-200 mb-4 min-h-[300px]">
@@ -38,16 +47,14 @@
                         :zoom="mapZoom"
                         class="w-full h-full"
                         @click="handleMapClick"
+                        @loaded="onMapLoaded"
                     >
                         <MapboxMarker
                             v-if="selectedCoordinates"
                             :lngLat="selectedCoordinates"
                             color="#EF4444"
-                        />
-                        <MapboxMarker
-                            v-if="userLocation"
-                            :lngLat="userLocation"
-                            color="#3B82F6"
+                            draggable
+                            @dragend="handleMarkerDragEnd"
                         />
                     </MapboxMap>
                 </div>
@@ -73,7 +80,7 @@
                     <h2 class="text-lg font-semibold">{{ t('addResource.step2.title') }}</h2>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="grid grid-cols-2 gap-3 mb-4 overflow-y-auto">
                     <div
                         v-for="category in categories"
                         :key="category.id"
@@ -81,12 +88,13 @@
                         :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
                         @click="selectCategory(category.id)"
                     >
+                        <!-- Icon Rendering: Falls Icon ein String (Emoji) ist -->
                         <div class="text-3xl mb-2">{{ category.icon || '📦' }}</div>
                         <div class="font-medium text-sm">{{ category.name }}</div>
                     </div>
                 </div>
 
-                <div class="mt-auto">
+                <div class="mt-auto pt-4">
                     <div class="flex gap-2">
                         <ion-button expand="block" fill="outline" class="flex-1" @click="prevStep">
                             {{ t('common.back') }}
@@ -104,7 +112,8 @@
                     <h2 class="text-lg font-semibold">{{ t('addResource.step3.title') }}</h2>
                 </div>
 
-                <div class="space-y-4 mb-6">
+                <div class="space-y-4 mb-6 overflow-y-auto">
+                    <!-- Pflichtfelder -->
                     <ion-item class="rounded-lg border border-gray-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.name') }} *</ion-label>
                         <ion-input v-model="formData.name" :placeholder="t('addResource.step3.namePlaceholder')" required />
@@ -113,16 +122,6 @@
                     <ion-item class="rounded-lg border border-gray-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.description') }} *</ion-label>
                         <ion-textarea v-model="formData.description" :placeholder="t('addResource.step3.descriptionPlaceholder')" rows="4" required />
-                    </ion-item>
-
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
-                        <ion-label position="stacked">{{ t('addResource.step3.rules') }}</ion-label>
-                        <ion-textarea v-model="formData.rules" :placeholder="t('addResource.step3.rulesPlaceholder')" rows="2" />
-                    </ion-item>
-
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
-                        <ion-label>{{ t('addResource.step3.is24_7') }}</ion-label>
-                        <ion-toggle v-model="formData.is24_7" slot="end" />
                     </ion-item>
 
                     <!-- Bild Upload -->
@@ -152,9 +151,29 @@
                             </ion-button>
                         </div>
                     </div>
+
+                    <!-- Weitere Infos Toggle -->
+                    <div class="pt-2">
+                        <ion-button fill="clear" expand="block" @click="showMoreDetails = !showMoreDetails">
+                            {{ showMoreDetails ? 'Weniger Optionen' : 'Weitere Optionen anzeigen' }}
+                            <ion-icon slot="end" :icon="showMoreDetails ? chevronUpOutline : chevronDownOutline" />
+                        </ion-button>
+                    </div>
+
+                    <div v-if="showMoreDetails" class="space-y-4 animate-fade-in">
+                        <ion-item class="rounded-lg border border-gray-200" lines="none">
+                            <ion-label position="stacked">{{ t('addResource.step3.rules') }}</ion-label>
+                            <ion-textarea v-model="formData.rules" :placeholder="t('addResource.step3.rulesPlaceholder')" rows="2" />
+                        </ion-item>
+
+                        <ion-item class="rounded-lg border border-gray-200" lines="none">
+                            <ion-label>{{ t('addResource.step3.is24_7') }}</ion-label>
+                            <ion-toggle v-model="formData.is24_7" slot="end" />
+                        </ion-item>
+                    </div>
                 </div>
 
-                <div class="mt-auto">
+                <div class="mt-auto pt-4">
                     <div class="flex gap-2">
                         <ion-button expand="block" fill="outline" class="flex-1" @click="prevStep" :disabled="isSubmitting">
                             {{ t('common.back') }}
@@ -167,23 +186,22 @@
                 </div>
             </div>
         </ion-content>
-    </ion-page>
+    </ion-modal>
 </template>
 
 <script setup>
 import {
-    IonPage,
+    IonModal,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonButtons,
-    IonBackButton,
+    IonButton,
+    IonIcon,
     IonSegment,
     IonSegmentButton,
     IonLabel,
-    IonButton,
-    IonIcon,
     IonItem,
     IonInput,
     IonTextarea,
@@ -192,14 +210,15 @@ import {
     toastController
 } from '@ionic/vue';
 import {
+    closeOutline,
     locateOutline,
     cameraOutline,
     trashOutline,
     checkmarkCircleOutline,
-    closeCircleOutline
+    chevronDownOutline,
+    chevronUpOutline
 } from 'ionicons/icons';
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { MapboxMap, MapboxMarker } from 'vue-mapbox-ts';
 import { storeToRefs } from 'pinia';
@@ -209,8 +228,16 @@ import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import apiCall from '../composables/apiCall';
 
+const props = defineProps({
+    isOpen: {
+        type: Boolean,
+        default: false
+    }
+});
+
+const emit = defineEmits(['close', 'location-added']);
+
 const { t } = useI18n();
-const router = useRouter();
 const locationsStore = useLocationsStore();
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -225,13 +252,15 @@ const defaultCenter = [13.354336, 52.477697];
 // State
 const currentStep = ref(1);
 const isSubmitting = ref(false);
+const showMoreDetails = ref(false);
 
 // Step 1: Location
 const mapCenter = ref(defaultCenter);
-const mapZoom = ref(11);
+const mapZoom = ref(13);
 const selectedCoordinates = ref(null);
 const selectedAddress = ref(null);
 const userLocation = computed(() => (geo.value ? [geo.value.long, geo.value.lat] : null));
+const mapInstance = ref(null);
 
 // Step 2: Category
 const selectedCategoryId = ref(null);
@@ -251,21 +280,43 @@ const isValidStep3 = computed(() => {
     return formData.value.name.trim() && formData.value.description.trim();
 });
 
-// Methods
-onMounted(() => {
-    if (userLocation.value) {
-        mapCenter.value = userLocation.value;
-    }
-    // Lade Kategorien falls noch nicht vorhanden
-    if (categories.value.length === 0) {
-        locationsStore.fetchCategories();
+// Watchers
+watch(() => props.isOpen, (newVal) => {
+    if (newVal) {
+        resetForm();
+        if (userLocation.value) {
+            mapCenter.value = userLocation.value;
+            // Setze Pin initial auf User Position wenn noch keiner gesetzt
+            if (!selectedCoordinates.value) {
+                selectedCoordinates.value = userLocation.value;
+                selectedAddress.value = { street: 'Aktueller Standort', city: '' };
+            }
+        }
+        // Lade Kategorien falls noch nicht vorhanden
+        if (categories.value.length === 0) {
+            locationsStore.fetchCategories();
+        }
     }
 });
 
+function onMapLoaded(map) {
+    mapInstance.value = map;
+    map.resize(); // Wichtig für Modal-Rendering
+}
+
 function handleMapClick(event) {
     const { lng, lat } = event.lngLat;
+    updateSelectedLocation(lng, lat);
+}
+
+function handleMarkerDragEnd(event) {
+    const { lng, lat } = event.target.getLngLat();
+    updateSelectedLocation(lng, lat);
+}
+
+function updateSelectedLocation(lng, lat) {
     selectedCoordinates.value = [lng, lat];
-    // Optional: Reverse Geocoding hier einbauen
+    // Simuliertes Reverse Geocoding
     selectedAddress.value = {
         street: 'Gewählte Position',
         city: `${lat.toFixed(4)}, ${lng.toFixed(4)}`
@@ -315,6 +366,30 @@ function prevStep() {
     if (currentStep.value > 1) currentStep.value--;
 }
 
+function resetForm() {
+    currentStep.value = 1;
+    selectedCoordinates.value = null;
+    selectedAddress.value = null;
+    selectedCategoryId.value = null;
+    formData.value = {
+        name: '',
+        description: '',
+        rules: '',
+        is24_7: false
+    };
+    selectedFile.value = null;
+    imagePreview.value = null;
+    showMoreDetails.value = false;
+}
+
+function closeModal() {
+    emit('close');
+}
+
+function handleDismiss() {
+    emit('close');
+}
+
 async function submitLocation() {
     if (!isValidStep3.value) return;
     isSubmitting.value = true;
@@ -328,9 +403,6 @@ async function submitLocation() {
             uploadData.append('file', selectedFile.value);
             uploadData.append('_payload', JSON.stringify({ alt: formData.value.name }));
 
-            // Spezieller API Call für Multipart
-            // Hinweis: apiCall muss FormData unterstützen oder wir nutzen axios direkt
-            // Hier nutzen wir apiCall und passen es gleich an (siehe Todo 4)
             const mediaResponse = await apiCall('media', {
                 method: 'POST',
                 data: uploadData,
@@ -356,16 +428,16 @@ async function submitLocation() {
                     indent: 0,
                     version: 1
                 }
-            }, // Einfaches Lexical Format
+            },
             category: selectedCategoryId.value,
             coordinates: selectedCoordinates.value, // [lng, lat]
             address: selectedAddress.value || {},
             openingHours: {
                 is24_7: formData.value.is24_7,
-                schedule: [] // Leer lassen für MVP
+                schedule: []
             },
             rules: formData.value.rules,
-            status: 'pending', // Muss erst freigeschaltet werden
+            status: 'pending',
             images: mediaId ? [{ image: mediaId }] : []
         };
 
@@ -384,12 +456,12 @@ async function submitLocation() {
         });
         await toast.present();
 
-        // Reset & Redirect
         locationsStore.getAllLocations(); // Neu laden
-        router.replace('/home');
+        emit('location-added');
+        closeModal();
+
     } catch (error) {
         console.error('Error creating location:', error);
-        // apiCall zeigt bereits Fehler-Toast
     } finally {
         isSubmitting.value = false;
     }
@@ -397,8 +469,12 @@ async function submitLocation() {
 </script>
 
 <style scoped>
-/* Mapbox Container Styling */
-:deep(.mapboxgl-map) {
-    border-radius: 0.75rem;
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 </style>

@@ -29,6 +29,9 @@
                     />
                 </ion-title>
                 <ion-buttons slot="end">
+                    <ion-button @click="presentActionSheet">
+                        <ion-icon size="small" :icon="ellipsisVertical" />
+                    </ion-button>
                     <ion-button @click="handleDismiss">
                         <ion-icon size="small" color="primary" :icon="closeOutline" />
                     </ion-button>
@@ -37,93 +40,23 @@
         </ion-header>
 
         <ion-content class="ion-padding">
-            <!-- Bewertungen -->
-            <div class="mb-4">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center">
-                        <ion-icon :icon="star" class="text-yellow-400 mr-1" />
-                        <span class="font-bold text-lg mr-1">
-                            {{ popupLocation?.averageRating || '-' }}
-                        </span>
-                        <span class="text-sm text-gray-500">
-                            ({{ popupLocation?.reviewCount || 0 }} Bewertungen)
-                        </span>
-                    </div>
-                    <ion-button
-                        v-if="isAuthenticated && !showReviewForm"
-                        size="small"
-                        fill="outline"
-                        @click="showReviewForm = true"
-                    >
-                        Bewerten
-                    </ion-button>
-                </div>
-
-                <!-- Review Form -->
-                <div v-if="showReviewForm" class="bg-gray-50 p-3 rounded-lg mb-3">
-                    <h4 class="font-semibold mb-2">Deine Bewertung</h4>
-                    <div class="flex gap-2 mb-2">
-                        <ion-icon
-                            v-for="i in 5"
-                            :key="i"
-                            :icon="i <= newReviewRating ? star : starOutline"
-                            class="text-2xl cursor-pointer text-yellow-400"
-                            @click="newReviewRating = i"
-                        />
-                    </div>
-                    <ion-textarea
-                        v-model="newReviewComment"
-                        placeholder="Dein Kommentar (optional)"
-                        rows="3"
-                        class="bg-white rounded-md border border-gray-200 mb-2"
-                    />
-                    <div class="flex justify-end gap-2">
-                        <ion-button size="small" fill="clear" @click="showReviewForm = false">Abbrechen</ion-button>
-                        <ion-button
-                            size="small"
-                            :disabled="newReviewRating === 0 || isSubmittingReview"
-                            @click="submitReview"
-                        >
-                            <ion-spinner v-if="isSubmittingReview" name="crescent" class="mr-1" />
-                            Senden
-                        </ion-button>
-                    </div>
-                </div>
-
-                <!-- Reviews List -->
-                <div v-if="isReviewsLoading" class="text-center py-4">
-                    <ion-spinner name="crescent" />
-                </div>
-                <div v-else-if="reviews.length > 0" class="space-y-3">
-                    <div v-for="review in reviews" :key="review.id" class="border-b pb-2 last:border-0">
-                        <div class="flex justify-between items-start">
-                            <div class="flex items-center gap-2 mb-1">
-                                <ion-icon :icon="personCircleOutline" class="text-gray-400" />
-                                <span class="font-medium text-sm">{{ review.user?.name || 'Unbekannt' }}</span>
-                            </div>
-                            <span class="text-xs text-gray-400">
-                                {{ new Date(review.createdAt).toLocaleDateString() }}
-                            </span>
-                        </div>
-                        <div class="flex items-center mb-1">
-                            <ion-icon
-                                v-for="i in 5"
-                                :key="i"
-                                :icon="star"
-                                class="text-xs"
-                                :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-200'"
-                            />
-                        </div>
-                        <p v-if="review.comment" class="text-sm text-gray-700">{{ review.comment }}</p>
-                    </div>
-                </div>
-                <p v-else class="text-sm text-gray-500 italic">Noch keine Bewertungen vorhanden.</p>
+            <!-- Header-Bewertung (Teaser) -->
+            <div class="flex items-center mb-4">
+                <ion-icon :icon="star" class="text-yellow-400 mr-1" />
+                <span class="font-bold text-lg mr-1">
+                    {{ popupLocation?.averageRating || '-' }}
+                </span>
+                <span class="text-sm text-gray-500">
+                    ({{ popupLocation?.reviewCount || 0 }} Bewertungen)
+                </span>
             </div>
 
-            <!-- Bildbereich (erstes Bild groß, weitere als Galerie) -->
-            <div class="mb-4">
+            <!-- Bildbereich: Snap-Slider (ein Bild pro Slide, Pfeile + Pagination) -->
+            <div class="relative mb-4">
+                <!-- Einzelbild oder Platzhalter -->
                 <div
-                    class="rounded-xl overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center h-40"
+                    v-if="allImageUrls.length <= 1"
+                    class="rounded-xl overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center h-56"
                 >
                     <ion-img
                         v-if="firstImageUrl"
@@ -133,18 +66,76 @@
                     />
                     <ion-icon v-else :icon="categoryIcon" class="text-5xl text-indigo-400" />
                 </div>
-                <div
-                    v-if="allImageUrls.length > 1"
-                    class="flex gap-2 mt-2 overflow-x-auto pb-1"
-                >
-                    <div
-                        v-for="(url, idx) in allImageUrls"
-                        :key="idx"
-                        class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100"
+
+                <!-- Snap-Slider bei mehreren Bildern -->
+                <template v-else>
+                    <!-- Pfeile -->
+                    <button
+                        type="button"
+                        class="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
+                        :class="{ 'opacity-0 pointer-events-none': imageSliderActiveIndex <= 0 }"
+                        :aria-label="t('locationDetail.slider_previous')"
+                        @click="imageSliderScrollToPrev"
                     >
-                        <ion-img :src="url" :alt="`${popupLocation?.name} ${idx + 1}`" class="object-cover w-full h-full" />
+                        <ion-icon :icon="chevronBackOutline" class="h-6 w-6 text-gray-700" />
+                    </button>
+                    <button
+                        type="button"
+                        class="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
+                        :class="{
+                            'opacity-0 pointer-events-none':
+                                imageSliderActiveIndex >= allImageUrls.length - 1,
+                        }"
+                        :aria-label="t('locationDetail.slider_next')"
+                        @click="imageSliderScrollToNext"
+                    >
+                        <ion-icon :icon="chevronForwardOutline" class="h-6 w-6 text-gray-700" />
+                    </button>
+
+                    <!-- Slider-Container -->
+                    <div
+                        ref="imageSliderRef"
+                        class="relative flex w-full snap-x snap-mandatory overflow-x-auto rounded-xl scroll-smooth"
+                        style="-webkit-overflow-scrolling: touch"
+                        @scroll="onImageSliderScroll"
+                    >
+                        <div
+                            v-for="(url, idx) in allImageUrls"
+                            :key="idx"
+                            class="min-w-full w-full shrink-0 snap-start"
+                        >
+                            <div
+                                class="relative h-56 w-full overflow-hidden rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100"
+                            >
+                                <ion-img
+                                    :src="url"
+                                    :alt="`${popupLocation?.name} ${idx + 1}`"
+                                    class="h-full w-full object-cover"
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Pagination (Overlay unten) -->
+                    <div
+                        class="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-2"
+                    >
+                        <button
+                            v-for="(_, idx) in allImageUrls"
+                            :key="`dot-${idx}`"
+                            type="button"
+                            class="pointer-events-auto rounded-full transition-colors"
+                            :class="
+                                idx === imageSliderActiveIndex
+                                    ? 'h-2.5 w-2.5 bg-white shadow'
+                                    : 'h-2 w-2 bg-white/60'
+                            "
+                            :aria-label="`Slide ${idx + 1}`"
+                            :aria-current="idx === imageSliderActiveIndex ? 'true' : 'false'"
+                            @click="imageSliderScrollToIndex(idx)"
+                        />
+                    </div>
+                </template>
             </div>
 
             <!-- Beschreibung -->
@@ -205,7 +196,7 @@
                     <ion-icon :icon="timeOutline" class="text-purple-400 mr-2 shrink-0" />
                     <div class="min-w-0">
                         <span class="font-medium block">{{ t('locationDetail.availability') }}</span>
-                        <span class="text-gray-700">{{ availabilityText }}</span>
+                        <span class="text-gray-700 whitespace-pre-line">{{ availabilityText }}</span>
                     </div>
                 </div>
             </div>
@@ -234,6 +225,98 @@
                         <ion-icon :icon="callOutline" class="mr-2" />{{ popupLocation.contact.phone }}
                     </span>
                 </div>
+            </div>
+
+            <!-- Bewertungen (Detail) -->
+            <div class="mb-4 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-lg">Bewertungen</h3>
+                    <ion-button
+                        v-if="isAuthenticated && !showReviewForm"
+                        size="small"
+                        fill="outline"
+                        @click="showReviewForm = true"
+                    >
+                        Bewerten
+                    </ion-button>
+                </div>
+
+                <!-- Review Form -->
+                <div v-if="showReviewForm" class="bg-gray-50 p-3 rounded-lg mb-4">
+                    <h4 class="font-semibold mb-2">Deine Bewertung</h4>
+                    <div class="flex gap-2 mb-2">
+                        <ion-icon
+                            v-for="i in 5"
+                            :key="i"
+                            :icon="i <= newReviewRating ? star : starOutline"
+                            class="text-2xl cursor-pointer text-yellow-400"
+                            @click="newReviewRating = i"
+                        />
+                    </div>
+                    <ion-textarea
+                        v-model="newReviewComment"
+                        placeholder="Dein Kommentar (optional)"
+                        rows="3"
+                        class="bg-white rounded-md border border-gray-200 mb-2"
+                    />
+                    <div class="flex justify-end gap-2">
+                        <ion-button size="small" fill="clear" @click="showReviewForm = false">Abbrechen</ion-button>
+                        <ion-button
+                            size="small"
+                            :disabled="newReviewRating === 0 || isSubmittingReview"
+                            @click="submitReview"
+                        >
+                            <ion-spinner v-if="isSubmittingReview" name="crescent" class="mr-1" />
+                            Senden
+                        </ion-button>
+                    </div>
+                </div>
+
+                <!-- Reviews List -->
+                <div v-if="isReviewsLoading" class="text-center py-4">
+                    <ion-spinner name="crescent" />
+                </div>
+                <div v-else-if="reviews.length > 0" class="space-y-4">
+                    <div v-for="review in visibleReviews" :key="review.id" class="border-b pb-3 last:border-0 border-gray-100">
+                        <div class="flex justify-between items-start mb-1">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0"
+                                >
+                                    <ion-img
+                                        v-if="getReviewUserAvatarUrl(review.user)"
+                                        :src="getReviewUserAvatarUrl(review.user)"
+                                        class="object-cover w-full h-full"
+                                        :alt="review.user?.name"
+                                    />
+                                    <ion-icon v-else :icon="personCircleOutline" class="text-gray-500" />
+                                </div>
+                                <span class="font-medium text-sm">{{ review.user?.name || 'Unbekannt' }}</span>
+                            </div>
+                            <span class="text-xs text-gray-400">
+                                {{ new Date(review.createdAt).toLocaleDateString() }}
+                            </span>
+                        </div>
+                        <div class="flex items-center mb-2 pl-10">
+                            <ion-icon
+                                v-for="i in 5"
+                                :key="i"
+                                :icon="star"
+                                class="text-xs mr-0.5"
+                                :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-200'"
+                            />
+                        </div>
+                        <p v-if="review.comment" class="text-sm text-gray-700 pl-10">{{ review.comment }}</p>
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    <div v-if="hasMoreReviews" class="text-center pt-2">
+                        <ion-button fill="clear" size="small" @click="loadMoreReviews">
+                            Mehr Bewertungen laden
+                        </ion-button>
+                    </div>
+                </div>
+                <p v-else class="text-sm text-gray-500 italic text-center py-2">Noch keine Bewertungen vorhanden.</p>
             </div>
 
             <!-- Aktionen -->
@@ -278,6 +361,9 @@ import {
     IonImg,
     IonTextarea,
     IonSpinner,
+    actionSheetController,
+    alertController,
+    toastController,
 } from '@ionic/vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -295,6 +381,10 @@ import {
     starOutline,
     personCircleOutline,
     checkmarkCircleOutline,
+    chevronBackOutline,
+    chevronForwardOutline,
+    ellipsisVertical,
+    flagOutline,
 } from 'ionicons/icons'
 import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -303,15 +393,84 @@ import { useLocationsStore } from '../store/locationsStore'
 import { useFavoritesStore } from '../store/favoritesStore'
 import { useUserStore } from '../store/userStore'
 import { useReviewsStore } from '../store/reviewsStore'
+import { useReportsStore } from '../store/reportsStore'
+import useAvatarUrl from '../composables/useAvatarUrl'
 
 const locationsStore = useLocationsStore()
 const favoritesStore = useFavoritesStore()
 const userStore = useUserStore()
 const reviewsStore = useReviewsStore()
+const reportsStore = useReportsStore()
 
 const { popupLocation } = storeToRefs(locationsStore)
 const { t } = useI18n()
 const locationModal = ref(null)
+
+// Bild-Snap-Slider
+const imageSliderRef = ref(null)
+const imageSliderActiveIndex = ref(0)
+let imageSliderScrollTimeout = null
+
+function onImageSliderScroll() {
+    if (!imageSliderRef.value) return
+    if (imageSliderScrollTimeout) clearTimeout(imageSliderScrollTimeout)
+    imageSliderScrollTimeout = setTimeout(() => {
+        if (!imageSliderRef.value) return
+        const slider = imageSliderRef.value
+        const { scrollLeft } = slider
+        const sliderWidth = slider.clientWidth
+        const viewportRight = scrollLeft + sliderWidth
+        const children = slider.children
+        if (!children.length) return
+        let newIndex = 0
+        let maxVisibleArea = 0
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i]
+            const childLeft = child.offsetLeft
+            const childRight = childLeft + child.offsetWidth
+            const visibleLeft = Math.max(scrollLeft, childLeft)
+            const visibleRight = Math.min(viewportRight, childRight)
+            const visibleArea = Math.max(0, visibleRight - visibleLeft)
+            const visibilityRatio = visibleArea / child.offsetWidth
+            if (visibilityRatio > 0.5 && visibleArea > maxVisibleArea) {
+                maxVisibleArea = visibleArea
+                newIndex = i
+            } else if (maxVisibleArea === 0 && visibleArea > 0 && visibleArea > maxVisibleArea) {
+                maxVisibleArea = visibleArea
+                newIndex = i
+            }
+        }
+        if (newIndex !== imageSliderActiveIndex.value) {
+            imageSliderActiveIndex.value = newIndex
+        }
+    }, 50)
+}
+
+function imageSliderScrollToIndex(index) {
+    if (!imageSliderRef.value) return
+    const slider = imageSliderRef.value
+    const children = slider.children
+    if (index < 0 || index >= children.length) return
+    imageSliderActiveIndex.value = index
+    const child = children[index]
+    slider.scrollTo({
+        left: child.offsetLeft,
+        behavior: 'smooth',
+    })
+}
+
+function imageSliderScrollToPrev() {
+    if (imageSliderActiveIndex.value > 0) {
+        imageSliderScrollToIndex(imageSliderActiveIndex.value - 1)
+    }
+}
+
+function imageSliderScrollToNext() {
+    const urls = allImageUrls.value
+    if (imageSliderActiveIndex.value < urls.length - 1) {
+        imageSliderScrollToIndex(imageSliderActiveIndex.value + 1)
+    }
+}
 
 // Reviews State
 const reviews = computed(() => {
@@ -323,13 +482,32 @@ const showReviewForm = ref(false)
 const newReviewRating = ref(0)
 const newReviewComment = ref('')
 const isSubmittingReview = ref(false)
+const visibleReviewsCount = ref(3)
 
-// Watch popupLocation to fetch reviews
+const visibleReviews = computed(() => {
+    return reviews.value.slice(0, visibleReviewsCount.value)
+})
+
+const hasMoreReviews = computed(() => {
+    return reviews.value.length > visibleReviewsCount.value
+})
+
+function getReviewUserAvatarUrl(reviewUser) {
+    return useAvatarUrl(reviewUser?.avatar)
+}
+
+function loadMoreReviews() {
+    visibleReviewsCount.value += 5
+}
+
+// Watch popupLocation to fetch reviews + Slider-Index zurücksetzen
 watch(
     () => popupLocation.value?.id,
     async (newId) => {
+        imageSliderActiveIndex.value = 0
         if (newId) {
             isReviewsLoading.value = true
+            visibleReviewsCount.value = 3 // Reset visible count
             await reviewsStore.fetchReviews(newId)
             isReviewsLoading.value = false
             // Reset Form
@@ -383,6 +561,16 @@ const descriptionText = computed(() =>
     extractDescriptionText(popupLocation.value?.description)
 )
 
+const DAY_LABELS_DE = {
+    monday: 'Mo',
+    tuesday: 'Di',
+    wednesday: 'Mi',
+    thursday: 'Do',
+    friday: 'Fr',
+    saturday: 'Sa',
+    sunday: 'So',
+}
+
 function formatAvailability(oh) {
     if (!oh) return ''
     if (oh.is24_7) return '24/7 geöffnet'
@@ -390,12 +578,12 @@ function formatAvailability(oh) {
     if (schedule.length === 0) return ''
     return schedule
         .map((s) => {
-            const day = s.day ? String(s.day).slice(0, 2) : ''
+            const dayDe = (s.day && DAY_LABELS_DE[s.day]) ? DAY_LABELS_DE[s.day] : ''
             const open = s.open || '–'
             const close = s.close || '–'
-            return `${day} ${open}–${close}`
+            return `${dayDe} ${open} - ${close} Uhr`
         })
-        .join(', ')
+        .join('\n')
 }
 
 const availabilityText = computed(() =>
@@ -493,6 +681,104 @@ function handleRoute() {
     const [lng, lat] = loc.coordinates
     const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
     window.open(url, '_blank', 'noopener,noreferrer')
+}
+
+async function presentActionSheet() {
+    const actionSheet = await actionSheetController.create({
+        header: 'Optionen',
+        buttons: [
+            {
+                text: 'Standort melden',
+                role: 'destructive',
+                icon: flagOutline,
+                handler: () => {
+                    if (!isAuthenticated.value) {
+                        toastController.create({
+                            message: 'Bitte melde dich an, um einen Standort zu melden.',
+                            duration: 3000,
+                            color: 'warning',
+                        }).then(t => t.present())
+                        return
+                    }
+                    presentReportAlert()
+                },
+            },
+            {
+                text: 'Abbrechen',
+                role: 'cancel',
+                icon: closeOutline,
+            },
+        ],
+    })
+    await actionSheet.present()
+}
+
+async function presentReportAlert() {
+    const alert = await alertController.create({
+        header: 'Standort melden',
+        message: 'Warum möchtest du diesen Standort melden?',
+        inputs: [
+            {
+                label: 'Geschlossen / Existiert nicht mehr',
+                type: 'radio',
+                value: 'not_existing',
+            },
+            {
+                label: 'Falsche Informationen',
+                type: 'radio',
+                value: 'false_info',
+            },
+            {
+                label: 'Duplikat',
+                type: 'radio',
+                value: 'spam', // Mapping auf 'spam' da 'duplicate' nicht existiert
+            },
+            {
+                label: 'Unangemessener Inhalt',
+                type: 'radio',
+                value: 'inappropriate',
+            },
+            {
+                label: 'Sonstiges',
+                type: 'radio',
+                value: 'other',
+            },
+        ],
+        buttons: [
+            {
+                text: 'Abbrechen',
+                role: 'cancel',
+            },
+            {
+                text: 'Senden',
+                handler: async (data) => {
+                    if (data) {
+                        try {
+                            await reportsStore.reportLocation({
+                                locationId: popupLocation.value.id,
+                                reason: data,
+                                userId: userStore.userId,
+                            })
+                            const toast = await toastController.create({
+                                message: 'Vielen Dank! Deine Meldung wurde gesendet.',
+                                duration: 2000,
+                                color: 'success',
+                            })
+                            await toast.present()
+                        } catch (error) {
+                            const toast = await toastController.create({
+                                message: 'Fehler beim Senden der Meldung.',
+                                duration: 2000,
+                                color: 'danger',
+                            })
+                            await toast.present()
+                        }
+                    }
+                },
+            },
+        ],
+    })
+    await alert.present()
 }
 
 async function submitReview() {

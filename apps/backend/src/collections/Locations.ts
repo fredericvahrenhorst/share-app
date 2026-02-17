@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { adminOnlyFieldUpdate, isAdmin, isAdminOrCreator, isAuthenticated } from '../accessControl'
+
 export const Locations: CollectionConfig = {
   slug: 'locations',
   admin: {
@@ -7,9 +9,9 @@ export const Locations: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: () => true,
+    create: isAuthenticated,
+    update: isAdminOrCreator('locations', 'createdBy'),
+    delete: isAdmin,
   },
   fields: [
     {
@@ -184,6 +186,7 @@ export const Locations: CollectionConfig = {
       name: 'status',
       type: 'select',
       label: 'Status',
+      access: { update: adminOnlyFieldUpdate },
       options: [
         { label: 'Aktiv', value: 'active' },
         { label: 'Inaktiv', value: 'inactive' },
@@ -197,28 +200,28 @@ export const Locations: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
       label: 'Erstellt von',
+      access: { update: adminOnlyFieldUpdate },
     },
     {
       name: 'verified',
       type: 'checkbox',
       label: 'Verifiziert',
+      access: { update: adminOnlyFieldUpdate },
       defaultValue: false,
     },
     {
       name: 'averageRating',
       type: 'number',
       label: 'Durchschnittsbewertung',
-      admin: {
-        readOnly: true,
-      },
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
     },
     {
       name: 'reviewCount',
       type: 'number',
       label: 'Anzahl Bewertungen',
-      admin: {
-        readOnly: true,
-      },
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
       defaultValue: 0,
     },
   ],

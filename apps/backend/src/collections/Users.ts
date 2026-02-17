@@ -1,27 +1,51 @@
 import type { CollectionConfig } from 'payload'
-import { greet, User } from '@test/shared';
+import { greet } from '@test/shared'
+import { adminOnlyFieldUpdate, isAdmin, isAdminOrSelf } from '../accessControl'
 
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
   },
-  auth: true,
+  auth: {
+    forgotPassword: {
+      generateEmailHTML: ({ token, user }) => {
+        console.log('Generating password reset email for user:', user.email);
+        const resetPasswordURL = `${process.env.FRONTEND_URL || 'http://localhost:8100'}/reset-password?token=${token}`
+
+        return `
+            <h1>Passwort zurücksetzen</h1>
+            <p>Hallo ${user.name || 'Nutzer'},</p>
+            <p>du hast angefordert, dein Passwort zurückzusetzen. Klicke auf den folgenden Link, um ein neues Passwort zu vergeben:</p>
+            <p><a href="${resetPasswordURL}">${resetPasswordURL}</a></p>
+            <p>Dieser Link ist 1 Stunde gültig.</p>
+            <p>Falls du dies nicht angefordert hast, kannst du diese E-Mail ignorieren.</p>
+        `
+      },
+      generateEmailSubject: () => 'Passwort zurücksetzen - ShareApp',
+    },
+  },
   access: {
     read: () => true,
     create: () => true,
-    update: ({ req: { user } }) => {
-      if (user) {
-        return true
-      }
-      return false
-    },
-    delete: ({ req: { user } }) => {
-      // Nur Admins können User löschen
-      return Boolean(user)
-    },
+    update: isAdminOrSelf,
+    delete: isAdmin,
   },
   fields: [
+    {
+      name: 'roles',
+      type: 'select',
+      hasMany: true,
+      defaultValue: ['user'],
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ],
+      access: {
+        create: () => false,
+        update: adminOnlyFieldUpdate,
+      },
+    },
     {
       name: 'name',
       type: 'text',
@@ -60,6 +84,10 @@ export const Users: CollectionConfig = {
       name: 'badges',
       type: 'array',
       label: 'Badges',
+      access: {
+        create: adminOnlyFieldUpdate,
+        update: adminOnlyFieldUpdate,
+      },
       fields: [
         {
           name: 'badge',
@@ -106,6 +134,9 @@ export const Users: CollectionConfig = {
       name: 'stats',
       type: 'group',
       label: 'Statistiken',
+      access: {
+        update: adminOnlyFieldUpdate,
+      },
       fields: [
         {
           name: 'locationsCreated',

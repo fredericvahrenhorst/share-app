@@ -147,7 +147,7 @@
         </div>
 
         <!-- Add Location FAB -->
-        <div class="fixed z-50 bottom-8 right-4">
+        <div class="fixed z-50 bottom-32 right-4">
             <ion-button
                 shape="circle"
                 color="primary"
@@ -173,6 +173,12 @@
             :is-open="isFilterModalOpen"
             @close="closeFilterModal"
         />
+
+        <!-- Add Location Modal -->
+        <AddLocationModal
+            :is-open="isAddLocationModalOpen"
+            @close="closeAddLocationModal"
+        />
     </div>
 </template>
 
@@ -187,14 +193,10 @@ import { MapboxMap, MapboxMarker, MapboxGeogeometryCircle } from 'vue-mapbox-ts'
 import { IonItem, IonInput, IonIcon, IonButton } from '@ionic/vue';
 import { navigate, searchOutline, funnelOutline, heartOutline, addOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-const router = useRouter();
-
-const goToAddLocation = () => {
-    router.push('/add-location');
-};
 import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
 import LocationFilter from './LocationFilter.vue';
+import AddLocationModal from './AddLocationModal.vue';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';
 
@@ -220,6 +222,16 @@ const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 const ready = ref(false);
 const isSearchModalOpen = ref(false);
+const isAddLocationModalOpen = ref(false);
+
+const goToAddLocation = () => {
+    isAddLocationModalOpen.value = true;
+};
+
+const closeAddLocationModal = () => {
+    isAddLocationModalOpen.value = false;
+};
+
 // Use saved mapZoom or calculate based on radius
 const zoom = ref(mapZoom.value || (mapGeo.value ? (radius.value > 10 ? 9 : 11) : 5));
 const center = ref([
@@ -291,10 +303,10 @@ const closeFilterModal = () => {
     isFilterModalOpen.value = false;
 };
 
-const handleLocationSelect = (location) => {
-    console.log('location: ', location);
+const handleLocationSelect = async (location) => {
     if (!location.isExternal) {
         locationsStore.setPopupLocation(location);
+        await locationsStore.fetchLocationById(location.id);
     }
 
     center.value = location.coordinates;
@@ -640,6 +652,12 @@ const updateClusterSource = () => {
         updateUnclusteredFeatures(mapInstance.value);
     }
 };
+
+// Watch for filtered locations changes and update cluster source
+watch(filteredLocations, () => {
+    console.log('filteredLocations changed');
+    updateClusterSource();
+}, { deep: true });
 
 // Watch for filter changes and update cluster source
 watch(filterState, () => {

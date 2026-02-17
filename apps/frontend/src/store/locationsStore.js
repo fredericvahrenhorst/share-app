@@ -106,8 +106,8 @@ export const useLocationsStore = defineStore('locations', {
                         }
                     });
 
-                    // Load categories from locations and filters
-                    this.loadCategoriesFromLocations();
+                    // Kategorien von API (sortOrder, isActive); bei Fehler Fallback aus Locations
+                    await this.fetchCategories();
                     this.loadFiltersFromLocalStorage();
                 }
             } catch (error) {
@@ -283,8 +283,57 @@ export const useLocationsStore = defineStore('locations', {
             // Vue reactivity verlangt, dass wir ein neues Objekt zuweisen, um Proxy-Probleme zu vermeiden
             this.popupLocation = location ? { ...location } : null;
         },
+        /**
+         * Lädt eine Location vollständig per ID und setzt sie als Popup.
+         * Wird genutzt, wenn die aktuell verfügbaren Daten reduziert sind (z. B. von der Karte).
+         */
+        async fetchLocationById(id) {
+            if (!id) return null;
+            try {
+                const loc = await apiCall(`locations/${id}`, { method: 'GET' });
+                this.popupLocation = loc ? { ...loc } : null;
+                return loc;
+            } catch (err) {
+                console.error('Error fetching location by id:', err);
+                return null;
+            }
+        },
         clearPopupLocation() {
             this.popupLocation = null;
+        },
+
+        /**
+         * Lädt Kategorien von der API (GET /api/categories).
+         * Sortierung nach sortOrder, nur aktive Kategorien (isActive).
+         * Bei Fehler Fallback: Kategorien aus bereits geladenen Locations ableiten.
+         */
+        async fetchCategories() {
+            this.isLoading = true;
+            try {
+                const params = new URLSearchParams({
+                    limit: '100',
+                    sort: 'sortOrder',
+                    'where[isActive][equals]': 'true'
+                });
+                const response = await apiCall(`categories?${params.toString()}`, {
+                    method: 'GET'
+                });
+                if (response?.docs?.length) {
+                    this.categories = response.docs.map((doc) => ({
+                        id: doc.id,
+                        name: doc.name,
+                        description: doc.description || '',
+                        icon: doc.icon || 'location-outline',
+                        color: doc.color || '#6366F1'
+                    }));
+                    return;
+                }
+            } catch (error) {
+                console.error('Error fetching categories from API, using fallback from locations:', error);
+            } finally {
+                this.isLoading = false;
+            }
+            this.loadCategoriesFromLocations();
         },
 
         loadCategoriesFromLocations() {
@@ -295,6 +344,11 @@ export const useLocationsStore = defineStore('locations', {
                 if (location.category) {
                     const categoryId = location.category.id || location.category;
                     const categoryName = location.category.name || 'Unbekannte Kategorie';
+
+                    if (categoryName === 'Unbekannte Kategorie') {
+                        return;
+                    }
+
                     const categoryColor = location.category.color || '#6366F1';
                     const categoryIcon = location.category.icon || 'location-outline';
 

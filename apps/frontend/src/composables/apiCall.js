@@ -5,11 +5,16 @@ import {
 import { closeCircleOutline } from 'ionicons/icons';
 
 export default async function apiCall(endpoint, options, token) {
+    const isFormData = options?.data instanceof FormData
     const headers = {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-        ...options?.headers
-    };
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+        ...options?.headers,
+    }
+    // Bei FormData kein Content-Type setzen – axios setzt automatisch multipart/form-data inkl. boundary
+    if (isFormData) {
+        delete headers['Content-Type']
+    }
 
     const authToken = token || (typeof localStorage !== 'undefined' && localStorage.getItem('token'));
     if (authToken) {

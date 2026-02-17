@@ -5,6 +5,8 @@ import type {
   CollectionBeforeChangeHook,
 } from 'payload'
 
+import { adminOnlyFieldUpdate, isAdminOrOwner, isAuthenticated } from '../accessControl'
+
 const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, req }) => {
   if (req?.user?.id && !data.user) {
     data.user = req.user.id
@@ -61,9 +63,9 @@ export const Reviews: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: () => true,
+    create: isAuthenticated,
+    update: isAdminOrOwner('reviews', 'user'),
+    delete: isAdminOrOwner('reviews', 'user'),
   },
   hooks: {
     beforeChange: [beforeChangeHook],
@@ -102,6 +104,7 @@ export const Reviews: CollectionConfig = {
       name: 'status',
       type: 'select',
       label: 'Status',
+      access: { update: adminOnlyFieldUpdate },
       options: [
         { label: 'Aktiv', value: 'active' },
         { label: 'Ausstehend', value: 'pending' },
