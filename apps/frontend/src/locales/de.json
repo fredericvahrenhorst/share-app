@@ -66,6 +66,17 @@
         "label": "Radius",
         "searchHere": "Hier suchen"
     },
+    "favorites": {
+        "title": "Favoriten",
+        "loading": "Favoriten werden geladen…",
+        "empty_title": "Keine Favoriten",
+        "empty_description": "Sie haben noch keine Orte zu Ihren Favoriten hinzugefügt.",
+        "login_required_title": "Anmeldung erforderlich",
+        "login_required_description": "Melden Sie sich an, um Ihre Favoriten zu sehen und zu verwalten.",
+        "login": "Anmelden",
+        "add": "Merken",
+        "remove": "Aus Favoriten entfernen"
+    },
     "addResource": {
         "title": "Ressource hinzufügen",
         "steps": {
@@ -117,5 +128,58 @@
         "oclock": "Uhr",
         "is_loading": "Daten laden …",
         "apply": "Anwenden"
+    },
+    "auth": {
+        "login_title": "Anmelden",
+        "login_email": "E-Mail",
+        "login_password": "Passwort",
+        "login_submit": "Anmelden",
+        "login_loading": "Anmeldung läuft…",
+        "login_no_account": "Noch kein Konto?",
+        "register_link": "Jetzt registrieren",
+        "register_title": "Registrieren",
+        "register_name": "Name",
+        "register_email": "E-Mail",
+        "register_password": "Passwort",
+        "register_submit": "Konto erstellen",
+        "register_loading": "Registrierung läuft…",
+        "register_has_account": "Bereits ein Konto?",
+        "login_link": "Jetzt anmelden",
+        "back_to_home": "Zurück zur Startseite"
+    },
+    "profile": {
+        "title": "Profil",
+        "not_logged_in": "Nicht angemeldet",
+        "login_prompt": "Melden Sie sich an, um Ihr Profil zu sehen.",
+        "login": "Anmelden",
+        "logout": "Abmelden",
+        "settings": "Einstellungen",
+        "notifications": "Benachrichtigungen",
+        "privacy": "Datenschutz",
+        "help": "Hilfe & Support",
+        "about": "Über die App",
+        "activity": "Ihre Aktivität",
+        "favorites_count": "Favoriten",
+        "visited_count": "Besucht",
+        "reviews_count": "Bewertungen",
+        "in_development": "In Entwicklung"
+    },
+    "locationDetail": {
+        "reviews_coming_soon": "Bewertungen kommen bald",
+        "no_description": "Keine Beschreibung",
+        "address": "Adresse",
+        "availability": "Verfügbarkeit",
+        "contact": "Kontakt",
+        "description": "Beschreibung",
+        "route": "Route",
+        "share": "Teilen",
+        "favorite_login_hint": "Bitte anmelden, um Orte zu merken",
+        "tags": "Tags",
+        "accessibility": "Barrierefreiheit",
+        "wheelchair_accessible": "Rollstuhlgerecht",
+        "accessible_toilet": "Behindertengerechtes WC",
+        "accessible_parking": "Behindertenparkplatz",
+        "verified": "Verifiziert",
+        "status_pending": "In Bearbeitung"
     }
 }

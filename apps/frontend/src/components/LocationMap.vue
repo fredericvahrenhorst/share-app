@@ -146,6 +146,18 @@
             </div>
         </div>
 
+        <!-- Add Location FAB -->
+        <div class="fixed z-50 bottom-8 right-4">
+            <ion-button
+                shape="circle"
+                color="primary"
+                class="w-14 h-14 shadow-lg"
+                @click="goToAddLocation"
+            >
+                <ion-icon :icon="addOutline" size="large" />
+            </ion-button>
+        </div>
+
         <!-- Location Detail Modal -->
         <LocationDetail />
 
@@ -173,7 +185,13 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { MapboxMap, MapboxMarker, MapboxGeogeometryCircle } from 'vue-mapbox-ts';
 import { IonItem, IonInput, IonIcon, IonButton } from '@ionic/vue';
-import { navigate, searchOutline, funnelOutline, heartOutline } from 'ionicons/icons';
+import { navigate, searchOutline, funnelOutline, heartOutline, addOutline } from 'ionicons/icons';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
+const goToAddLocation = () => {
+    router.push('/add-location');
+};
 import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
 import LocationFilter from './LocationFilter.vue';

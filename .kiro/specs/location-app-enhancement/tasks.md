@@ -227,3 +227,12 @@ This implementation plan converts the ShareApp design into actionable coding tas
 - Largest Contentful Paint < 3s
 - Map interaction response < 100ms
 - Offline functionality for core features
+
+---
+
+## Verification Notes (see verification-report.md)
+
+- **Naming:** In codebase "Location" is used consistently (locationsStore, LocationMap, LocationDetail, /api/locations). Tasks/requirements refer to "Resource"; same concept.
+- **API:** Payload REST `/api/locations`, `/api/categories` and custom `/api/search/locations`, `/api/search/locations/nearby` are implemented and tested (HTTP 200 with seed data).
+- **Placeholder content:** FavoritesPage uses hardcoded example list (not connected to Favorites API/store). ProfilPage uses hardcoded user/stats (not connected to userStore/API). LocationDetail contains some dummy text (e.g. rating "4.9", Lorem ipsum). These areas need wiring to backend or explicit "coming soon" state.
+- **Categories:** Categories in the app are derived from locations (loadCategoriesFromLocations); optional: use GET /api/categories for dedicated category list/sortOrder.

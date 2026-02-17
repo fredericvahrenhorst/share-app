@@ -1,4 +1,58 @@
-import type { CollectionConfig } from 'payload'
+import type {
+  CollectionConfig,
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  CollectionBeforeChangeHook,
+} from 'payload'
+
+const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, req }) => {
+  if (req?.user?.id && !data.user) {
+    data.user = req.user.id
+  }
+  return data
+}
+
+const updateLocationStats = async (req: any, locationId: string | number) => {
+  if (!locationId) return
+
+  const reviews = await req.payload.find({
+    collection: 'reviews',
+    where: {
+      location: {
+        equals: locationId,
+      },
+      status: {
+        equals: 'active',
+      },
+    },
+    limit: 0,
+  })
+
+  const totalRating = reviews.docs.reduce((sum: number, review: any) => sum + (review.rating || 0), 0)
+  const reviewCount = reviews.totalDocs
+  const averageRating = reviewCount > 0 ? parseFloat((totalRating / reviewCount).toFixed(1)) : 0
+
+  await req.payload.update({
+    collection: 'locations',
+    id: locationId,
+    data: {
+      averageRating,
+      reviewCount,
+    },
+  })
+}
+
+const afterChangeHook: CollectionAfterChangeHook = async ({ doc, req, operation }) => {
+  const locationId = typeof doc.location === 'object' ? doc.location.id : doc.location
+  await updateLocationStats(req, locationId)
+  return doc
+}
+
+const afterDeleteHook: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  const locationId = typeof doc.location === 'object' ? doc.location.id : doc.location
+  await updateLocationStats(req, locationId)
+  return doc
+}
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
@@ -10,6 +64,11 @@ export const Reviews: CollectionConfig = {
     create: () => true,
     update: () => true,
     delete: () => true,
+  },
+  hooks: {
+    beforeChange: [beforeChangeHook],
+    afterChange: [afterChangeHook],
+    afterDelete: [afterDeleteHook],
   },
   fields: [
     {

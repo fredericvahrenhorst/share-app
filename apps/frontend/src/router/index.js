@@ -7,6 +7,21 @@ const routes = [
         redirect: '/home'
     },
     {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/LoginPage.vue') /* eslint-disable-line */
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: () => import('@/views/RegisterPage.vue') /* eslint-disable-line */
+    },
+    {
+        path: '/add-location',
+        name: 'AddLocation',
+        component: () => import('@/views/AddLocationPage.vue') /* eslint-disable-line */
+    },
+    {
         path: '/',
         component: pageLayout,
         children: [

@@ -2,214 +2,221 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
-                <ion-title>Profil</ion-title>
+                <ion-title>{{ t('profile.title') }}</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
                 <ion-toolbar>
-                    <ion-title size="large">Profil</ion-title>
+                    <ion-title size="large">{{ t('profile.title') }}</ion-title>
                 </ion-toolbar>
             </ion-header>
 
-            <div class="container">
-                <!-- Profil Header -->
-                <div class="profile-header">
-                    <ion-avatar class="profile-avatar">
-                        <img :src="user.avatar" :alt="user.name" />
-                    </ion-avatar>
-                    <h2>{{ user.name }}</h2>
-                    <p>{{ user.email }}</p>
+            <div class="p-4">
+                <!-- Gast-Zustand -->
+                <div
+                    v-if="!isAuthenticated"
+                    class="flex flex-col items-center justify-center py-16 text-center"
+                >
+                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4 text-gray-400" />
+                    <h2 class="text-xl font-semibold mb-2 text-gray-800">{{ t('profile.not_logged_in') }}</h2>
+                    <p class="text-sm text-gray-600 mb-4">{{ t('profile.login_prompt') }}</p>
+                    <ion-button fill="outline" @click="goToLogin">
+                        {{ t('profile.login') }}
+                    </ion-button>
                 </div>
 
-                <!-- Profil Optionen -->
-                <ion-list>
-                    <ion-item button @click="openSettings">
-                        <ion-icon :icon="settings" slot="start"></ion-icon>
-                        <ion-label>Einstellungen</ion-label>
-                        <ion-icon :icon="chevronForward" slot="end"></ion-icon>
-                    </ion-item>
+                <template v-else>
+                    <!-- Profil Header -->
+                    <div class="flex flex-col items-center py-6 mb-4">
+                        <ion-avatar class="w-20 h-20 mb-3">
+                            <ion-img
+                                v-if="avatarUrl"
+                                :src="avatarUrl"
+                                :alt="user?.name"
+                                class="object-cover w-full h-full"
+                            />
+                            <div
+                                v-else
+                                class="w-full h-full flex items-center justify-center bg-gray-200 rounded-full"
+                            >
+                                <ion-icon :icon="personCircleOutline" class="text-4xl text-gray-500" />
+                            </div>
+                        </ion-avatar>
+                        <h2 class="text-xl font-semibold text-gray-800 m-0 mb-1">{{ user?.name || '–' }}</h2>
+                        <p class="text-sm text-gray-600 m-0">{{ user?.email || '–' }}</p>
+                    </div>
 
-                    <ion-item button @click="openNotifications">
-                        <ion-icon :icon="notifications" slot="start"></ion-icon>
-                        <ion-label>Benachrichtigungen</ion-label>
-                        <ion-icon :icon="chevronForward" slot="end"></ion-icon>
-                    </ion-item>
+                    <!-- Profil Optionen -->
+                    <ion-list class="rounded-xl overflow-hidden mb-6">
+                        <ion-item button @click="openSettings" class="rounded-none">
+                            <ion-icon :icon="settings" slot="start" />
+                            <ion-label>{{ t('profile.settings') }}</ion-label>
+                            <ion-icon :icon="chevronForward" slot="end" />
+                        </ion-item>
+                        <ion-item button @click="openNotifications" class="rounded-none">
+                            <ion-icon :icon="notifications" slot="start" />
+                            <ion-label>{{ t('profile.notifications') }}</ion-label>
+                            <ion-icon :icon="chevronForward" slot="end" />
+                        </ion-item>
+                        <ion-item button @click="openPrivacy" class="rounded-none">
+                            <ion-icon :icon="shield" slot="start" />
+                            <ion-label>{{ t('profile.privacy') }}</ion-label>
+                            <ion-icon :icon="chevronForward" slot="end" />
+                        </ion-item>
+                        <ion-item button @click="openHelp" class="rounded-none">
+                            <ion-icon :icon="helpCircle" slot="start" />
+                            <ion-label>{{ t('profile.help') }}</ion-label>
+                            <ion-icon :icon="chevronForward" slot="end" />
+                        </ion-item>
+                        <ion-item button @click="openAbout" class="rounded-none">
+                            <ion-icon :icon="informationCircle" slot="start" />
+                            <ion-label>{{ t('profile.about') }}</ion-label>
+                            <ion-icon :icon="chevronForward" slot="end" />
+                        </ion-item>
+                    </ion-list>
 
-                    <ion-item button @click="openPrivacy">
-                        <ion-icon :icon="shield" slot="start"></ion-icon>
-                        <ion-label>Datenschutz</ion-label>
-                        <ion-icon :icon="chevronForward" slot="end"></ion-icon>
-                    </ion-item>
-
-                    <ion-item button @click="openHelp">
-                        <ion-icon :icon="helpCircle" slot="start"></ion-icon>
-                        <ion-label>Hilfe & Support</ion-label>
-                        <ion-icon :icon="chevronForward" slot="end"></ion-icon>
-                    </ion-item>
-
-                    <ion-item button @click="openAbout">
-                        <ion-icon :icon="informationCircle" slot="start"></ion-icon>
-                        <ion-label>Über die App</ion-label>
-                        <ion-icon :icon="chevronForward" slot="end"></ion-icon>
-                    </ion-item>
-                </ion-list>
-
-                <!-- Statistiken -->
-                <div class="stats-section">
-                    <h3>Ihre Aktivität</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-number">{{ stats.favoriten }}</div>
-                            <div class="stat-label">Favoriten</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">{{ stats.besucht }}</div>
-                            <div class="stat-label">Besucht</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">{{ stats.bewertungen }}</div>
-                            <div class="stat-label">Bewertungen</div>
+                    <!-- Statistiken -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">{{ t('profile.activity') }}</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
+                                <span class="text-2xl font-bold text-primary">{{ favoritesCount }}</span>
+                                <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
+                                    {{ t('profile.favorites_count') }}
+                                </span>
+                            </div>
+                            <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
+                                <span class="text-2xl font-bold text-primary">–</span>
+                                <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
+                                    {{ t('profile.visited_count') }}
+                                </span>
+                            </div>
+                            <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
+                                <span class="text-2xl font-bold text-primary">–</span>
+                                <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
+                                    {{ t('profile.reviews_count') }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Abmelden Button -->
-                <ion-button expand="block" fill="outline" color="danger" @click="logout">
-                    <ion-icon :icon="logOut" slot="start"></ion-icon>
-                    Abmelden
-                </ion-button>
+                    <!-- Abmelden -->
+                    <ion-button expand="block" fill="outline" color="danger" @click="handleLogout">
+                        <ion-icon :icon="logOut" slot="start" />
+                        {{ t('profile.logout') }}
+                    </ion-button>
+                </template>
             </div>
         </ion-content>
     </ion-page>
 </template>
 
-<script>
+<script setup>
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
-    IonIcon, IonLabel, IonAvatar, IonButton
-} from '@ionic/vue';
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
+    IonAvatar,
+    IonButton,
+    IonImg,
+} from '@ionic/vue'
 import {
-    settings, notifications, shield, helpCircle, informationCircle,
-    chevronForward, logOut
-} from 'ionicons/icons';
+    settings,
+    notifications,
+    shield,
+    helpCircle,
+    informationCircle,
+    chevronForward,
+    logOut,
+    personCircleOutline,
+} from 'ionicons/icons'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted } from 'vue'
+import { toastController } from '@ionic/vue'
 
-export default {
-    name: 'ProfilPage',
-    components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
-        IonIcon, IonLabel, IonAvatar, IonButton
-    },
-    data() {
-        return {
-            user: {
-                name: 'Max Mustermann',
-                email: 'max.mustermann@example.com',
-                avatar: 'https://via.placeholder.com/100x100'
-            },
-            stats: {
-                favoriten: 12,
-                besucht: 45,
-                bewertungen: 8
-            }
-        };
-    },
-    methods: {
-        openSettings() {
-            console.log('Einstellungen öffnen');
-        },
-        openNotifications() {
-            console.log('Benachrichtigungen öffnen');
-        },
-        openPrivacy() {
-            console.log('Datenschutz öffnen');
-        },
-        openHelp() {
-            console.log('Hilfe öffnen');
-        },
-        openAbout() {
-            console.log('Über die App öffnen');
-        },
-        logout() {
-            console.log('Abmelden');
-            // Hier können Sie die Abmelde-Logik implementieren
+import { useUserStore } from '../store/userStore'
+import { useFavoritesStore } from '../store/favoritesStore'
+
+const { t } = useI18n()
+const router = useRouter()
+const userStore = useUserStore()
+const favoritesStore = useFavoritesStore()
+
+const { user, authenticated: isAuthenticated } = storeToRefs(userStore)
+const { favorites } = storeToRefs(favoritesStore)
+
+const favoritesCount = computed(() => favorites.value?.length ?? 0)
+
+const avatarUrl = computed(() => {
+    const av = user.value?.avatar
+    if (!av) return ''
+    const url = av?.url || (typeof av === 'object' ? av?.url : null)
+    if (!url) return ''
+    return url.startsWith('http') ? url : `${(process.env.API_URL || '').replace(/\/api\/?$/, '')}${url}`
+})
+
+function goToLogin() {
+    router.push({ name: 'Login', query: { redirect: '/profil' } })
+}
+
+async function handleLogout() {
+    try {
+        await userStore.logout()
+        await favoritesStore.fetchFavorites()
+        router.push({ name: 'Home' })
+    } catch (err) {
+        router.push({ name: 'Home' })
+    }
+}
+
+async function showInDevelopmentToast() {
+    const toast = await toastController.create({
+        message: t('profile.in_development'),
+        duration: 2000,
+        position: 'bottom',
+    })
+    await toast.present()
+}
+
+function openSettings() {
+    showInDevelopmentToast()
+}
+
+function openNotifications() {
+    showInDevelopmentToast()
+}
+
+function openPrivacy() {
+    showInDevelopmentToast()
+}
+
+function openHelp() {
+    showInDevelopmentToast()
+}
+
+function openAbout() {
+    showInDevelopmentToast()
+}
+
+onMounted(async () => {
+    if (isAuthenticated.value && userStore.userId) {
+        try {
+            await userStore.getUserData()
+        } catch (err) {
+            // Fehler beim Laden – User bleibt leer
         }
     }
-};
+    if (isAuthenticated.value) {
+        await favoritesStore.fetchFavorites()
+    }
+})
 </script>
-
-<style scoped>
-.container {
-    padding: 16px;
-}
-
-.profile-header {
-    text-align: center;
-    padding: 20px 0;
-    margin-bottom: 20px;
-}
-
-.profile-avatar {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 16px auto;
-}
-
-.profile-header h2 {
-    margin: 0 0 4px 0;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.profile-header p {
-    margin: 0;
-    color: var(--ion-color-medium);
-    font-size: 14px;
-}
-
-ion-item {
-    margin-bottom: 8px;
-    border-radius: 8px;
-}
-
-.stats-section {
-    margin: 24px 0;
-}
-
-.stats-section h3 {
-    margin: 0 0 16px 0;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 16px;
-    background: var(--ion-color-light);
-    border-radius: 8px;
-}
-
-.stat-number {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ion-color-primary);
-    margin-bottom: 4px;
-}
-
-.stat-label {
-    font-size: 12px;
-    color: var(--ion-color-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-ion-button {
-    margin-top: 24px;
-}
-</style>

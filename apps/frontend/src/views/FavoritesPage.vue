@@ -2,35 +2,78 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
-                <ion-title>Favoriten</ion-title>
+                <ion-title>{{ t('favorites.title') }}</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
                 <ion-toolbar>
-                    <ion-title size="large">Favoriten</ion-title>
+                    <ion-title size="large">{{ t('favorites.title') }}</ion-title>
                 </ion-toolbar>
             </ion-header>
 
-            <div class="container">
-                <div v-if="favorites.length === 0" class="empty-state">
-                    <ion-icon :icon="heartOutline" size="large"></ion-icon>
-                    <h2>Keine Favoriten</h2>
-                    <p>Sie haben noch keine Orte zu Ihren Favoriten hinzugefügt.</p>
+            <div class="p-4">
+                <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-gray-500">
+                    <ion-spinner name="crescent" />
+                    <p class="mt-4">{{ t('favorites.loading') }}</p>
                 </div>
 
-                <ion-list v-else>
-                    <ion-item v-for="favorite in favorites" :key="favorite.id" button @click="openFavorite(favorite)">
-                        <ion-thumbnail slot="start">
-                            <img :src="favorite.image" :alt="favorite.name" />
+                <div
+                    v-else-if="!isAuthenticated"
+                    class="flex flex-col items-center justify-center py-16 text-center text-gray-500"
+                >
+                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4" />
+                    <h2 class="text-xl font-semibold mb-2">{{ t('favorites.login_required_title') }}</h2>
+                    <p class="text-sm mb-4">{{ t('favorites.login_required_description') }}</p>
+                    <ion-button fill="outline" @click="goToLogin">
+                        {{ t('favorites.login') }}
+                    </ion-button>
+                </div>
+
+                <div
+                    v-else-if="favorites.length === 0"
+                    class="flex flex-col items-center justify-center py-16 text-center text-gray-500"
+                >
+                    <ion-icon :icon="heartOutline" size="large" class="text-6xl mb-4" />
+                    <h2 class="text-xl font-semibold mb-2">{{ t('favorites.empty_title') }}</h2>
+                    <p class="text-sm">{{ t('favorites.empty_description') }}</p>
+                </div>
+
+                <ion-list v-else class="space-y-2">
+                    <ion-item
+                        v-for="favorite in favorites"
+                        :key="favorite.id"
+                        button
+                        class="rounded-xl mb-2"
+                        @click="openFavorite(favorite)"
+                    >
+                        <ion-thumbnail slot="start" class="rounded-lg overflow-hidden">
+                            <ion-img
+                                v-if="getFavoriteImage(favorite)"
+                                :src="getFavoriteImageUrl(favorite)"
+                                :alt="getLocationName(favorite)"
+                            />
+                            <div
+                                v-else
+                                class="w-full h-full flex items-center justify-center bg-gray-200"
+                            >
+                                <ion-icon :icon="locationOutline" class="text-2xl text-gray-400" />
+                            </div>
                         </ion-thumbnail>
                         <ion-label>
-                            <h2>{{ favorite.name }}</h2>
-                            <p>{{ favorite.address }}</p>
-                            <p>{{ favorite.category }}</p>
+                            <h2 class="font-semibold">{{ getLocationName(favorite) }}</h2>
+                            <p class="text-sm text-gray-600">{{ formatAddress(getLocation(favorite)?.address) }}</p>
+                            <p v-if="getLocation(favorite)?.category?.name" class="text-xs text-gray-500">
+                                {{ getLocation(favorite).category.name }}
+                            </p>
                         </ion-label>
-                        <ion-button slot="end" fill="clear" @click.stop="removeFavorite(favorite.id)">
-                            <ion-icon :icon="heart" color="danger"></ion-icon>
+                        <ion-button
+                            slot="end"
+                            fill="clear"
+                            color="danger"
+                            @click.stop="handleRemoveFavorite(favorite)"
+                        >
+                            <ion-icon :icon="heart" />
                         </ion-button>
                     </ion-item>
                 </ion-list>
@@ -39,95 +82,97 @@
     </ion-page>
 </template>
 
-<script>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonThumbnail, IonLabel, IonButton, IonIcon } from '@ionic/vue';
-import { heart, heartOutline } from 'ionicons/icons';
+<script setup>
+import {
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonThumbnail,
+    IonLabel,
+    IonButton,
+    IonIcon,
+    IonSpinner,
+    IonImg,
+} from '@ionic/vue'
+import { heart, heartOutline, personCircleOutline, locationOutline } from 'ionicons/icons'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { onMounted, computed } from 'vue'
 
-export default {
-    name: 'FavoritesPage',
-    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonThumbnail, IonLabel, IonButton, IonIcon },
-    data() {
-        return {
-            favorites: [
-                {
-                    id: 1,
-                    name: 'Café Central',
-                    address: 'Hauptstraße 123, 12345 Stadt',
-                    category: 'Café',
-                    image: 'https://via.placeholder.com/80x80'
-                },
-                {
-                    id: 2,
-                    name: 'Restaurant Zum Goldenen Löwen',
-                    address: 'Marktplatz 5, 12345 Stadt',
-                    category: 'Restaurant',
-                    image: 'https://via.placeholder.com/80x80'
-                },
-                {
-                    id: 3,
-                    name: 'Apotheke am Markt',
-                    address: 'Kirchstraße 8, 12345 Stadt',
-                    category: 'Apotheke',
-                    image: 'https://via.placeholder.com/80x80'
-                }
-            ]
-        };
-    },
-    methods: {
-        openFavorite(favorite) {
-            console.log('Favorite opened:', favorite.name);
-            // Hier können Sie die Navigation zur Detailansicht implementieren
-        },
-        removeFavorite(id) {
-            this.favorites = this.favorites.filter(f => f.id !== id);
-            console.log('Favorite removed:', id);
-        }
+import { useFavoritesStore } from '../store/favoritesStore'
+import { useUserStore } from '../store/userStore'
+import { useLocationsStore } from '../store/locationsStore'
+
+const { t } = useI18n()
+const router = useRouter()
+const favoritesStore = useFavoritesStore()
+const userStore = useUserStore()
+const locationsStore = useLocationsStore()
+
+const { favorites, isLoading } = storeToRefs(favoritesStore)
+const isAuthenticated = computed(() => userStore.authenticated)
+
+function getLocation(favorite) {
+    return favorite?.location || favorite
+}
+
+function getLocationName(favorite) {
+    return getLocation(favorite)?.name || ''
+}
+
+function getFavoriteImage(favorite) {
+    const loc = getLocation(favorite)
+    const firstImage = loc?.images?.[0]?.image
+    return firstImage?.url || firstImage
+}
+
+function getFavoriteImageUrl(favorite) {
+    const url = getFavoriteImage(favorite)
+    if (!url) return ''
+    return url.startsWith('http') ? url : `${(process.env.API_URL || '').replace(/\/api\/?$/, '')}${url}`
+}
+
+function formatAddress(address) {
+    if (!address) return ''
+    const parts = []
+    if (address.street) parts.push(address.street)
+    if (address.postalCode && address.city) {
+        parts.push(`${address.postalCode} ${address.city}`)
+    } else if (address.city) {
+        parts.push(address.city)
     }
-};
+    if (address.country) parts.push(address.country)
+    return parts.join(', ')
+}
+
+function openFavorite(favorite) {
+    const loc = getLocation(favorite)
+    if (loc) {
+        locationsStore.setPopupLocation(loc)
+        router.push({ name: 'Home' })
+    }
+}
+
+async function handleRemoveFavorite(favorite) {
+    try {
+        await favoritesStore.removeFavorite(favorite.id)
+    } catch (err) {
+        // apiCall zeigt bereits Toast bei Fehler
+    }
+}
+
+function goToLogin() {
+    router.push({ name: 'Login', query: { redirect: '/favoriten' } })
+}
+
+onMounted(async () => {
+    if (isAuthenticated.value) {
+        await favoritesStore.fetchFavorites()
+    }
+})
 </script>
-
-<style scoped>
-.container {
-    padding: 16px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--ion-color-medium);
-}
-
-.empty-state ion-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
-}
-
-.empty-state h2 {
-    margin: 16px 0 8px 0;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.empty-state p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-ion-item {
-    margin-bottom: 8px;
-    border-radius: 8px;
-}
-
-ion-thumbnail {
-    --size: 60px;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-ion-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-</style>

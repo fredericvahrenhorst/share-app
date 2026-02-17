@@ -1,5 +1,6 @@
 {
-  "name": "ionic-app-base",
-  "integrations": {},
-  "type": "vue-vite"
+    "name": "ionic-app-base",
+    "integrations": {},
+    "type": "vue-vite",
+    "mode": "ios"
 }

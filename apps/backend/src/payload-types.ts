@@ -275,6 +275,8 @@ export interface Location {
   status?: ('active' | 'inactive' | 'pending' | 'blocked') | null;
   createdBy?: (string | null) | User;
   verified?: boolean | null;
+  averageRating?: number | null;
+  reviewCount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -538,6 +540,8 @@ export interface LocationsSelect<T extends boolean = true> {
   status?: T;
   createdBy?: T;
   verified?: T;
+  averageRating?: T;
+  reviewCount?: T;
   updatedAt?: T;
   createdAt?: T;
 }

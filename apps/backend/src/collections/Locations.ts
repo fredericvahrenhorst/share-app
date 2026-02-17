@@ -204,5 +204,22 @@ export const Locations: CollectionConfig = {
       label: 'Verifiziert',
       defaultValue: false,
     },
+    {
+      name: 'averageRating',
+      type: 'number',
+      label: 'Durchschnittsbewertung',
+      admin: {
+        readOnly: true,
+      },
+    },
+    {
+      name: 'reviewCount',
+      type: 'number',
+      label: 'Anzahl Bewertungen',
+      admin: {
+        readOnly: true,
+      },
+      defaultValue: 0,
+    },
   ],
 } 

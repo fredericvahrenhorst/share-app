@@ -88,7 +88,9 @@ export const useLocationsStore = defineStore('locations', {
                     'select[category]': 'true',
                     'select[status]': 'true',
                     'select[createdAt]': 'true',
-                    'select[openingHours]': 'true'
+                    'select[openingHours]': 'true',
+                    'select[averageRating]': 'true',
+                    'select[reviewCount]': 'true'
                 });
 
                 response = await apiCall(`locations?${params.toString()}`, {

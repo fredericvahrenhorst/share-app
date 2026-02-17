@@ -8,10 +8,12 @@ export default async function apiCall(endpoint, options, token) {
     const headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        ...options?.headers
     };
 
-    if (token) {
-        headers.Authorization = token;
+    const authToken = token || (typeof localStorage !== 'undefined' && localStorage.getItem('token'));
+    if (authToken) {
+        headers.Authorization = authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`;
     }
 
     const opts = {
