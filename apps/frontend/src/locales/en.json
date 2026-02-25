@@ -175,7 +175,8 @@
         "edit_name_required": "Please enter a name.",
         "edit_success": "Profile saved.",
         "edit_error": "Save failed. Please try again.",
-        "activity_feed": "Community Feed"
+        "activity_feed": "Community Feed",
+        "enable_notifications": "Enable browser notifications"
     },
     "activity": {
         "title": "Community Feed",

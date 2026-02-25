@@ -175,7 +175,8 @@
         "edit_name_required": "Bitte gib einen Namen ein.",
         "edit_success": "Profil gespeichert.",
         "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
-        "activity_feed": "Community-Feed"
+        "activity_feed": "Community-Feed",
+        "enable_notifications": "Browser-Benachrichtigungen aktivieren"
     },
     "activity": {
         "title": "Community-Feed",
