@@ -1,6 +1,16 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import pageLayout from '../layouts/PageLayout.vue';
 
+function requireAuth(to, from, next) {
+    const token = localStorage.getItem('token')
+    const userId = localStorage.getItem('userId')
+    if (token && userId) {
+        next()
+    } else {
+        next({ name: 'Login', query: { redirect: to.fullPath } })
+    }
+}
+
 const routes = [
     {
         path: '/',
@@ -29,12 +39,14 @@ const routes = [
     {
         path: '/add-location',
         name: 'AddLocation',
-        component: () => import('@/views/AddLocationPage.vue') /* eslint-disable-line */
+        component: () => import('@/views/AddLocationPage.vue'), /* eslint-disable-line */
+        beforeEnter: requireAuth,
     },
     {
         path: '/activity',
         name: 'Activity',
-        component: () => import('@/views/ActivityFeedPage.vue') /* eslint-disable-line */
+        component: () => import('@/views/ActivityFeedPage.vue'), /* eslint-disable-line */
+        beforeEnter: requireAuth,
     },
     {
         path: '/',

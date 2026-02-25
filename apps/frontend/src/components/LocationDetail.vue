@@ -388,7 +388,6 @@
                 <ion-button
                     fill="clear"
                     class="flex-1 flex flex-col items-center"
-                    :disabled="!isAuthenticated"
                     @click="handleFavoriteClick"
                 >
                     <ion-icon :icon="isFavorite ? heart : heartOutline" :color="isFavorite ? 'danger' : undefined" />
@@ -718,7 +717,15 @@ function handleDidDismiss() {
 }
 
 async function handleFavoriteClick() {
-    if (!isAuthenticated.value) return
+    if (!isAuthenticated.value) {
+        const toast = await toastController.create({
+            message: t('locationDetail.favorite_login_hint'),
+            duration: 3000,
+            color: 'warning',
+        })
+        await toast.present()
+        return
+    }
     const id = popupLocation.value?.id
     if (!id) return
 
