@@ -167,6 +167,11 @@
                 </div>
             </div>
         </ion-content>
+        <SuccessAnimation
+            :is-visible="showSuccessAnimation"
+            :message="t('addResource.success.title')"
+            @complete="onSuccessAnimationComplete"
+        />
     </ion-page>
 </template>
 
@@ -208,6 +213,7 @@ import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import apiCall from '../composables/apiCall';
+import SuccessAnimation from '../components/SuccessAnimation.vue';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -225,6 +231,7 @@ const defaultCenter = [13.354336, 52.477697];
 // State
 const currentStep = ref(1);
 const isSubmitting = ref(false);
+const showSuccessAnimation = ref(false);
 
 // Step 1: Location
 const mapCenter = ref(defaultCenter);
@@ -315,6 +322,11 @@ function prevStep() {
     if (currentStep.value > 1) currentStep.value--;
 }
 
+function onSuccessAnimationComplete() {
+    showSuccessAnimation.value = false
+    router.replace('/home')
+}
+
 async function submitLocation() {
     if (!isValidStep3.value) return;
     isSubmitting.value = true;
@@ -374,19 +386,9 @@ async function submitLocation() {
             data: locationPayload
         });
 
-        // Success
-        const toast = await toastController.create({
-            message: t('addResource.success.message'),
-            duration: 3000,
-            color: 'success',
-            icon: checkmarkCircleOutline,
-            position: 'top'
-        });
-        await toast.present();
-
-        // Reset & Redirect
-        locationsStore.getAllLocations(); // Neu laden
-        router.replace('/home');
+        // Success - show animation first
+        showSuccessAnimation.value = true;
+        locationsStore.getAllLocations();
     } catch (error) {
         console.error('Error creating location:', error);
         // apiCall zeigt bereits Fehler-Toast
