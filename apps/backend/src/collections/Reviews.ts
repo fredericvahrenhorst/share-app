@@ -7,10 +7,17 @@ import type {
 
 import { adminOnlyFieldUpdate, isAdminOrOwner, isAuthenticated } from '../accessControl'
 import { onReviewCreated, onReviewDeleted } from '../hooks/communityHooks'
+import { checkSpamContent } from '../hooks/spamDetection'
 
 const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, req }) => {
   if (req?.user?.id && !data.user) {
     data.user = req.user.id
+  }
+  if (data.comment) {
+    const { isSpam, reason } = checkSpamContent(data.comment)
+    if (isSpam) {
+      throw new Error(`Spam erkannt: ${reason}`)
+    }
   }
   return data
 }
