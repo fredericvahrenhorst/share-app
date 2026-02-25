@@ -1,5 +1,6 @@
 <template>
     <ion-app>
+        <OnboardingOverlay />
         <ion-router-outlet />
     </ion-app>
 </template>
@@ -9,6 +10,7 @@ import { onMounted } from 'vue';
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useUserStore } from './store/userStore';
+import OnboardingOverlay from './components/OnboardingOverlay.vue';
 
 const userStore = useUserStore();
 

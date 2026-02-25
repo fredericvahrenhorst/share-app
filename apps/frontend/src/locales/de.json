@@ -166,6 +166,9 @@
         "reputation": "Reputation",
         "points": "Punkte",
         "badges": "Badges",
+        "privacy_public": "Öffentlich",
+        "privacy_friends": "Nur Freunde",
+        "privacy_private": "Privat",
         "in_development": "In Entwicklung",
         "edit_title": "Profil bearbeiten",
         "edit_name": "Name",
@@ -183,6 +186,23 @@
         "empty_title": "Noch keine Aktivitäten",
         "empty_description": "Hier erscheinen bald Neuigkeiten aus der Community.",
         "load_more": "Mehr laden"
+    },
+    "onboarding": {
+        "screen1_title": "Willkommen bei ShareApp",
+        "screen1_description": "Entdecke kostenlose Ressourcen in deiner Nähe — Foodsharing-Kühlschränke, Kleidertausch, Wasserstellen und mehr.",
+        "screen2_title": "Finde Ressourcen auf der Karte",
+        "screen2_description": "Tippe auf Marker, um Details zu sehen. Nutze die Suche und Filter, um genau das zu finden, was du brauchst.",
+        "screen3_title": "Deine Daten sind sicher",
+        "screen3_description": "Wir speichern nur das Nötigste. Dein Standort wird nie ohne deine Zustimmung geteilt. Du behältst die volle Kontrolle.",
+        "skip": "Überspringen",
+        "start": "Los geht's"
+    },
+    "mapHelp": {
+        "title": "So funktioniert die Karte",
+        "tip_markers": "Tippe auf Marker, um Standort-Details zu sehen",
+        "tip_search": "Nutze die Suchleiste oben für Orte und Adressen",
+        "tip_add": "Mit dem + Button kannst du neue Standorte hinzufügen",
+        "got_it": "Verstanden!"
     },
     "locationDetail": {
         "reviews_coming_soon": "Bewertungen kommen bald",

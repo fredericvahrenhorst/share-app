@@ -58,15 +58,27 @@
                             <ion-label>{{ t('profile.settings') }}</ion-label>
                             <ion-icon :icon="chevronForward" slot="end" />
                         </ion-item>
-                        <ion-item button @click="openNotifications" class="rounded-none">
+                        <ion-item class="rounded-none">
                             <ion-icon :icon="notifications" slot="start" />
-                            <ion-label>{{ t('profile.notifications') }}</ion-label>
-                            <ion-icon :icon="chevronForward" slot="end" />
+                            <ion-toggle
+                                :checked="notificationsEnabled"
+                                @ionChange="toggleNotifications($event)"
+                            >
+                                <ion-label>{{ t('profile.notifications') }}</ion-label>
+                            </ion-toggle>
                         </ion-item>
-                        <ion-item button @click="openPrivacy" class="rounded-none">
+                        <ion-item class="rounded-none">
                             <ion-icon :icon="shield" slot="start" />
                             <ion-label>{{ t('profile.privacy') }}</ion-label>
-                            <ion-icon :icon="chevronForward" slot="end" />
+                            <ion-select
+                                :value="privacySetting"
+                                interface="popover"
+                                @ionChange="changePrivacy($event)"
+                            >
+                                <ion-select-option value="public">{{ t('profile.privacy_public') }}</ion-select-option>
+                                <ion-select-option value="friends">{{ t('profile.privacy_friends') }}</ion-select-option>
+                                <ion-select-option value="private">{{ t('profile.privacy_private') }}</ion-select-option>
+                            </ion-select>
                         </ion-item>
                         <ion-item button @click="openHelp" class="rounded-none">
                             <ion-icon :icon="helpCircle" slot="start" />
@@ -172,6 +184,9 @@ import {
     IonAvatar,
     IonButton,
     IonImg,
+    IonToggle,
+    IonSelect,
+    IonSelectOption,
 } from '@ionic/vue'
 import {
     settings,
@@ -208,6 +223,31 @@ const { favorites } = storeToRefs(favoritesStore)
 const favoritesCount = computed(() => favorites.value?.length ?? 0)
 
 const avatarUrl = computed(() => useAvatarUrl(user.value?.avatar))
+
+const notificationsEnabled = computed(() => user.value?.preferences?.notifications ?? true)
+const privacySetting = computed(() => user.value?.preferences?.privacy || 'public')
+
+async function toggleNotifications(event) {
+    const enabled = event.detail.checked
+    try {
+        await userStore.updateUser({
+            preferences: { ...user.value?.preferences, notifications: enabled },
+        })
+    } catch (err) {
+        // apiCall zeigt Toast
+    }
+}
+
+async function changePrivacy(event) {
+    const value = event.detail.value
+    try {
+        await userStore.updateUser({
+            preferences: { ...user.value?.preferences, privacy: value },
+        })
+    } catch (err) {
+        // apiCall zeigt Toast
+    }
+}
 
 const REPUTATION_LEVEL_LABELS = {
     newcomer: 'Neuling',
@@ -297,14 +337,6 @@ async function showInDevelopmentToast() {
 }
 
 function openSettings() {
-    showInDevelopmentToast()
-}
-
-function openNotifications() {
-    showInDevelopmentToast()
-}
-
-function openPrivacy() {
     showInDevelopmentToast()
 }
 
