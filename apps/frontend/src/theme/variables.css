@@ -9,96 +9,96 @@
   --font-display: "Poppins", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* Primary Colors */
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
-  --color-primary-950: #082f49;
+  /* Primary Colors — Brand Primary #333333 (Charcoal) */
+  --color-primary-50: #f8f8f6;
+  --color-primary-100: #f0f0eb;
+  --color-primary-200: #deded9;
+  --color-primary-300: #bebeb9;
+  --color-primary-400: #6c6c6c;
+  --color-primary-500: #4c4c4c;
+  --color-primary-600: #333333;
+  --color-primary-700: #1a1a1a;
+  --color-primary-800: #0d0d0d;
+  --color-primary-900: #000000;
+  --color-primary-950: #000000;
 
-  /* Secondary Colors */
-  --color-secondary-50: #fdf4ff;
-  --color-secondary-100: #fae8ff;
-  --color-secondary-200: #f5d0fe;
-  --color-secondary-300: #f0abfc;
-  --color-secondary-400: #e879f9;
-  --color-secondary-500: #d946ef;
-  --color-secondary-600: #c026d3;
-  --color-secondary-700: #a21caf;
-  --color-secondary-800: #86198f;
-  --color-secondary-900: #701a75;
-  --color-secondary-950: #4a044e;
+  /* Secondary Colors — Brand Secondary #275243 (Forest Green) */
+  --color-secondary-50: #eef5f2;
+  --color-secondary-100: #d4e8e0;
+  --color-secondary-200: #a9d1c1;
+  --color-secondary-300: #7eb9a2;
+  --color-secondary-400: #4d9a7d;
+  --color-secondary-500: #357a62;
+  --color-secondary-600: #275243;
+  --color-secondary-700: #1e3f34;
+  --color-secondary-800: #162d25;
+  --color-secondary-900: #0e1c17;
+  --color-secondary-950: #070e0c;
 
-  /* Accent Colors */
-  --color-accent-50: #fefce8;
-  --color-accent-100: #fef9c3;
-  --color-accent-200: #fef08a;
-  --color-accent-300: #fde047;
-  --color-accent-400: #facc15;
-  --color-accent-500: #eab308;
-  --color-accent-600: #ca8a04;
-  --color-accent-700: #a16207;
-  --color-accent-800: #854d0e;
-  --color-accent-900: #713f12;
-  --color-accent-950: #422006;
+  /* Accent / Featured Colors — #D7EB80 (Lime) */
+  --color-accent-50: #f9fce8;
+  --color-accent-100: #f2f8cc;
+  --color-accent-200: #e8f3a6;
+  --color-accent-300: #D7EB80;
+  --color-accent-400: #BBCF65;
+  --color-accent-500: #A1B353;
+  --color-accent-600: #879741;
+  --color-accent-700: #6d7a30;
+  --color-accent-800: #535d20;
+  --color-accent-900: #3a4110;
+  --color-accent-950: #202400;
 
-  /* Neutral Colors */
-  --color-neutral-50: #fafafa;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-200: #e5e5e5;
-  --color-neutral-300: #d4d4d4;
-  --color-neutral-400: #a3a3a3;
-  --color-neutral-500: #737373;
-  --color-neutral-600: #525252;
-  --color-neutral-700: #404040;
-  --color-neutral-800: #262626;
-  --color-neutral-900: #171717;
-  --color-neutral-950: #0a0a0a;
+  /* Neutral Colors — from brand palette */
+  --color-neutral-50: #f8f8f6;
+  --color-neutral-100: #f0f0eb;
+  --color-neutral-200: #deded9;
+  --color-neutral-300: #bebeb9;
+  --color-neutral-400: #6c6c6c;
+  --color-neutral-500: #4c4c4c;
+  --color-neutral-600: #333333;
+  --color-neutral-700: #1a1a1a;
+  --color-neutral-800: #0d0d0d;
+  --color-neutral-900: #000000;
+  --color-neutral-950: #000000;
 
-  /* Success Colors */
-  --color-success-50: #f0fdf4;
-  --color-success-100: #dcfce7;
-  --color-success-200: #bbf7d0;
-  --color-success-300: #86efac;
-  --color-success-400: #4ade80;
-  --color-success-500: #22c55e;
-  --color-success-600: #16a34a;
-  --color-success-700: #15803d;
-  --color-success-800: #166534;
-  --color-success-900: #14532d;
-  --color-success-950: #052e16;
+  /* Success Colors — #008009 (Green) */
+  --color-success-50: #ecfdf0;
+  --color-success-100: #d1fad8;
+  --color-success-200: #a3f4b1;
+  --color-success-300: #5de775;
+  --color-success-400: #2ecc45;
+  --color-success-500: #008009;
+  --color-success-600: #006600;
+  --color-success-700: #005200;
+  --color-success-800: #003d00;
+  --color-success-900: #002900;
+  --color-success-950: #001400;
 
-  /* Warning Colors */
+  /* Warning Colors — #F7BC00 */
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
   --color-warning-200: #fde68a;
-  --color-warning-300: #fcd34d;
-  --color-warning-400: #fbbf24;
-  --color-warning-500: #f59e0b;
-  --color-warning-600: #d97706;
-  --color-warning-700: #b45309;
-  --color-warning-800: #92400e;
-  --color-warning-900: #78350f;
-  --color-warning-950: #451a03;
+  --color-warning-300: #F7BC00;
+  --color-warning-400: #d9a500;
+  --color-warning-500: #b88e00;
+  --color-warning-600: #977400;
+  --color-warning-700: #755a00;
+  --color-warning-800: #544100;
+  --color-warning-900: #322700;
+  --color-warning-950: #1a1400;
 
-  /* Error Colors */
-  --color-error-50: #fef2f2;
-  --color-error-100: #fee2e2;
-  --color-error-200: #fecaca;
-  --color-error-300: #fca5a5;
-  --color-error-400: #f87171;
-  --color-error-500: #ef4444;
-  --color-error-600: #dc2626;
-  --color-error-700: #b91c1c;
-  --color-error-800: #991b1b;
-  --color-error-900: #7f1d1d;
-  --color-error-950: #450a0a;
+  /* Error Colors — #B90A32 (Red) */
+  --color-error-50: #fef2f4;
+  --color-error-100: #fde2e7;
+  --color-error-200: #fcc5cf;
+  --color-error-300: #f9909f;
+  --color-error-400: #E71140;
+  --color-error-500: #B90A32;
+  --color-error-600: #8E0624;
+  --color-error-700: #6d041b;
+  --color-error-800: #4d0312;
+  --color-error-900: #2e0209;
+  --color-error-950: #170104;
 
   /* Border Radius */
   --radius-4xl: 2rem;
@@ -114,37 +114,37 @@
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Custom CSS Variables */
+/* Custom CSS Variables — ShareApp Brand */
 :root {
-  /* Ionic CSS Variables für Dark/Light Mode */
-  --ion-color-primary: #0ea5e9;
-  --ion-color-primary-rgb: 14, 165, 233;
+  /* Ionic overrides to match brand */
+  --ion-color-primary: #333333;
+  --ion-color-primary-rgb: 51,51,51;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #0c93cf;
-  --ion-color-primary-tint: #26aeea;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #1a1a1a;
+  --ion-color-primary-tint: #4c4c4c;
 
-  --ion-color-secondary: #d946ef;
-  --ion-color-secondary-rgb: 217, 70, 239;
+  --ion-color-secondary: #275243;
+  --ion-color-secondary-rgb: 39,82,67;
   --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #bf3ed3;
-  --ion-color-secondary-tint: #dd59f0;
+  --ion-color-secondary-contrast-rgb: 255,255,255;
+  --ion-color-secondary-shade: #1e3f34;
+  --ion-color-secondary-tint: #3d6556;
 
-  --ion-color-accent: #eab308;
-  --ion-color-accent-rgb: 234, 179, 8;
-  --ion-color-accent-contrast: #000000;
-  --ion-color-accent-contrast-rgb: 0, 0, 0;
-  --ion-color-accent-shade: #ce9e07;
-  --ion-color-accent-tint: #ecbc21;
+  --ion-color-accent: #D7EB80;
+  --ion-color-accent-rgb: 215,235,128;
+  --ion-color-accent-contrast: #333333;
+  --ion-color-accent-contrast-rgb: 51,51,51;
+  --ion-color-accent-shade: #BBCF65;
+  --ion-color-accent-tint: #e0ef99;
 
   /* Custom App Variables */
   --app-background: #ffffff;
-  --app-surface: #f8fafc;
-  --app-border: #e2e8f0;
-  --app-text-primary: #1e293b;
-  --app-text-secondary: #64748b;
-  --app-text-muted: #94a3b8;
+  --app-surface: #f8f8f6;
+  --app-border: #deded9;
+  --app-text-primary: #333333;
+  --app-text-secondary: #6c6c6c;
+  --app-text-muted: #bebeb9;
 
   /* Mapbox Variables */
   --mapbox-token: '';
@@ -157,35 +157,39 @@
 /* Dark Mode Variables */
 @media (prefers-color-scheme: dark) {
   :root {
-    --app-background: #0f172a;
-    --app-surface: #1e293b;
-    --app-border: #334155;
-    --app-text-primary: #f1f5f9;
-    --app-text-secondary: #cbd5e1;
-    --app-text-muted: #64748b;
+    --app-background: #1a1a1a;
+    --app-surface: #333333;
+    --app-border: #4c4c4c;
+    --app-text-primary: #f8f8f6;
+    --app-text-secondary: #bebeb9;
+    --app-text-muted: #6c6c6c;
   }
 }
 
 /* Custom Component Styles */
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
+    @apply bg-secondary-600 hover:bg-secondary-500 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-400 focus:ring-offset-2;
+  }
+
+  .btn-featured {
+    @apply bg-accent-300 hover:bg-accent-400 text-primary-600 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:ring-offset-2;
   }
 
   .btn-outline {
-    @apply border border-neutral-300 hover:border-neutral-400 text-neutral-700 hover:text-neutral-900 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply border border-primary-600 hover:bg-primary-50 text-primary-600 hover:text-primary-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2;
   }
 
   .card {
-    @apply bg-white dark:bg-neutral-800 rounded-xl shadow-soft border border-neutral-200 dark:border-neutral-700;
+    @apply bg-white dark:bg-neutral-700 rounded-xl shadow-soft border border-neutral-200 dark:border-neutral-600;
   }
 
   .input-field {
-    @apply w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100;
+    @apply w-full px-3 py-2 border border-neutral-300 dark:border-neutral-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-300 focus:border-transparent bg-white dark:bg-neutral-700 text-primary-600 dark:text-neutral-50;
   }
 
   .map-container {
@@ -193,15 +197,15 @@
   }
 
   .marker-tooltip {
-    @apply bg-white dark:bg-neutral-800 rounded-lg shadow-medium border border-neutral-200 dark:border-neutral-700 p-3 max-w-xs;
+    @apply bg-white dark:bg-neutral-700 rounded-lg shadow-medium border border-neutral-200 dark:border-neutral-600 p-3 max-w-xs;
   }
 
   .bottom-sheet {
-    @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-800 rounded-t-2xl shadow-large border-t border-neutral-200 dark:border-neutral-700 transform transition-transform duration-300 ease-out;
+    @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-700 rounded-t-2xl shadow-large border-t border-neutral-200 dark:border-neutral-600 transform transition-transform duration-300 ease-out;
   }
 
   .floating-button {
-    @apply fixed bottom-6 right-6 w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-large flex items-center justify-center transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply fixed bottom-6 right-6 w-14 h-14 bg-secondary-600 hover:bg-secondary-500 text-white rounded-full shadow-large flex items-center justify-center transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-300 focus:ring-offset-2;
   }
 }
 
