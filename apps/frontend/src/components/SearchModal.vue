@@ -231,6 +231,23 @@
                     </div>
                 </div>
 
+                <!-- Popular Tags -->
+                <div v-if="popularTags.length > 0" class="mb-6">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                        {{ t('search_tags.title') }}
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            v-for="tag in popularTags"
+                            :key="typeof tag === 'string' ? tag : tag.tag || tag.id"
+                            class="px-3 py-1.5 rounded-full text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
+                            @click="selectTag(tag)"
+                        >
+                            {{ typeof tag === 'string' ? tag : tag.tag || tag.name }}
+                        </button>
+                    </div>
+                </div>
+
                 <div class="text-center py-8">
                     <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
                     <h3 class="text-lg font-medium text-gray-600 mb-2">
@@ -286,6 +303,7 @@ import { useI18n } from 'vue-i18n';
 import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
 import LocationCard from './LocationCard.vue';
+import apiCall from '../composables/apiCall';
 
 // Props
 const props = defineProps({
@@ -324,6 +342,34 @@ const selectedCategoryObj = ref(null);
 const searchMode = ref('external'); // 'local' oder 'external'
 const mapboxResults = ref([]);
 const isMapboxSearching = ref(false);
+
+// Popular Tags
+const popularTags = ref([])
+const isLoadingTags = ref(false)
+
+async function fetchPopularTags() {
+    if (popularTags.value.length > 0) return
+    isLoadingTags.value = true
+    try {
+        const response = await apiCall('search/tags', { method: 'GET' })
+        if (response?.data) {
+            popularTags.value = response.data
+        } else if (Array.isArray(response)) {
+            popularTags.value = response
+        }
+    } catch {
+        // Fail silently
+    } finally {
+        isLoadingTags.value = false
+    }
+}
+
+function selectTag(tag) {
+    const tagText = typeof tag === 'string' ? tag : tag.tag || tag.name || ''
+    if (!tagText) return
+    searchQuery.value = tagText
+    performSearch()
+}
 
 // Mapbox API Token
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
@@ -550,6 +596,7 @@ const handleClickOutside = (event) => {
 // Load
 onMounted(async() => {
     document.addEventListener('click', handleClickOutside);
+    fetchPopularTags();
 });
 
 onUnmounted(() => {
