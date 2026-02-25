@@ -44,6 +44,23 @@
             </ion-button>
         </div>
 
+        <!-- Filter Chips -->
+        <div
+            v-if="activeFilterChips.length > 0"
+            class="fixed top-[calc(var(--ion-statusbar-padding)+5.5rem)] left-2 right-2 z-50
+            flex flex-wrap gap-1.5"
+        >
+            <ion-chip
+                v-for="chip in activeFilterChips"
+                :key="chip.key"
+                class="blur-bg-light text-xs"
+                @click="removeFilter(chip)"
+            >
+                <ion-label>{{ chip.label }}</ion-label>
+                <ion-icon :icon="closeCircle" />
+            </ion-chip>
+        </div>
+
         <mapbox-map
             :accessToken="mapboxToken"
             :zoom="zoom"
@@ -190,8 +207,8 @@ import { point } from '@turf/helpers';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { MapboxMap, MapboxMarker, MapboxGeogeometryCircle } from 'vue-mapbox-ts';
-import { IonItem, IonInput, IonIcon, IonButton } from '@ionic/vue';
-import { navigate, searchOutline, funnelOutline, heartOutline, addOutline } from 'ionicons/icons';
+import { IonItem, IonInput, IonIcon, IonButton, IonChip, IonLabel } from '@ionic/vue';
+import { navigate, searchOutline, funnelOutline, heartOutline, addOutline, closeCircle } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
@@ -221,6 +238,43 @@ const userStore = useUserStore();
 const { filterState, filteredLocations } = storeToRefs(locationsStore);
 
 const isAuthenticated = computed(() => userStore.authenticated);
+
+const activeFilterChips = computed(() => {
+    const chips = []
+
+    if (filterState.value.categories && filterState.value.categories.length > 0) {
+        const allCategories = locationsStore.categories || []
+        filterState.value.categories.forEach((catId) => {
+            const cat = allCategories.find((c) => c.id === catId)
+            chips.push({
+                key: `cat-${catId}`,
+                type: 'category',
+                value: catId,
+                label: cat ? cat.name : catId,
+            })
+        })
+    }
+
+    if (filterState.value.radius && filterState.value.radius > 0) {
+        chips.push({
+            key: 'radius',
+            type: 'radius',
+            value: filterState.value.radius,
+            label: `< ${filterState.value.radius}${t('radius.unit')}`,
+        })
+    }
+
+    return chips
+})
+
+const removeFilter = (chip) => {
+    if (chip.type === 'category') {
+        const updated = filterState.value.categories.filter((id) => id !== chip.value)
+        locationsStore.applyFilters({ ...filterState.value, categories: updated })
+    } else if (chip.type === 'radius') {
+        locationsStore.applyFilters({ ...filterState.value, radius: 0 })
+    }
+}
 
 const defaultCenter = [13.354336, 52.477697];
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
