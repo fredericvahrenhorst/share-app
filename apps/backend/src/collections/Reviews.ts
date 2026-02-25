@@ -6,6 +6,7 @@ import type {
 } from 'payload'
 
 import { adminOnlyFieldUpdate, isAdminOrOwner, isAuthenticated } from '../accessControl'
+import { onReviewCreated, onReviewDeleted } from '../hooks/communityHooks'
 
 const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, req }) => {
   if (req?.user?.id && !data.user) {
@@ -47,12 +48,24 @@ const updateLocationStats = async (req: any, locationId: string | number) => {
 const afterChangeHook: CollectionAfterChangeHook = async ({ doc, req, operation }) => {
   const locationId = typeof doc.location === 'object' ? doc.location.id : doc.location
   await updateLocationStats(req, locationId)
+  if (operation === 'create') {
+    try {
+      await onReviewCreated(req.payload, doc)
+    } catch (e) {
+      console.error('Community hook error (review create):', e)
+    }
+  }
   return doc
 }
 
 const afterDeleteHook: CollectionAfterDeleteHook = async ({ doc, req }) => {
   const locationId = typeof doc.location === 'object' ? doc.location.id : doc.location
   await updateLocationStats(req, locationId)
+  try {
+    await onReviewDeleted(req.payload, doc)
+  } catch (e) {
+    console.error('Community hook error (review delete):', e)
+  }
   return doc
 }
 
@@ -111,6 +124,22 @@ export const Reviews: CollectionConfig = {
         { label: 'Gesperrt', value: 'blocked' },
       ],
       defaultValue: 'active',
+    },
+    {
+      name: 'upvotes',
+      type: 'number',
+      label: 'Hilfreich',
+      defaultValue: 0,
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
+    },
+    {
+      name: 'downvotes',
+      type: 'number',
+      label: 'Nicht hilfreich',
+      defaultValue: 0,
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
     },
     {
       name: 'createdAt',

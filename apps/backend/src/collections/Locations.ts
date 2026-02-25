@@ -1,6 +1,18 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, CollectionAfterChangeHook } from 'payload'
 
 import { adminOnlyFieldUpdate, isAdmin, isAdminOrCreator, isAuthenticated } from '../accessControl'
+import { onLocationCreated } from '../hooks/communityHooks'
+
+const locationAfterChangeHook: CollectionAfterChangeHook = async ({ doc, req, operation }) => {
+  if (operation === 'create') {
+    try {
+      await onLocationCreated(req.payload, doc)
+    } catch (e) {
+      console.error('Community hook error (location):', e)
+    }
+  }
+  return doc
+}
 
 export const Locations: CollectionConfig = {
   slug: 'locations',
@@ -12,6 +24,9 @@ export const Locations: CollectionConfig = {
     create: isAuthenticated,
     update: isAdminOrCreator('locations', 'createdBy'),
     delete: isAdmin,
+  },
+  hooks: {
+    afterChange: [locationAfterChangeHook],
   },
   fields: [
     {
@@ -220,6 +235,14 @@ export const Locations: CollectionConfig = {
       name: 'reviewCount',
       type: 'number',
       label: 'Anzahl Bewertungen',
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
+      defaultValue: 0,
+    },
+    {
+      name: 'confirmationCount',
+      type: 'number',
+      label: 'Bestätigungen',
       admin: { readOnly: true },
       access: { update: adminOnlyFieldUpdate },
       defaultValue: 0,
