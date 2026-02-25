@@ -15,9 +15,13 @@ import { Locations } from './collections/Locations'
 import { Reviews } from './collections/Reviews'
 import { Favorites } from './collections/Favorites'
 import { Reports } from './collections/Reports'
+import { ReviewVotes } from './collections/ReviewVotes'
+import { Activities } from './collections/Activities'
+import { LocationConfirmations } from './collections/LocationConfirmations'
 
 import { locationsEndpoint } from './endpoints/locations'
 import { searchEndpoint } from './endpoints/search'
+import { activityFeedEndpoint } from './endpoints/activityFeed'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -36,7 +40,10 @@ export default buildConfig({
     Locations,
     Reviews,
     Favorites,
-    Reports
+    Reports,
+    ReviewVotes,
+    Activities,
+    LocationConfirmations,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -53,7 +60,7 @@ export default buildConfig({
   ],
   cors: [
     process.env.FRONTEND_URL || 'http://localhost:8100',
-    'http://localhost:5173',
+    '[REDACTED]',
     'http://localhost:8100',
     'http://localhost:3000',
     'http://192.168.1.155:5173',
@@ -61,7 +68,7 @@ export default buildConfig({
   ],
   csrf: [
     process.env.FRONTEND_URL || 'http://localhost:8100',
-    'http://localhost:5173',
+    '[REDACTED]',
     'http://localhost:8100',
     'http://localhost:3000',
     'http://192.168.1.155:5173',
@@ -69,7 +76,8 @@ export default buildConfig({
   ],
   endpoints: [
     locationsEndpoint,
-    searchEndpoint
+    searchEndpoint,
+    activityFeedEndpoint,
   ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_FROM_ADDRESS || 'info@shareapp.local',

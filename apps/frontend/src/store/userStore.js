@@ -129,6 +129,25 @@ export const useUserStore = defineStore('user', {
                 this.clearUserData();
             }
         },
+        async validateAuth() {
+            if (!this.token || !this.userId) {
+                this.clearUserData()
+                return false
+            }
+            try {
+                const response = await apiCall('users/me', { method: 'GET' })
+                if (response?.user) {
+                    this.user = response.user
+                    this.authenticated = true
+                    return true
+                }
+                this.clearUserData()
+                return false
+            } catch (err) {
+                this.clearUserData()
+                return false
+            }
+        },
         async getUserData() {
             const response = await apiCall(`users/${this.userId}?depth=1`, {
                 method: 'GET',
