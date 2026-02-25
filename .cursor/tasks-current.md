@@ -178,9 +178,9 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
 - [~] **4.5.1** Bestehende Lokalisierung vervollständigen
   - Einige Strings sind noch hardcoded (z. B. in Stores, Error-Messages)
   - Alle UI-Strings durch `t('...')` ersetzen
-- [ ] **4.5.2** Englisch als zweite Sprache
-  - `en.json` anlegen, alle Keys übersetzen
-  - Sprachauswahl in SettingsModal (aktuell fehlt)
+- [x] **4.5.2** Englisch als zweite Sprache
+  - `en.json` mit ~170 übersetzten Keys; Sprachauswahl-Dropdown in SettingsModal
+  - Browser-Locale-Erkennung + localStorage-Persistenz; sofortiger Sprachwechsel ohne Reload
 - [ ] **4.5.3** Automatische Spracherkennung
   - Browser-Locale erkennen und als Default setzen
 
@@ -235,9 +235,9 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
 
 ### 5.3 DSGVO & Datenschutz
 
-- [ ] **5.3.1** Account-Löschung
-  - Nutzer kann eigenen Account + alle Daten löschen (DSGVO Art. 17)
-  - Cascade: Favoriten, Reviews, Reports, Locations (oder anonymisieren)
+- [x] **5.3.1** Account-Löschung
+  - DELETE /api/users/delete-account mit Cascade-Löschung (Favorites, Reviews, Votes, Reports, Confirmations, Activities)
+  - Locations werden anonymisiert (createdBy → null); Bestätigungsdialog in ProfilPage
 - [ ] **5.3.2** Datenexport
   - Nutzer kann eigene Daten als JSON/CSV herunterladen (DSGVO Art. 20)
   - Endpoint: `/api/users/:id/export`
