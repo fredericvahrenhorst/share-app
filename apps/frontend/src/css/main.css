@@ -6,6 +6,9 @@
 @import './variables.css';
 @import './helper.css';
 @import './accessibility.css';
+@import './detail-styles/modern.css';
+@import './detail-styles/bold.css';
+@import './detail-styles/blur.css';
 
 @theme {
   /* Font Families */

@@ -1,5 +1,6 @@
 <template>
     <ion-app role="application" :lang="locale">
+        <StyleSwitcher />
         <ion-router-outlet />
         <ConsentBanner v-if="appStore.walkthroughVisited" />
     </ion-app>
@@ -13,6 +14,7 @@ import { useI18n } from 'vue-i18n';
 import { useUserStore } from './store/userStore';
 import { useAppStore } from './store/appStore';
 import ConsentBanner from './components/ConsentBanner.vue';
+import StyleSwitcher from './components/StyleSwitcher.vue';
 
 const { locale } = useI18n();
 const userStore = useUserStore();
