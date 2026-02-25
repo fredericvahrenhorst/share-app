@@ -1,141 +1,449 @@
-/* Style: Bold — Font: Space Grotesk */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/*
+ * ShareApp Design System — Bold
+ * Body: Fira Sans 400 | Headlines: Alegreya Sans 800
+ * Brand: #333333 (Primary), #275243 (Secondary), #D7EB80 (Featured)
+ */
 
-.style-bold .popupLocation {
-    --font-detail: 'Space Grotesk', system-ui, sans-serif;
+/* ═══════════════════════════════════════════
+   1. TYPOGRAPHY
+   ═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@700;800;900&family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+    --font-body: 'Fira Sans', system-ui, sans-serif;
+    --font-heading: 'Alegreya Sans', system-ui, sans-serif;
 }
 
-.style-bold .popupLocation ion-toolbar {
+/* Global font base */
+body,
+ion-app,
+ion-content,
+ion-item,
+ion-label,
+ion-input,
+ion-textarea,
+ion-select,
+ion-toggle,
+ion-button,
+ion-chip,
+ion-note {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Headings — all use Alegreya Sans 800 */
+h1, h2, h3, h4, h5, h6,
+ion-title,
+.heading {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #333333;
+}
+
+h1, .text-2xl { font-size: 1.75rem; line-height: 1.15; }
+h2, .text-xl  { font-size: 1.375rem; line-height: 1.2; }
+h3, .text-lg  { font-size: 1.125rem; line-height: 1.25; }
+h4            { font-size: 1rem; line-height: 1.3; }
+
+/* Body text hierarchy */
+.text-body    { font-size: 0.9375rem; line-height: 1.5; color: #333333; }
+.text-caption { font-size: 0.8125rem; line-height: 1.4; color: #6c6c6c; }
+.text-micro   { font-size: 0.6875rem; line-height: 1.3; color: #bebeb9; }
+
+/* ═══════════════════════════════════════════
+   2. IONIC COMPONENT OVERRIDES
+   ═══════════════════════════════════════════ */
+
+/* Toolbar — dark header */
+ion-toolbar {
     --background: #333333;
     --color: #ffffff;
     --border-color: transparent;
-    font-family: var(--font-detail);
+    font-family: var(--font-body);
 }
 
-.style-bold .popupLocation ion-toolbar ion-icon {
-    color: #D7EB80;
-}
-
-.style-bold .popupLocation ion-content {
-    --background: #f8f8f6;
-    font-family: var(--font-detail);
-}
-
-.style-bold .popupLocation ion-title {
-    font-family: var(--font-detail);
-    font-weight: 700;
+ion-toolbar ion-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
     font-size: 1.25rem;
     letter-spacing: -0.02em;
     color: #ffffff;
 }
 
-/* Image area: no border-radius, full-bleed feel */
-.style-bold .popupLocation .relative.mb-4 .rounded-xl {
-    border-radius: 0;
-    margin-left: -1rem;
-    margin-right: -1rem;
-}
-
-.style-bold .popupLocation .relative.mb-4 img {
-    border-radius: 0;
-}
-
-/* Section titles: big and bold */
-.style-bold .popupLocation h3 {
-    font-family: var(--font-detail);
-    font-weight: 700;
-    font-size: 1rem;
-    color: #333333;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.25rem;
-    border-bottom: 3px solid #D7EB80;
-    display: inline-block;
-}
-
-/* Info cards: bold colored blocks */
-.style-bold .popupLocation .bg-blue-50 {
-    background: #275243;
-    color: #ffffff;
-    border-radius: 0.5rem;
-    padding: 1rem;
-}
-
-.style-bold .popupLocation .bg-blue-50 .font-medium,
-.style-bold .popupLocation .bg-blue-50 .text-gray-700 {
-    color: #ffffff;
-}
-
-.style-bold .popupLocation .bg-blue-50 ion-icon {
+ion-toolbar ion-icon {
     color: #D7EB80;
 }
 
-.style-bold .popupLocation .bg-purple-50 {
-    background: #333333;
-    color: #ffffff;
-    border-radius: 0.5rem;
-    padding: 1rem;
+ion-toolbar ion-button {
+    --color: #D7EB80;
 }
 
-.style-bold .popupLocation .bg-purple-50 .font-medium,
-.style-bold .popupLocation .bg-purple-50 .text-gray-700 {
-    color: #ffffff;
+ion-toolbar ion-back-button {
+    --color: #D7EB80;
 }
 
-.style-bold .popupLocation .bg-purple-50 ion-icon {
-    color: #D7EB80;
+/* Content background */
+ion-content {
+    --background: #f8f8f6;
 }
 
-/* Tags: filled chips with brand color */
-.style-bold .popupLocation .bg-gray-100 {
-    background: #D7EB80;
-    color: #333333;
+/* Tab bar */
+ion-tab-bar {
+    --background: #333333;
+    --border: none;
+    border-top: 3px solid #D7EB80;
+}
+
+ion-tab-button {
+    --color: #bebeb9;
+    --color-selected: #D7EB80;
+    font-family: var(--font-body);
+    font-weight: 500;
+    background: transparent !important;
+}
+
+ion-tab-button.tab-selected {
+    --color: #D7EB80;
+}
+
+ion-tab-button ion-icon {
+    background: transparent !important;
+}
+
+ion-tab-button ion-label {
+    font-family: var(--font-body);
     font-weight: 600;
-    border-radius: 0.25rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
-/* Rating: use featured color */
-.style-bold .popupLocation .text-yellow-400 {
-    color: #D7EB80;
-}
-
-/* Action buttons: chunky with featured color */
-.style-bold .popupLocation .border-t {
-    border-color: #deded9;
-    padding-top: 1rem;
-}
-
-.style-bold .popupLocation ion-button[fill="clear"] {
-    --color: #333333;
-    font-family: var(--font-detail);
+/* Buttons */
+ion-button {
+    --border-radius: 0.5rem;
+    font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
 }
 
-.style-bold .popupLocation ion-button[fill="solid"] {
+ion-button[fill="solid"],
+ion-button:not([fill]) {
     --background: #D7EB80;
     --background-hover: #BBCF65;
+    --background-activated: #A1B353;
     --color: #333333;
-    --border-radius: 0.5rem;
-    font-family: var(--font-detail);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
 
-/* Reviews: bold divider */
-.style-bold .popupLocation .border-b {
-    border-color: #deded9;
-    border-width: 2px;
+ion-button[fill="outline"] {
+    --border-color: #333333;
+    --color: #333333;
+    --border-width: 2px;
 }
 
-/* Community confirmation: lime accent */
-.style-bold .popupLocation .bg-amber-50 {
+ion-button[fill="clear"] {
+    --color: #275243;
+    font-weight: 600;
+}
+
+ion-button[color="danger"] {
+    --background: #B90A32;
+    --color: #ffffff;
+}
+
+ion-button[color="danger"][fill="outline"] {
+    --border-color: #B90A32;
+    --color: #B90A32;
+    --background: transparent;
+}
+
+/* Items / Lists */
+ion-item {
+    --background: #ffffff;
+    --border-color: #f0f0eb;
+    font-family: var(--font-body);
+}
+
+ion-list {
+    background: transparent;
+}
+
+/* Modals */
+ion-modal {
+    --background: #f8f8f6;
+}
+
+ion-modal ion-toolbar {
+    --background: #333333;
+}
+
+/* Chips */
+ion-chip {
+    --background: #D7EB80;
+    --color: #333333;
+    font-family: var(--font-body);
+    font-weight: 600;
+    border-radius: 0.25rem;
+}
+
+/* Toggle */
+ion-toggle {
+    --track-background-checked: #275243;
+}
+
+/* ═══════════════════════════════════════════
+   3. SECTION HEADERS — Lime Underline Pattern
+   ═══════════════════════════════════════════ */
+
+.section-title,
+ion-content h3.font-semibold,
+ion-content h3 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1rem;
+    color: #333333;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 3px solid #D7EB80;
+    display: inline-block;
+}
+
+/* ═══════════════════════════════════════════
+   4. CARDS & SURFACES
+   ═══════════════════════════════════════════ */
+
+/* Info cards: filled brand blocks */
+.info-card-primary,
+.bg-blue-50 {
+    background: #275243 !important;
+    color: #ffffff !important;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: none !important;
+}
+
+.info-card-primary ion-icon,
+.bg-blue-50 ion-icon {
+    color: #D7EB80 !important;
+}
+
+.info-card-primary .font-medium,
+.info-card-primary .text-gray-700,
+.bg-blue-50 .font-medium,
+.bg-blue-50 .text-gray-700 {
+    color: #ffffff !important;
+}
+
+.info-card-secondary,
+.bg-purple-50 {
+    background: #333333 !important;
+    color: #ffffff !important;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: none !important;
+}
+
+.info-card-secondary ion-icon,
+.bg-purple-50 ion-icon {
+    color: #D7EB80 !important;
+}
+
+.info-card-secondary .font-medium,
+.info-card-secondary .text-gray-700,
+.bg-purple-50 .font-medium,
+.bg-purple-50 .text-gray-700 {
+    color: #ffffff !important;
+}
+
+/* Tags */
+.tag,
+.rounded-full.bg-gray-100 {
     background: #D7EB80;
-    border-color: #A1B353;
     color: #333333;
+    font-weight: 600;
+    font-family: var(--font-body);
+    border-radius: 0.25rem;
 }
 
-.style-bold .popupLocation .text-amber-800,
-.style-bold .popupLocation .text-amber-600 {
-    color: #333333;
+/* Stat cards (profile) */
+.bg-gray-100.rounded-xl {
+    background: #ffffff;
+    border: 2px solid #f0f0eb;
+}
+
+/* Community confirmation banner */
+.bg-amber-50 {
+    background: #D7EB80 !important;
+    border-color: #A1B353 !important;
+    color: #333333 !important;
+}
+
+.text-amber-800,
+.text-amber-600 {
+    color: #333333 !important;
+}
+
+/* ═══════════════════════════════════════════
+   5. RATING & STARS
+   ═══════════════════════════════════════════ */
+
+.text-yellow-400 {
+    color: #D7EB80 !important;
+}
+
+/* ═══════════════════════════════════════════
+   6. DIVIDERS & BORDERS
+   ═══════════════════════════════════════════ */
+
+.border-t,
+.border-b {
+    border-color: #deded9;
+}
+
+.border-gray-100,
+.border-gray-200 {
+    border-color: #f0f0eb;
+}
+
+/* ═══════════════════════════════════════════
+   7. IMAGES — Full-bleed in detail views
+   ═══════════════════════════════════════════ */
+
+.popupLocation .relative.mb-4 .rounded-xl {
+    border-radius: 0;
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+.popupLocation .relative.mb-4 img {
+    border-radius: 0;
+}
+
+/* ═══════════════════════════════════════════
+   8. AUTH PAGES
+   ═══════════════════════════════════════════ */
+
+ion-page > ion-content {
+    --background: #f8f8f6;
+}
+
+/* ═══════════════════════════════════════════
+   9. ONBOARDING
+   ═══════════════════════════════════════════ */
+
+.fixed.inset-0.bg-white {
+    background: #f8f8f6 !important;
+}
+
+/* ═══════════════════════════════════════════
+   10. CATEGORY PAGE — Grid cards
+   ═══════════════════════════════════════════ */
+
+.bg-white.rounded-xl.shadow-sm,
+.bg-white.rounded-xl {
+    border: 2px solid #f0f0eb;
+    box-shadow: none;
+}
+
+/* ═══════════════════════════════════════════
+   11. BLUR BACKGROUNDS override → solid
+   ═══════════════════════════════════════════ */
+
+.blur-bg,
+.blur-bg-light {
+    background: #333333 !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* ═══════════════════════════════════════════
+   12. FILTER MODAL
+   ═══════════════════════════════════════════ */
+
+.filter-modal ion-toolbar {
+    --background: #333333;
+}
+
+.filter-modal ion-content {
+    --background: #f8f8f6;
+}
+
+/* ═══════════════════════════════════════════
+   13. SEARCH MODAL
+   ═══════════════════════════════════════════ */
+
+ion-modal ion-content {
+    --background: #f8f8f6;
+}
+
+/* ═══════════════════════════════════════════
+   14. PROFILE PAGE — Reputation bar colors
+   ═══════════════════════════════════════════ */
+
+.bg-green-100 { background: rgba(0, 128, 9, 0.1) !important; }
+.text-green-700 { color: #008009 !important; }
+.bg-purple-100 { background: rgba(39, 82, 67, 0.1) !important; }
+.text-purple-700 { color: #275243 !important; }
+.bg-yellow-100 { background: rgba(215, 235, 128, 0.2) !important; }
+.text-yellow-700 { color: #333333 !important; }
+
+/* ═══════════════════════════════════════════
+   15. VOTE BUTTONS
+   ═══════════════════════════════════════════ */
+
+.bg-green-100.text-green-700 {
+    background: rgba(0, 128, 9, 0.12) !important;
+    color: #008009 !important;
+}
+
+.bg-red-100.text-red-700 {
+    background: rgba(185, 10, 50, 0.12) !important;
+    color: #B90A32 !important;
+}
+
+/* ═══════════════════════════════════════════
+   16. GRADIENT OVERRIDES — use brand
+   ═══════════════════════════════════════════ */
+
+.from-indigo-100,
+.to-purple-100,
+.from-purple-100,
+.to-blue-100,
+.bg-gradient-to-br {
+    background: #f0f0eb !important;
+}
+
+.bg-gradient-purple-blue {
+    background: #D7EB80 !important;
+}
+
+/* Active tab indicator */
+.from-purple-100.to-blue-100.bg-gradient-to-br {
+    background: transparent !important;
+}
+
+/* ═══════════════════════════════════════════
+   17. LINK COLORS
+   ═══════════════════════════════════════════ */
+
+a.text-blue-600,
+.text-blue-600 {
+    color: #275243 !important;
+}
+
+a.text-blue-600:hover,
+.text-blue-600:hover {
+    color: #1e3f34 !important;
+}
+
+/* ═══════════════════════════════════════════
+   18. FOCUS STATES — brand accent
+   ═══════════════════════════════════════════ */
+
+:focus-visible {
+    outline-color: #D7EB80;
 }

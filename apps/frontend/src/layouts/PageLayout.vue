@@ -4,30 +4,21 @@
             <ion-router-outlet></ion-router-outlet>
             <ion-tab-bar
                 slot="bottom"
-                class="fixed bottom-0 left-0 right-0 w-auto z-50 shadow-lg h-18 p-1.5 pb-6 gap-2
-                blur-bg-light text-light-gray-96 !rounded-none"
+                class="fixed bottom-0 left-0 right-0 w-auto z-50 h-18 p-1.5 pb-6 gap-2 !rounded-none"
             >
                 <ion-tab-button
                     v-for="tab in tabs"
                     :key="tab.tab"
                     :tab="tab.tab"
                     :href="tab.href"
-                    class="flex flex-col items-center p-1 rounded-2xl transition-all duration-300"
-                    :class="{
-                        'from-purple-100 to-blue-100 bg-gradient-to-br': $route.path === tab.href,
-                        'bg-gray-100': $route.path !== tab.href
-                    }"
+                    class="flex flex-col items-center p-1 rounded-lg transition-all duration-200"
                 >
                     <ion-icon
                         aria-hidden="true"
                         :icon="tab.icon"
-                        class="transition-colors duration-200 rounded-full p-2 h-4.5 w-4.5 mb-1"
-                        :class="{
-                            'bg-gradient-purple-blue ': $route.path === tab.href,
-                            'bg-gray-100 text-gray-500 hover:bg-gray-200': $route.path !== tab.href
-                        }"
+                        class="transition-colors duration-200 h-5 w-5 mb-0.5"
                     />
-                    <ion-label class="text-xs font-medium">{{ tab.label }}</ion-label>
+                    <ion-label>{{ tab.label }}</ion-label>
                 </ion-tab-button>
             </ion-tab-bar>
         </ion-tabs>
