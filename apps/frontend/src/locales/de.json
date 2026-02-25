@@ -224,5 +224,16 @@
     "searchHistory": {
         "title": "Letzte Suchen",
         "clear": "Verlauf löschen"
+    },
+    "consent": {
+        "title": "Kartenanzeige & Datenschutz",
+        "text": "Diese App nutzt Mapbox für die Kartenanzeige. Dabei werden Kartenkacheln von externen Servern geladen und deine IP-Adresse übertragen. Ohne Mapbox kann die Karte nicht angezeigt werden.",
+        "accept": "Akzeptieren & Weiter",
+        "learn_more": "Mehr erfahren"
+    },
+    "search_tags": {
+        "title": "Populäre Tags",
+        "loading": "Tags werden geladen…",
+        "error": "Tags konnten nicht geladen werden"
     }
 }

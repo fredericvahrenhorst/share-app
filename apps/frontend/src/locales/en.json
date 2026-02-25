@@ -224,5 +224,16 @@
     "searchHistory": {
         "title": "Recent Searches",
         "clear": "Clear History"
+    },
+    "consent": {
+        "title": "Map Display & Privacy",
+        "text": "This app uses Mapbox for map display. Map tiles are loaded from external servers and your IP address is transmitted. Without Mapbox, the map cannot be displayed.",
+        "accept": "Accept & Continue",
+        "learn_more": "Learn more"
+    },
+    "search_tags": {
+        "title": "Popular Tags",
+        "loading": "Loading tags…",
+        "error": "Could not load tags"
     }
 }

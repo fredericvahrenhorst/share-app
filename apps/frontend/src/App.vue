@@ -1,6 +1,7 @@
 <template>
     <ion-app>
         <ion-router-outlet />
+        <ConsentBanner v-if="appStore.walkthroughVisited" />
     </ion-app>
 </template>
 
@@ -9,8 +10,11 @@ import { onMounted } from 'vue';
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useUserStore } from './store/userStore';
+import { useAppStore } from './store/appStore';
+import ConsentBanner from './components/ConsentBanner.vue';
 
 const userStore = useUserStore();
+const appStore = useAppStore();
 
 const isNative = () => {
     return !!(window && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
