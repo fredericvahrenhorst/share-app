@@ -80,6 +80,42 @@
                         </ion-item>
                     </ion-list>
 
+                    <!-- Reputation & Badges -->
+                    <div v-if="user?.reputation !== undefined" class="mb-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-semibold text-gray-800">{{ t('profile.reputation') }}</h3>
+                            <span
+                                class="text-sm font-medium px-3 py-1 rounded-full"
+                                :class="reputationLevelClass"
+                            >
+                                {{ reputationLevelLabel }}
+                            </span>
+                        </div>
+                        <div class="bg-gray-100 rounded-full h-2 mb-2">
+                            <div
+                                class="h-2 rounded-full transition-all duration-500"
+                                :class="reputationBarClass"
+                                :style="{ width: reputationBarWidth + '%' }"
+                            />
+                        </div>
+                        <p class="text-xs text-gray-500 text-right">{{ user.reputation || 0 }} {{ t('profile.points') }}</p>
+                    </div>
+
+                    <div v-if="userBadges.length > 0" class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ t('profile.badges') }}</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <div
+                                v-for="badge in userBadges"
+                                :key="badge.badge"
+                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm"
+                                :class="badgeClass(badge.badge)"
+                            >
+                                <span>{{ badgeIcon(badge.badge) }}</span>
+                                <span>{{ badgeLabel(badge.badge) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Statistiken -->
                     <div class="mb-6">
                         <h3 class="text-lg font-semibold mb-4 text-gray-800">{{ t('profile.activity') }}</h3>
@@ -91,19 +127,25 @@
                                 </span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
-                                <span class="text-2xl font-bold text-primary">–</span>
+                                <span class="text-2xl font-bold text-primary">{{ user?.stats?.locationsCreated || 0 }}</span>
                                 <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
-                                    {{ t('profile.visited_count') }}
+                                    {{ t('profile.locations_count') }}
                                 </span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
-                                <span class="text-2xl font-bold text-primary">–</span>
+                                <span class="text-2xl font-bold text-primary">{{ user?.stats?.reviewsWritten || 0 }}</span>
                                 <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
                                     {{ t('profile.reviews_count') }}
                                 </span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Community Feed -->
+                    <ion-button expand="block" fill="outline" class="mb-4" @click="goToActivityFeed">
+                        <ion-icon :icon="peopleOutline" slot="start" />
+                        {{ t('profile.activity_feed') }}
+                    </ion-button>
 
                     <!-- Abmelden -->
                     <ion-button expand="block" fill="outline" color="danger" @click="handleLogout">
@@ -141,6 +183,7 @@ import {
     logOut,
     personCircleOutline,
     createOutline,
+    peopleOutline,
 } from 'ionicons/icons'
 import { modalController } from '@ionic/vue'
 import EditProfileModal from '../components/EditProfileModal.vue'
@@ -165,6 +208,70 @@ const { favorites } = storeToRefs(favoritesStore)
 const favoritesCount = computed(() => favorites.value?.length ?? 0)
 
 const avatarUrl = computed(() => useAvatarUrl(user.value?.avatar))
+
+const REPUTATION_LEVEL_LABELS = {
+    newcomer: 'Neuling',
+    active: 'Aktiver Teiler',
+    hero: 'Community-Held',
+    legend: 'Legende',
+}
+
+const reputationLevelLabel = computed(() =>
+    REPUTATION_LEVEL_LABELS[user.value?.reputationLevel] || REPUTATION_LEVEL_LABELS.newcomer
+)
+
+const reputationLevelClass = computed(() => {
+    const level = user.value?.reputationLevel || 'newcomer'
+    return {
+        newcomer: 'bg-gray-100 text-gray-700',
+        active: 'bg-green-100 text-green-700',
+        hero: 'bg-purple-100 text-purple-700',
+        legend: 'bg-yellow-100 text-yellow-700',
+    }[level] || 'bg-gray-100 text-gray-700'
+})
+
+const reputationBarClass = computed(() => {
+    const level = user.value?.reputationLevel || 'newcomer'
+    return {
+        newcomer: 'bg-gray-400',
+        active: 'bg-green-500',
+        hero: 'bg-purple-500',
+        legend: 'bg-yellow-500',
+    }[level] || 'bg-gray-400'
+})
+
+const reputationBarWidth = computed(() => {
+    const rep = user.value?.reputation || 0
+    if (rep >= 100) return 100
+    if (rep >= 50) return 75
+    if (rep >= 15) return 45
+    return Math.min((rep / 15) * 30, 30)
+})
+
+const userBadges = computed(() => user.value?.badges || [])
+
+const BADGE_CONFIG = {
+    creator: { label: 'Ersteller', icon: '🏗️', class: 'bg-blue-100 text-blue-700' },
+    verified: { label: 'Verifiziert', icon: '✅', class: 'bg-green-100 text-green-700' },
+    helper: { label: 'Community-Helfer', icon: '🤝', class: 'bg-orange-100 text-orange-700' },
+    moderator: { label: 'Moderator', icon: '🛡️', class: 'bg-red-100 text-red-700' },
+}
+
+function badgeLabel(badge) {
+    return BADGE_CONFIG[badge]?.label || badge
+}
+
+function badgeIcon(badge) {
+    return BADGE_CONFIG[badge]?.icon || '🏅'
+}
+
+function badgeClass(badge) {
+    return BADGE_CONFIG[badge]?.class || 'bg-gray-100 text-gray-700'
+}
+
+function goToActivityFeed() {
+    router.push({ name: 'Activity' })
+}
 
 function goToLogin() {
     router.push({ name: 'Login', query: { redirect: '/profil' } })

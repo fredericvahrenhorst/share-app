@@ -160,8 +160,12 @@
         "about": "Über die App",
         "activity": "Ihre Aktivität",
         "favorites_count": "Favoriten",
+        "locations_count": "Erstellt",
         "visited_count": "Besucht",
         "reviews_count": "Bewertungen",
+        "reputation": "Reputation",
+        "points": "Punkte",
+        "badges": "Badges",
         "in_development": "In Entwicklung",
         "edit_title": "Profil bearbeiten",
         "edit_name": "Name",
@@ -170,7 +174,15 @@
         "edit_avatar_hint": "Tippen zum Ändern des Profilbilds",
         "edit_name_required": "Bitte gib einen Namen ein.",
         "edit_success": "Profil gespeichert.",
-        "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen."
+        "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+        "activity_feed": "Community-Feed"
+    },
+    "activity": {
+        "title": "Community-Feed",
+        "loading": "Aktivitäten laden…",
+        "empty_title": "Noch keine Aktivitäten",
+        "empty_description": "Hier erscheinen bald Neuigkeiten aus der Community.",
+        "load_more": "Mehr laden"
     },
     "locationDetail": {
         "reviews_coming_soon": "Bewertungen kommen bald",

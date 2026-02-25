@@ -1,6 +1,18 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
 import { adminOnlyFieldUpdate, isAdmin, isAdminOrOwner, isAuthenticated } from '../accessControl'
+import { onFavoriteChanged } from '../hooks/communityHooks'
+
+const favoriteAfterChangeHook: CollectionAfterChangeHook = async ({ doc, req }) => {
+  const userId = typeof doc.user === 'object' ? doc.user?.id : doc.user
+  try { await onFavoriteChanged(req.payload, userId) } catch (e) { console.error('Community hook error (fav):', e) }
+  return doc
+}
+const favoriteAfterDeleteHook: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  const userId = typeof doc.user === 'object' ? doc.user?.id : doc.user
+  try { await onFavoriteChanged(req.payload, userId) } catch (e) { console.error('Community hook error (fav del):', e) }
+  return doc
+}
 
 export const Favorites: CollectionConfig = {
   slug: 'favorites',
@@ -16,6 +28,10 @@ export const Favorites: CollectionConfig = {
     create: isAuthenticated,
     update: isAdminOrOwner('favorites', 'user'),
     delete: isAdminOrOwner('favorites', 'user'),
+  },
+  hooks: {
+    afterChange: [favoriteAfterChangeHook],
+    afterDelete: [favoriteAfterDeleteHook],
   },
   fields: [
     {

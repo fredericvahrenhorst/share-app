@@ -197,8 +197,10 @@ import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
 import LocationFilter from './LocationFilter.vue';
 import AddLocationModal from './AddLocationModal.vue';
+import { toastController } from '@ionic/vue';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';
+import { useUserStore } from '../store/userStore';
 
 const props = defineProps({
     allLocations: {
@@ -215,7 +217,10 @@ const appStore = useAppStore();
 const { geo, mapGeo, radius, mapZoom } = storeToRefs(appStore);
 
 const locationsStore = useLocationsStore();
+const userStore = useUserStore();
 const { filterState, filteredLocations } = storeToRefs(locationsStore);
+
+const isAuthenticated = computed(() => userStore.authenticated);
 
 const defaultCenter = [13.354336, 52.477697];
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
@@ -224,7 +229,16 @@ const ready = ref(false);
 const isSearchModalOpen = ref(false);
 const isAddLocationModalOpen = ref(false);
 
-const goToAddLocation = () => {
+const goToAddLocation = async () => {
+    if (!isAuthenticated.value) {
+        const toast = await toastController.create({
+            message: 'Bitte melde dich an, um einen Standort hinzuzufügen.',
+            duration: 3000,
+            color: 'warning',
+        })
+        await toast.present()
+        return
+    }
     isAddLocationModalOpen.value = true;
 };
 

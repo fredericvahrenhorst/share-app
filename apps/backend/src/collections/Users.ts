@@ -131,6 +131,28 @@ export const Users: CollectionConfig = {
       ],
     },
     {
+      name: 'reputation',
+      type: 'number',
+      label: 'Reputation',
+      defaultValue: 0,
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
+    },
+    {
+      name: 'reputationLevel',
+      type: 'select',
+      label: 'Reputations-Level',
+      defaultValue: 'newcomer',
+      options: [
+        { label: 'Neuling', value: 'newcomer' },
+        { label: 'Aktiver Teiler', value: 'active' },
+        { label: 'Community-Held', value: 'hero' },
+        { label: 'Legende', value: 'legend' },
+      ],
+      admin: { readOnly: true },
+      access: { update: adminOnlyFieldUpdate },
+    },
+    {
       name: 'stats',
       type: 'group',
       label: 'Statistiken',
