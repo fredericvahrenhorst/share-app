@@ -1,0 +1,145 @@
+---
+description: Projektweite Coding Conventions (Formatierung, Linting, TypeScript, Benennung, Frontend/Backend)
+alwaysApply: true
+---
+
+## Ziel
+Einheitliche Coding Conventions für das gesamte Monorepo. Diese Regeln gelten bei jedem Prompt und für alle generierten Codevorschläge.
+
+## Grundprinzipien
+- Lesbarkeit vor Cleverness
+- Strikte Typisierung an öffentlichen APIs
+- Kleine, reine Funktionen mit Guard Clauses
+- Kein toter/auskommentierter Code
+- Fehler bewusst behandeln; keine swallowed errors
+
+## Formatierung (Prettier + EditorConfig)
+- Quelle der Wahrheit: Prettier + EditorConfig
+- Prettier:
+  - singleQuote: true
+  - trailingComma: all
+  - printWidth: 100
+  - semi: false
+- EditorConfig:
+  - 4 Leerzeichen Standard
+  - 2 Leerzeichen für JSON/YAML
+  - LF Zeilenenden, finale newline, trailing whitespace trimmen (außer Markdown)
+- Maximale Zeilenlänge: bei 100 umbrechen (auch wenn Lint 120 zulässt)
+- Nutze `pnpm format` für verbindliches Styling
+
+## Linting (ESLint)
+- Basis: Airbnb, plugin:vue/vue3-essential, eslint:recommended (siehe `apps/frontend/.eslintrc.cjs`)
+- Wichtige Regeln:
+  - 4-space indent (inkl. `vue/html-indent`)
+  - `max-len`: 120 (Prettier umbricht dennoch bei 100)
+  - `space-before-function-paren`: never
+  - `no-console`/`no-debugger`: in production warn/aus
+  - Ausnahmen aktiv: `no-underscore-dangle`, `one-var`, `no-plusplus`
+- Konflikte: Prettier gewinnt bei Stil, ESLint bei Korrektheit. Vor Commit Lint-Fehler beheben.
+
+## TypeScript
+- `strict: true` überall; keine `any` in Export-APIs
+- Öffentliche Funktionen/Komponenten mit expliziten Rückgabetypen
+- Type-only imports: `import type { Foo } from '…'`
+- Pfad-Aliase nutzen (gemäß `tsconfig.json`) statt tiefer relativer Pfade
+- Geteilte Typen in `packages/shared`
+- **In .js und .vue Dateien**: Keine TypeScript-Syntax verwenden; JSDoc bei Bedarf für Typ-Hinweise
+
+## Benennung
+- Aussagekräftige, vollständige Namen; keine kryptischen Abkürzungen
+- Funktionen: Verben/Verb-Phrasen (`calculateDistance`)
+- Typen/Interfaces: PascalCase (`UserProfile`)
+- Konstanten: camelCase; Build-Konstanten in UPPER_SNAKE_CASE (`MAPBOX_ACCESS_TOKEN`)
+- Booleans: Präfix `is/has/should/can`
+- Events: Vergangenheitsform (`locationSelected`)
+
+## Imports
+- Reihenfolge: Built-ins → Externals → Workspace-Pakete → Alias (`@/…`) → Relative → Styles
+- Leere Zeile zwischen Gruppen
+- Barrels erlaubt, zyklische Abhängigkeiten vermeiden
+
+## Fehlerbehandlung & Logging
+- Async/Await statt verschachtelter `.then`/`.catch`
+- Schmale `try/catch`-Scopes mit hilfreichen Fehlern
+- Keine Debug-Logs im produktiven Pfad; Backend-Logs strukturiert
+
+## Kommentare & Doku
+- Erkläre „Warum“, nicht „Wie“; sparsam einsetzen
+- Gute Namen statt redundanter Kommentare
+- Kurze Header-Docs bei komplexen Dateien/Module
+
+## Frontend – Vue (apps/frontend)
+- SFC: `<template>` → `<script setup lang="ts">` → `<style>`
+- Nur Composition API für neue Komponenten (`script setup`, `ref`, `computed`, `watch`)
+- Props/Emits typisiert mit `defineProps`/`defineEmits`
+- State-Sharing über Pinia; lokale Refs klein halten
+- Tailwind: Utility-first; Inline-Styles vermeiden (außer Variablen)
+- Komponenten-Dateinamen PascalCase (`LocationMap.vue`)
+- Events im Template `kebab-case`; wohldefinierte Payloads
+- Mapbox: Keine Tokens im Code; Env nutzen (`MAPBOX_ACCESS_TOKEN`). Teure `render`-Listener vermeiden/debouncen
+- Optional Chaining bei API- und dynamischen Daten verwenden (`resource?.title`, `list?.length`)
+
+## Komponenten-Erweiterungen (Frontend)
+- Props für Flexibilität: Neue Props hinzufügen, um Varianten abzubilden (z. B. `centered`, `variant`)
+- Rückwärtskompatibilität: Neue Props mit sinnvollen Defaults, damit bestehender Code weiterläuft
+- Layout-Optionen als Props (z. B. zentrierte Ausrichtung, Sichtbarkeit von Aktionen)
+
+## CSS & Styling (Tailwind)
+- Utility-first: Direkte Tailwind-Klassen verwenden; eigene CSS-Klassen vermeiden
+- Custom-Klassen nur in `src/css/inc/` oder `apps/frontend/src/css/` wenn: komplexe Komponenten-Systeme, häufig wiederkehrende Kombinationen, Animationen/Transitions
+- Priorität: Inline Tailwind > Custom-Klassen > CSS-Variablen
+
+## Tailwind-Klassen-Reihenfolge
+- Strukturierte Reihenfolge im Markup: 1. Custom, 2. Layout (flex, grid, relative), 3. Box-Modell (size, w, h, p, m, gap), 4. Positionierung (inset, top, left), 5. Interaktivität (cursor, pointer-events), 6. Styling (bg, text, border, rounded, shadow), 7. Animation (animate, transition), 8. States (hover:, focus:, active:), 9. Responsive (sm:, md:, lg:)
+- Vorteile: Lesbarkeit, konsistente Struktur, einfachere Wartung
+
+## React – UI Paket (packages/ui)
+- Funktionskomponenten mit TS-Props-Interfaces
+- Hooks: `useX`-Präfix; keine Hooks in Bedingungen/Schleifen
+- Memoization (`React.memo`/`useMemo`/`useCallback`) gezielt und messbar
+- Einheitliches Styling (Tailwind/CSS Modules); keine inline-styles
+
+## Backend – Payload CMS + Next.js (apps/backend)
+- TS strict beibehalten
+- Saubere DTOs/Typen; Eingaben validieren
+- Keine Secrets im Code; `.env` verwenden; CORS prüfen
+- Schlanke Services; keine Logik in Routen-Handlern duplizieren
+- Einheitliche Fehlerantworten; keine Stacktraces nach außen
+
+## Dateien & Ordner
+- Dateinamen: kebab-case (TS/JS), PascalCase für Vue/React-Komponenten
+- Tests: co-located `*.test.ts`/`*.spec.ts[x]` oder `__tests__`
+- Bevorzuge named exports
+
+## Tests
+- Unit (Vitest): schnelle, deterministische Given/When/Then-Tests
+- E2E (Playwright): kritische Flows; stabile Selektoren; keine Sleeps
+- Decke Geschäftslogik und Stores/Composables ab; UI-Details sparsam
+
+## Performance
+- Frontend: unnötige Re-Renders vermeiden; `watch`-Scopes prüfen; Listen virtualisieren
+- Backend: N+1 vermeiden; Indizes; Streams/Chunking für große Antworten
+
+## Internationalisierung
+- Keine Hartkodierung von UI-Strings; immer `t('…')` verwenden; konsistente Keys
+
+## Accessibility
+- Sinnvolle ARIA-Attribute; Tastaturbedienbarkeit
+- Ausreichende Kontraste (Tailwind-Farbwahl)
+- Keyboard-Navigation für Menüs und Modals (Escape, Pfeiltasten, ggf. Home/End)
+- Focus-Management für Dropdowns, Modals und Sheet-Interfaces
+- Screen-Reader-freundliche Labels und Descriptions
+
+## Git & PRs
+- Commits: Imperativ, kurz, Fokus auf das Warum
+- Keine Secrets einchecken
+- PR: kurze Zusammenfassung + Testplan
+
+## Commands
+- Format: `pnpm format`
+- Lint: `pnpm lint`
+- Typecheck: `pnpm check-types`
+
+## Konfliktlösung
+- Reihenfolge: Korrektheit > Prettier > ESLint-Ausnahmen > Präferenz
+- Entscheidungen dokumentieren und teamweit angleichen

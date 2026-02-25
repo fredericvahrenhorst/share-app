@@ -1,0 +1,195 @@
+{
+    "pages": {
+        "start": {
+            "title": "App Start",
+            "welcome": "Willkommen bei der Ionic App!"
+        }
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "imprint": "Impressum",
+        "data_protection": "Datenschutz",
+        "dark_mode": "Dark Mode"
+    },
+    "menu": {
+        "settings": "Einstellungen"
+    },
+    "search": {
+        "title": "Suche",
+        "placeholder": "Standort, POI oder Adresse suchen...",
+        "placeholder-local": "Point of Interest suchen...",
+        "placeholder_external": "Ort oder Adresse suchen...",
+        "local_places": "POI finden",
+        "external_places": "Dein Standort",
+        "category_label": "Kategorie",
+        "all_categories": "Alle Kategorien",
+        "loading": "Suche läuft...",
+        "results_found": "Ergebnis gefunden",
+        "results_found_plural": "Ergebnisse gefunden",
+        "no_results_title": "Keine Ergebnisse gefunden",
+        "no_results_description": "Versuche andere Suchbegriffe oder ändere die Kategorie",
+        "no_results_description_external": "Versuche andere Suchbegriffe oder eine andere Schreibweise",
+        "start_title": "Point of Interests durchsuchen",
+        "start_title_external": "Deinen Standort suchen",
+        "start_description": "Gib einen Suchbegriff ein, um POIs zu finden",
+        "start_description_external": "Gib einen Ort oder eine Adresse ein",
+        "pagination": {
+            "page": "Seite",
+            "of": "von",
+            "back": "Zurück",
+            "next": "Weiter"
+        }
+    },
+    "filter": {
+        "title": "Filter",
+        "categories": "Kategorien",
+        "radius": "Radius",
+        "availability": "Verfügbarkeit",
+        "all": "Alle",
+        "open": "Geöffnet",
+        "closed": "Geschlossen",
+        "all_distances": "Alle Entfernungen",
+        "1_km": "1 km",
+        "5_km": "5 km",
+        "10_km": "10 km",
+        "25_km": "25 km",
+        "50_km": "50 km",
+        "apply": "Filter anwenden",
+        "reset": "Filter zurücksetzen",
+        "clear_all": "Alle Filter zurücksetzen",
+        "radius_label": "Radius",
+        "locations_found": "Standorte gefunden",
+        "locations_found_plural": "Standorte gefunden"
+    },
+    "radius": {
+        "unit": "km",
+        "label": "Radius",
+        "searchHere": "Hier suchen"
+    },
+    "favorites": {
+        "title": "Favoriten",
+        "loading": "Favoriten werden geladen…",
+        "empty_title": "Keine Favoriten",
+        "empty_description": "Sie haben noch keine Orte zu Ihren Favoriten hinzugefügt.",
+        "login_required_title": "Anmeldung erforderlich",
+        "login_required_description": "Melden Sie sich an, um Ihre Favoriten zu sehen und zu verwalten.",
+        "login": "Anmelden",
+        "add": "Merken",
+        "remove": "Aus Favoriten entfernen"
+    },
+    "addResource": {
+        "title": "Ressource hinzufügen",
+        "steps": {
+            "location": "Standort",
+            "category": "Kategorie",
+            "details": "Details"
+        },
+        "step1": {
+            "title": "Wo befindet sich die Ressource?",
+            "searchPlaceholder": "Adresse oder Ort suchen...",
+            "useCurrentLocation": "Aktuellen Standort verwenden"
+        },
+        "step2": {
+            "title": "Was für eine Art von Ressource ist es?"
+        },
+        "step3": {
+            "title": "Erzähle uns mehr über die Ressource",
+            "name": "Name der Ressource",
+            "namePlaceholder": "z.B. Foodsharing-Kühlschrank Mitte",
+            "description": "Beschreibung",
+            "descriptionPlaceholder": "Beschreibe die Ressource und wie sie genutzt werden kann...",
+            "rules": "Regeln & Hinweise",
+            "rulesPlaceholder": "z.B. Bitte kein Fleisch einlegen, nur haltbare Lebensmittel",
+            "is24_7": "24/7 verfügbar",
+            "tags": "Tags"
+        },
+        "submit": "Ressource hinzufügen",
+        "success": {
+            "title": "Erfolgreich hinzugefügt!",
+            "message": "Deine Ressource wurde erfolgreich hinzugefügt und wird nach Prüfung freigeschaltet."
+        },
+        "error": {
+            "title": "Fehler",
+            "message": "Beim Hinzufügen der Ressource ist ein Fehler aufgetreten. Bitte versuche es erneut."
+        }
+    },
+    "common": {
+        "ok": "OK",
+        "back": "Zurück",
+        "next": "Weiter",
+        "cancel": "Abbrechen",
+        "save": "Speichern"
+    },
+    "misc": {
+        "close": "Schließen",
+        "cancel": "Abbrechen",
+        "back": "Zurück",
+        "to": "bis",
+        "oclock": "Uhr",
+        "is_loading": "Daten laden …",
+        "apply": "Anwenden"
+    },
+    "auth": {
+        "login_title": "Anmelden",
+        "login_email": "E-Mail",
+        "login_password": "Passwort",
+        "login_submit": "Anmelden",
+        "login_loading": "Anmeldung läuft…",
+        "login_no_account": "Noch kein Konto?",
+        "register_link": "Jetzt registrieren",
+        "register_title": "Registrieren",
+        "register_name": "Name",
+        "register_email": "E-Mail",
+        "register_password": "Passwort",
+        "register_submit": "Konto erstellen",
+        "register_loading": "Registrierung läuft…",
+        "register_has_account": "Bereits ein Konto?",
+        "login_link": "Jetzt anmelden",
+        "back_to_home": "Zurück zur Startseite"
+    },
+    "profile": {
+        "title": "Profil",
+        "not_logged_in": "Nicht angemeldet",
+        "login_prompt": "Melden Sie sich an, um Ihr Profil zu sehen.",
+        "login": "Anmelden",
+        "logout": "Abmelden",
+        "settings": "Einstellungen",
+        "notifications": "Benachrichtigungen",
+        "privacy": "Datenschutz",
+        "help": "Hilfe & Support",
+        "about": "Über die App",
+        "activity": "Ihre Aktivität",
+        "favorites_count": "Favoriten",
+        "visited_count": "Besucht",
+        "reviews_count": "Bewertungen",
+        "in_development": "In Entwicklung",
+        "edit_title": "Profil bearbeiten",
+        "edit_name": "Name",
+        "edit_bio": "Über mich",
+        "edit_bio_placeholder": "Kurz etwas über dich …",
+        "edit_avatar_hint": "Tippen zum Ändern des Profilbilds",
+        "edit_name_required": "Bitte gib einen Namen ein.",
+        "edit_success": "Profil gespeichert.",
+        "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen."
+    },
+    "locationDetail": {
+        "reviews_coming_soon": "Bewertungen kommen bald",
+        "no_description": "Keine Beschreibung",
+        "address": "Adresse",
+        "availability": "Verfügbarkeit",
+        "contact": "Kontakt",
+        "description": "Beschreibung",
+        "route": "Route",
+        "share": "Teilen",
+        "favorite_login_hint": "Bitte anmelden, um Orte zu merken",
+        "tags": "Tags",
+        "accessibility": "Barrierefreiheit",
+        "wheelchair_accessible": "Rollstuhlgerecht",
+        "accessible_toilet": "Behindertengerechtes WC",
+        "accessible_parking": "Behindertenparkplatz",
+        "verified": "Verifiziert",
+        "status_pending": "In Bearbeitung",
+        "slider_previous": "Vorheriges Bild",
+        "slider_next": "Nächstes Bild"
+    }
+}
