@@ -160,9 +160,15 @@
                     </ion-button>
 
                     <!-- Abmelden -->
-                    <ion-button expand="block" fill="outline" color="danger" @click="handleLogout">
+                    <ion-button expand="block" fill="outline" color="danger" class="mb-3" @click="handleLogout">
                         <ion-icon :icon="logOut" slot="start" />
                         {{ t('profile.logout') }}
+                    </ion-button>
+
+                    <!-- Account löschen -->
+                    <ion-button expand="block" fill="clear" color="medium" size="small" @click="handleDeleteAccount">
+                        <ion-icon :icon="trashOutline" slot="start" />
+                        {{ t('profile.delete_account') }}
                     </ion-button>
                 </template>
             </div>
@@ -199,8 +205,9 @@ import {
     personCircleOutline,
     createOutline,
     peopleOutline,
+    trashOutline,
 } from 'ionicons/icons'
-import { modalController } from '@ionic/vue'
+import { modalController, alertController } from '@ionic/vue'
 import EditProfileModal from '../components/EditProfileModal.vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -346,6 +353,41 @@ function openHelp() {
 
 function openAbout() {
     showInDevelopmentToast()
+}
+
+async function handleDeleteAccount() {
+    const alert = await alertController.create({
+        header: t('profile.delete_account'),
+        message: t('profile.delete_account_confirm'),
+        buttons: [
+            { text: t('common.cancel'), role: 'cancel' },
+            {
+                text: t('profile.delete_account_action'),
+                role: 'destructive',
+                handler: async () => {
+                    const result = await userStore.deleteAccount()
+                    if (result.success) {
+                        await favoritesStore.fetchFavorites()
+                        const toast = await toastController.create({
+                            message: t('profile.delete_account_success'),
+                            duration: 3000,
+                            color: 'success',
+                        })
+                        await toast.present()
+                        router.push({ name: 'Home' })
+                    } else {
+                        const toast = await toastController.create({
+                            message: result.errors?.[0] || t('profile.delete_account_error'),
+                            duration: 3000,
+                            color: 'danger',
+                        })
+                        await toast.present()
+                    }
+                },
+            },
+        ],
+    })
+    await alert.present()
 }
 
 async function openEditProfile() {

@@ -9,7 +9,8 @@
         "title": "Einstellungen",
         "imprint": "Impressum",
         "data_protection": "Datenschutz",
-        "dark_mode": "Dark Mode"
+        "dark_mode": "Dark Mode",
+        "language": "Sprache"
     },
     "menu": {
         "settings": "Einstellungen"
@@ -184,7 +185,12 @@
         "edit_name_required": "Bitte gib einen Namen ein.",
         "edit_success": "Profil gespeichert.",
         "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
-        "activity_feed": "Community-Feed"
+        "activity_feed": "Community-Feed",
+        "delete_account": "Account löschen",
+        "delete_account_confirm": "Bist du sicher? Dein Account und alle deine Daten (Favoriten, Bewertungen, Meldungen) werden unwiderruflich gelöscht. Deine erstellten Standorte bleiben anonymisiert erhalten.",
+        "delete_account_action": "Endgültig löschen",
+        "delete_account_success": "Dein Account wurde erfolgreich gelöscht.",
+        "delete_account_error": "Fehler beim Löschen des Accounts."
     },
     "activity": {
         "title": "Community-Feed",

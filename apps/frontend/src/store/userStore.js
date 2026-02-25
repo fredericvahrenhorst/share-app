@@ -166,6 +166,22 @@ export const useUserStore = defineStore('user', {
             this.user = response.user || response.doc || response
             return { success: true }
         },
+        async deleteAccount() {
+            if (!this.userId) return { success: false, errors: ['Nicht angemeldet'] }
+            try {
+                const response = await apiCall('users/delete-account', {
+                    method: 'DELETE',
+                })
+                this.clearUserData()
+                return { success: true, data: response }
+            } catch (error) {
+                const data = error.response?.data
+                const errors = []
+                if (data?.error) errors.push(data.error)
+                if (errors.length === 0) errors.push('Account-Löschung fehlgeschlagen.')
+                return { success: false, errors }
+            }
+        },
         clearUserData() {
             this.authenticated = false;
             this.token = '';

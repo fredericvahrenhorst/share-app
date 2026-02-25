@@ -22,6 +22,7 @@ import { LocationConfirmations } from './collections/LocationConfirmations'
 import { locationsEndpoint } from './endpoints/locations'
 import { searchEndpoint } from './endpoints/search'
 import { activityFeedEndpoint } from './endpoints/activityFeed'
+import { deleteAccountEndpoint } from './endpoints/deleteAccount'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -78,6 +79,7 @@ export default buildConfig({
     locationsEndpoint,
     searchEndpoint,
     activityFeedEndpoint,
+    deleteAccountEndpoint,
   ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_FROM_ADDRESS || 'info@shareapp.local',
