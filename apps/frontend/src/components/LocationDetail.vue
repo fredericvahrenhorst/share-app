@@ -12,8 +12,8 @@
         <ion-header collapse="fade" translucent>
             <ion-toolbar>
                 <div v-if="popupLocation?.category" class="flex items-center mb-2">
-                    <ion-icon :icon="categoryIcon" class="text-xl mr-2" />
-                    <span class="text-sm text-gray-500">{{ popupLocation.category?.name }}</span>
+                    <ion-icon :icon="categoryIcon" class="text-xl mr-2 text-[#D7EB80]" />
+                    <span class="text-sm text-[#bebeb9]">{{ popupLocation.category?.name }}</span>
                     <span
                         v-if="popupLocation?.status && popupLocation.status !== 'active'"
                         class="ml-2 text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800"
@@ -26,7 +26,7 @@
                     <ion-icon
                         v-if="popupLocation?.verified"
                         :icon="checkmarkCircleOutline"
-                        class="text-green-500 shrink-0"
+                        class="text-[#D7EB80] shrink-0"
                         title="Verifiziert"
                     />
                 </ion-title>
@@ -48,7 +48,7 @@
                 <span class="font-bold text-lg mr-1">
                     {{ popupLocation?.averageRating || '-' }}
                 </span>
-                <span class="text-sm text-gray-500">
+                <span class="text-sm text-[#6c6c6c]">
                     ({{ popupLocation?.reviewCount || 0 }} Bewertungen)
                 </span>
             </div>
@@ -58,7 +58,7 @@
                 <!-- Einzelbild oder Platzhalter -->
                 <div
                     v-if="allImageUrls.length <= 1"
-                    class="rounded-xl overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center h-56"
+                    class="rounded-xl overflow-hidden bg-[#f0f0eb] flex items-center justify-center h-56"
                 >
                     <ion-img
                         v-if="firstImageUrl"
@@ -66,7 +66,7 @@
                         :alt="popupLocation?.name"
                         class="object-cover w-full h-full"
                     />
-                    <ion-icon v-else :icon="categoryIcon" class="text-5xl text-indigo-400" />
+                    <ion-icon v-else :icon="categoryIcon" class="text-5xl text-[#bebeb9]" />
                 </div>
 
                 <!-- Snap-Slider bei mehreren Bildern -->
@@ -107,7 +107,7 @@
                             class="min-w-full w-full shrink-0 snap-start"
                         >
                             <div
-                                class="relative h-56 w-full overflow-hidden rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100"
+                                class="relative h-56 w-full overflow-hidden rounded-xl bg-[#f0f0eb]"
                             >
                                 <ion-img
                                     :src="url"
@@ -170,16 +170,16 @@
             <div v-if="hasAccessibility" class="mb-4">
                 <h3 class="font-semibold mb-2">{{ t('locationDetail.accessibility') }}</h3>
                 <div class="space-y-1">
-                    <div v-if="popupLocation?.accessibility?.wheelchairAccessible" class="flex items-center text-gray-700">
-                        <ion-icon :icon="checkmarkCircleOutline" class="text-green-500 mr-2 shrink-0" />
+                    <div v-if="popupLocation?.accessibility?.wheelchairAccessible" class="flex items-center text-[#333333]">
+                        <ion-icon :icon="checkmarkCircleOutline" class="text-[#008009] mr-2 shrink-0" />
                         {{ t('locationDetail.wheelchair_accessible') }}
                     </div>
-                    <div v-if="popupLocation?.accessibility?.accessibleToilet" class="flex items-center text-gray-700">
-                        <ion-icon :icon="checkmarkCircleOutline" class="text-green-500 mr-2 shrink-0" />
+                    <div v-if="popupLocation?.accessibility?.accessibleToilet" class="flex items-center text-[#333333]">
+                        <ion-icon :icon="checkmarkCircleOutline" class="text-[#008009] mr-2 shrink-0" />
                         {{ t('locationDetail.accessible_toilet') }}
                     </div>
-                    <div v-if="popupLocation?.accessibility?.accessibleParking" class="flex items-center text-gray-700">
-                        <ion-icon :icon="checkmarkCircleOutline" class="text-green-500 mr-2 shrink-0" />
+                    <div v-if="popupLocation?.accessibility?.accessibleParking" class="flex items-center text-[#333333]">
+                        <ion-icon :icon="checkmarkCircleOutline" class="text-[#008009] mr-2 shrink-0" />
                         {{ t('locationDetail.accessible_parking') }}
                     </div>
                 </div>
@@ -188,17 +188,17 @@
             <!-- Info-Karten -->
             <div class="space-y-2 mb-4">
                 <div v-if="formatAddress(popupLocation?.address)" class="flex items-center bg-blue-50 rounded-lg px-3 py-2">
-                    <ion-icon :icon="locationOutline" class="text-blue-400 mr-2 shrink-0" />
+                    <ion-icon :icon="locationOutline" class="text-[#D7EB80] mr-2 shrink-0" />
                     <div class="min-w-0">
-                        <span class="font-medium block">{{ t('locationDetail.address') }}</span>
-                        <span class="text-gray-700">{{ formatAddress(popupLocation?.address) }}</span>
+                        <span class="font-medium block text-white">{{ t('locationDetail.address') }}</span>
+                        <span class="text-white/80">{{ formatAddress(popupLocation?.address) }}</span>
                     </div>
                 </div>
                 <div v-if="availabilityText" class="flex items-center bg-purple-50 rounded-lg px-3 py-2">
-                    <ion-icon :icon="timeOutline" class="text-purple-400 mr-2 shrink-0" />
+                    <ion-icon :icon="timeOutline" class="text-[#D7EB80] mr-2 shrink-0" />
                     <div class="min-w-0">
-                        <span class="font-medium block">{{ t('locationDetail.availability') }}</span>
-                        <span class="text-gray-700 whitespace-pre-line">{{ availabilityText }}</span>
+                        <span class="font-medium block text-white">{{ t('locationDetail.availability') }}</span>
+                        <span class="text-white/80 whitespace-pre-line">{{ availabilityText }}</span>
                     </div>
                 </div>
             </div>
@@ -308,7 +308,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <span class="text-xs text-gray-400">
+                            <span class="text-xs text-[#6c6c6c]">
                                 {{ new Date(review.createdAt).toLocaleDateString() }}
                             </span>
                         </div>
@@ -327,7 +327,7 @@
                                 class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
                                 :class="getUserVote(review.id) === 'up'
                                     ? 'bg-green-100 text-green-700'
-                                    : 'text-gray-400 hover:text-green-600 hover:bg-green-50'"
+                                    : 'text-[#6c6c6c] hover:text-[#008009] hover:bg-[#ecfdf0]'"
                                 :disabled="!isAuthenticated"
                                 @click="handleVote(review.id, 'up')"
                             >
@@ -338,7 +338,7 @@
                                 class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
                                 :class="getUserVote(review.id) === 'down'
                                     ? 'bg-red-100 text-red-700'
-                                    : 'text-gray-400 hover:text-red-600 hover:bg-red-50'"
+                                    : 'text-[#6c6c6c] hover:text-[#B90A32] hover:bg-[#fef2f4]'"
                                 :disabled="!isAuthenticated"
                                 @click="handleVote(review.id, 'down')"
                             >
@@ -355,7 +355,7 @@
                         </ion-button>
                     </div>
                 </div>
-                <p v-else class="text-sm text-gray-500 italic text-center py-2">Noch keine Bewertungen vorhanden.</p>
+                <p v-else class="text-sm text-[#6c6c6c] italic text-center py-2">Noch keine Bewertungen vorhanden.</p>
             </div>
 
             <!-- Community-Bestätigung -->

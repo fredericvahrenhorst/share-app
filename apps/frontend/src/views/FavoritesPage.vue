@@ -57,7 +57,7 @@
                                 v-else
                                 class="w-full h-full flex items-center justify-center bg-gray-200"
                             >
-                                <ion-icon :icon="locationOutline" class="text-2xl text-gray-400" />
+                                <ion-icon :icon="locationOutline" class="text-2xl text-[#bebeb9]" />
                             </div>
                         </ion-thumbnail>
                         <ion-label>

@@ -18,7 +18,7 @@
                     v-if="!isAuthenticated"
                     class="flex flex-col items-center justify-center py-16 text-center"
                 >
-                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4 text-gray-400" />
+                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4 text-[#bebeb9]" />
                     <h2 class="text-xl font-semibold mb-2 text-gray-800">{{ t('profile.not_logged_in') }}</h2>
                     <p class="text-sm text-gray-600 mb-4">{{ t('profile.login_prompt') }}</p>
                     <ion-button fill="outline" @click="goToLogin">
