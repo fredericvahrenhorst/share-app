@@ -127,16 +127,17 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
 
 ### 4.2 Onboarding & Hilfe
 
-- [ ] **4.2.1** Onboarding-Flow (max. 3 animierte Screens)
-  - Privacy-Fokus, App-Nutzen erklären, Standort-Permission mit Erklärung
-  - Nur beim ersten App-Start; Completion in localStorage persistieren
-- [ ] **4.2.2** Kontextuelle Hilfe
-  - „So funktioniert die Karte" Tooltip beim ersten Karten-Besuch
-  - Erklärungen für Filter, Favoriten, Standort-Hinzufügen
-- [ ] **4.2.3** Einstellungs-Persistenz
-  - Benachrichtigungs-Einstellungen (aktuell Toast „In Entwicklung") implementieren
-  - Privacy-Einstellungen (public/friends/private) funktional machen
-  - Preferences-Sync mit Backend-User-Objekt
+- [x] **4.2.1** Onboarding-Flow (3 animierte Screens)
+  - Screen 1: Willkommen (🌱), Screen 2: Karte (🗺️), Screen 3: Datenschutz (🔒)
+  - Skip/Weiter/Los-geht's Buttons, Dot-Indikator, Slide-Animationen
+  - Nur beim ersten App-Start; Completion in localStorage persistiert
+- [x] **4.2.2** Kontextuelle Hilfe
+  - MapHelpTooltip: „So funktioniert die Karte" mit 3 Tipps (Marker, Suche, Hinzufügen)
+  - Erscheint nach 1.5s, dismiss in localStorage persistiert
+- [x] **4.2.3** Einstellungs-Persistenz
+  - Benachrichtigungen: Toggle in ProfilPage, synct mit Backend (PATCH /api/users/:id)
+  - Privacy: Select (Öffentlich/Freunde/Privat), synct mit Backend
+  - Beide speichern in user.preferences
 
 ### 4.3 Offline & Performance
 
