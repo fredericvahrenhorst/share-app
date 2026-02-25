@@ -27,6 +27,7 @@
     "@capacitor/keyboard": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
     "@payloadcms/db-mongodb": "3.46.0",
+    "@payloadcms/email-nodemailer": "3.46.0",
     "@payloadcms/next": "3.46.0",
     "@payloadcms/payload-cloud": "3.46.0",
     "@payloadcms/richtext-lexical": "3.46.0",
