@@ -66,6 +66,81 @@
                 </div>
             </div>
 
+            <!-- Öffnungszeiten Sektion -->
+            <div class="mb-6">
+                <ion-label class="text-base font-semibold text-gray-900 mb-3 block">
+                    {{ t('filter.availability') }}
+                </ion-label>
+                <div class="space-y-2">
+                    <ion-item
+                        v-for="opt in availabilityOptions"
+                        :key="opt.value"
+                        @click="selectedAvailability = opt.value"
+                        :class="[
+                            'rounded-lg border cursor-pointer transition-colors',
+                            selectedAvailability === opt.value
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-white border-gray-200 hover:border-gray-300'
+                        ]"
+                        lines="none"
+                        button
+                    >
+                        <span class="text-xl mr-3" slot="start">{{ opt.icon }}</span>
+                        <ion-label>{{ opt.label }}</ion-label>
+                        <ion-radio
+                            :value="opt.value"
+                            :checked="selectedAvailability === opt.value"
+                            slot="end"
+                        />
+                    </ion-item>
+                </div>
+            </div>
+
+            <!-- Barrierefreiheit Sektion -->
+            <div class="mb-6">
+                <ion-label class="text-base font-semibold text-gray-900 mb-3 block">
+                    {{ t('filter.accessibility') }}
+                </ion-label>
+                <div class="space-y-2">
+                    <ion-item
+                        class="rounded-lg border bg-white border-gray-200"
+                        lines="none"
+                    >
+                        <span class="text-xl mr-3" slot="start">♿</span>
+                        <ion-label>{{ t('filter.wheelchair') }}</ion-label>
+                        <ion-checkbox
+                            :checked="accessibilityFilters.wheelchair"
+                            @ionChange="accessibilityFilters.wheelchair = $event.detail.checked"
+                            slot="end"
+                        />
+                    </ion-item>
+                    <ion-item
+                        class="rounded-lg border bg-white border-gray-200"
+                        lines="none"
+                    >
+                        <span class="text-xl mr-3" slot="start">🚻</span>
+                        <ion-label>{{ t('filter.accessible_toilet') }}</ion-label>
+                        <ion-checkbox
+                            :checked="accessibilityFilters.toilet"
+                            @ionChange="accessibilityFilters.toilet = $event.detail.checked"
+                            slot="end"
+                        />
+                    </ion-item>
+                    <ion-item
+                        class="rounded-lg border bg-white border-gray-200"
+                        lines="none"
+                    >
+                        <span class="text-xl mr-3" slot="start">🅿️</span>
+                        <ion-label>{{ t('filter.accessible_parking') }}</ion-label>
+                        <ion-checkbox
+                            :checked="accessibilityFilters.parking"
+                            @ionChange="accessibilityFilters.parking = $event.detail.checked"
+                            slot="end"
+                        />
+                    </ion-item>
+                </div>
+            </div>
+
             <!-- Radius Sektion -->
             <div class="mb-6">
                 <ion-label class="text-base font-semibold text-gray-900 mb-3 block">
@@ -148,7 +223,8 @@ import {
     IonLabel,
     IonCheckbox,
     IonRange,
-    IonFooter
+    IonFooter,
+    IonRadio,
 } from '@ionic/vue';
 import { useI18n } from 'vue-i18n';
 import { closeOutline } from 'ionicons/icons';
@@ -175,28 +251,54 @@ const { categories } = storeToRefs(locationsStore);
 // Local state für Filter-Optionen - initialisiere mit Store-Werten
 const selectedCategories = ref([...locationsStore.filterState.categories]);
 const selectedRadius = ref(locationsStore.filterState.radius === 'all' ? 0 : locationsStore.filterState.radius);
+const selectedAvailability = ref(locationsStore.filterState.availability || 'all');
+const accessibilityFilters = ref({
+    wheelchair: locationsStore.filterState.accessibility?.wheelchair || false,
+    toilet: locationsStore.filterState.accessibility?.toilet || false,
+    parking: locationsStore.filterState.accessibility?.parking || false,
+});
+
+const availabilityOptions = computed(() => [
+    { value: 'all', label: t('filter.all'), icon: '🕐' },
+    { value: 'open_now', label: t('filter.open_now'), icon: '🟢' },
+    { value: '24_7', label: t('filter.24_7'), icon: '⏰' },
+]);
 
 // Watch for changes in isOpen to sync with store
 watch(() => props.isOpen, (isOpen) => {
     if (isOpen) {
         selectedCategories.value = [...locationsStore.filterState.categories];
         selectedRadius.value = locationsStore.filterState.radius === 'all' ? 0 : locationsStore.filterState.radius;
+        selectedAvailability.value = locationsStore.filterState.availability || 'all';
+        accessibilityFilters.value = {
+            wheelchair: locationsStore.filterState.accessibility?.wheelchair || false,
+            toilet: locationsStore.filterState.accessibility?.toilet || false,
+            parking: locationsStore.filterState.accessibility?.parking || false,
+        };
     }
 });
 
 // Watch for changes in local filter states and apply filters immediately
-watch([selectedCategories, selectedRadius], () => {
+watch([selectedCategories, selectedRadius, selectedAvailability, accessibilityFilters], () => {
     const filterOptions = {
         categories: selectedCategories.value,
         radius: selectedRadius.value,
+        availability: selectedAvailability.value,
+        accessibility: { ...accessibilityFilters.value },
     };
 
-    // Apply filters immediately without triggering the store watcher
     locationsStore.applyFilters(filterOptions);
 }, { deep: true });
 
 // Computed properties
-const hasActiveFilters = computed(() => selectedCategories.value.length > 0 || selectedRadius.value > 0);
+const hasActiveFilters = computed(() =>
+    selectedCategories.value.length > 0
+    || selectedRadius.value > 0
+    || selectedAvailability.value !== 'all'
+    || accessibilityFilters.value.wheelchair
+    || accessibilityFilters.value.toilet
+    || accessibilityFilters.value.parking
+);
 
 // Methods
 const handleDismiss = () => {
@@ -228,11 +330,11 @@ const applyFilters = () => {
 };
 
 const clearFilters = () => {
-    // Clear local state
     selectedCategories.value = [];
     selectedRadius.value = 0;
+    selectedAvailability.value = 'all';
+    accessibilityFilters.value = { wheelchair: false, toilet: false, parking: false };
 
-    // Clear filters in store
     locationsStore.clearFilters();
 };
 

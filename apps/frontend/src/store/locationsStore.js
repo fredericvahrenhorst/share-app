@@ -45,6 +45,8 @@ export const useLocationsStore = defineStore('locations', {
             return {
                 categories: [],
                 radius: 0,
+                availability: 'all',
+                accessibility: { wheelchair: false, toilet: false, parking: false },
             };
         })(),
     }),
@@ -86,7 +88,8 @@ export const useLocationsStore = defineStore('locations', {
                     'select[createdAt]': 'true',
                     'select[openingHours]': 'true',
                     'select[averageRating]': 'true',
-                    'select[reviewCount]': 'true'
+                    'select[reviewCount]': 'true',
+                    'select[accessibility]': 'true'
                 });
 
                 response = await apiCall(`locations?${params.toString()}`, {
@@ -380,6 +383,8 @@ export const useLocationsStore = defineStore('locations', {
             this.filterState = {
                 categories: [],
                 radius: 0,
+                availability: 'all',
+                accessibility: { wheelchair: false, toilet: false, parking: false },
             };
 
             localStorage.removeItem('locationFilters');
@@ -419,50 +424,64 @@ export const useLocationsStore = defineStore('locations', {
             this.updateFilteredLocations();
         },
 
-        // Update filtered locations based on current filter state
         updateFilteredLocations() {
             let locations = this.locations;
 
-            // Apply filters if any are set
-            if (this.filterState.categories.length > 0
-            || (this.filterState.radius && this.filterState.radius !== 0)) {
-                console.log('Applying filters to locations...');
+            const hasAnyFilter = this.filterState.categories.length > 0
+                || (this.filterState.radius && this.filterState.radius !== 0)
+                || (this.filterState.availability && this.filterState.availability !== 'all')
+                || this.filterState.accessibility?.wheelchair
+                || this.filterState.accessibility?.toilet
+                || this.filterState.accessibility?.parking;
 
+            if (hasAnyFilter) {
                 locations = locations.filter((loc) => {
-                    // Category filter
                     if (this.filterState.categories.length > 0) {
                         const categoryId = loc.category?.id || loc.category;
-
                         if (!this.filterState.categories.includes(categoryId)) {
                             return false;
                         }
                     }
 
-                    // Radius filter (if geo is available)
                     if (this.filterState.radius && this.filterState.radius !== 0) {
                         const appStore = useAppStore();
-                        const geo = appStore.geo;
-
-                        if (geo && loc.coordinates && Array.isArray(loc.coordinates)) {
-                            const userPoint = point([geo.long, geo.lat]);
+                        const geoData = appStore.geo;
+                        if (geoData && loc.coordinates && Array.isArray(loc.coordinates)) {
+                            const userPoint = point([geoData.long, geoData.lat]);
                             const locationPoint = point(loc.coordinates);
-                            const distance = turfDistance(userPoint, locationPoint, { units: 'meters' });
-                            const maxDistance = this.filterState.radius * 1000; // Convert to meters
-
-                            if (distance > maxDistance) {
-                                return false;
-                            }
+                            const dist = turfDistance(userPoint, locationPoint, { units: 'meters' });
+                            if (dist > this.filterState.radius * 1000) return false;
                         } else {
                             return false;
                         }
                     }
 
+                    if (this.filterState.availability === '24_7') {
+                        if (!loc.openingHours?.is24_7) return false;
+                    } else if (this.filterState.availability === 'open_now') {
+                        if (loc.openingHours?.is24_7) {
+                            // 24/7 is always open
+                        } else if (loc.openingHours?.schedule?.length) {
+                            const now = new Date();
+                            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                            const today = days[now.getDay()];
+                            const currentTime = now.getHours() * 100 + now.getMinutes();
+                            const todaySchedule = loc.openingHours.schedule.find((s) => s.day === today);
+                            if (!todaySchedule) return false;
+                            const openTime = parseInt((todaySchedule.open || '').replace(':', ''), 10) || 0;
+                            const closeTime = parseInt((todaySchedule.close || '').replace(':', ''), 10) || 2359;
+                            if (currentTime < openTime || currentTime > closeTime) return false;
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    if (this.filterState.accessibility?.wheelchair && !loc.accessibility?.wheelchairAccessible) return false;
+                    if (this.filterState.accessibility?.toilet && !loc.accessibility?.accessibleToilet) return false;
+                    if (this.filterState.accessibility?.parking && !loc.accessibility?.accessibleParking) return false;
+
                     return true;
                 });
-
-                console.log('Filtered locations count:', locations.length);
-            } else {
-                console.log('No filters applied, showing all locations');
             }
 
             this.filteredLocations = locations;

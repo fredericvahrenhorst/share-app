@@ -167,6 +167,9 @@
             </div>
         </div>
 
+        <!-- Map Help Tooltip -->
+        <MapHelpTooltip />
+
         <!-- Add Location FAB -->
         <div class="fixed z-50 bottom-32 right-4">
             <ion-button
@@ -219,6 +222,7 @@ import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
 import LocationFilter from './LocationFilter.vue';
 import AddLocationModal from './AddLocationModal.vue';
+import MapHelpTooltip from './MapHelpTooltip.vue';
 import { toastController } from '@ionic/vue';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';

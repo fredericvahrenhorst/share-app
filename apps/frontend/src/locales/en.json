@@ -9,16 +9,17 @@
         "title": "Settings",
         "imprint": "Imprint",
         "data_protection": "Privacy Policy",
-        "dark_mode": "Dark Mode"
+        "dark_mode": "Dark Mode",
+        "language": "Language"
     },
     "menu": {
         "settings": "Settings"
     },
     "search": {
         "title": "Search",
-        "placeholder": "Search location, POI or address...",
-        "placeholder-local": "Search Point of Interest...",
-        "placeholder_external": "Search place or address...",
+        "placeholder": "Search for location, POI or address...",
+        "placeholder-local": "Search for Point of Interest...",
+        "placeholder_external": "Search for place or address...",
         "local_places": "Find POI",
         "external_places": "Your Location",
         "category_label": "Category",
@@ -29,7 +30,7 @@
         "no_results_title": "No results found",
         "no_results_description": "Try different search terms or change the category",
         "no_results_description_external": "Try different search terms or a different spelling",
-        "start_title": "Browse Points of Interest",
+        "start_title": "Search Points of Interest",
         "start_title_external": "Search your location",
         "start_description": "Enter a search term to find POIs",
         "start_description_external": "Enter a place or address",
@@ -45,18 +46,24 @@
         "categories": "Categories",
         "radius": "Radius",
         "availability": "Availability",
+        "accessibility": "Accessibility",
+        "wheelchair": "Wheelchair Accessible",
+        "accessible_toilet": "Accessible Restroom",
+        "accessible_parking": "Disabled Parking",
         "all": "All",
+        "open_now": "Open Now",
+        "24_7": "Open 24/7",
         "open": "Open",
         "closed": "Closed",
-        "all_distances": "All distances",
+        "all_distances": "All Distances",
         "1_km": "1 km",
         "5_km": "5 km",
         "10_km": "10 km",
         "25_km": "25 km",
         "50_km": "50 km",
-        "apply": "Apply filters",
-        "reset": "Reset filters",
-        "clear_all": "Clear all filters",
+        "apply": "Apply Filters",
+        "reset": "Reset Filters",
+        "clear_all": "Clear All Filters",
         "radius_label": "Radius",
         "locations_found": "locations found",
         "locations_found_plural": "locations found"
@@ -64,18 +71,18 @@
     "radius": {
         "unit": "km",
         "label": "Radius",
-        "searchHere": "Search here"
+        "searchHere": "Search Here"
     },
     "favorites": {
         "title": "Favorites",
         "loading": "Loading favorites…",
         "empty_title": "No Favorites",
-        "empty_description": "You have not added any places to your favorites yet.",
-        "login_required_title": "Login required",
-        "login_required_description": "Log in to view and manage your favorites.",
-        "login": "Log in",
+        "empty_description": "You haven't added any places to your favorites yet.",
+        "login_required_title": "Login Required",
+        "login_required_description": "Log in to see and manage your favorites.",
+        "login": "Log In",
         "add": "Save",
-        "remove": "Remove from favorites"
+        "remove": "Remove from Favorites"
     },
     "addResource": {
         "title": "Add Resource",
@@ -86,16 +93,16 @@
         },
         "step1": {
             "title": "Where is the resource located?",
-            "searchPlaceholder": "Search address or place...",
-            "useCurrentLocation": "Use current location"
+            "searchPlaceholder": "Search for address or place...",
+            "useCurrentLocation": "Use Current Location"
         },
         "step2": {
-            "title": "What kind of resource is it?"
+            "title": "What type of resource is it?"
         },
         "step3": {
             "title": "Tell us more about the resource",
-            "name": "Resource name",
-            "namePlaceholder": "e.g. Foodsharing fridge downtown",
+            "name": "Resource Name",
+            "namePlaceholder": "e.g. Food Sharing Fridge Downtown",
             "description": "Description",
             "descriptionPlaceholder": "Describe the resource and how it can be used...",
             "rules": "Rules & Notes",
@@ -103,10 +110,10 @@
             "is24_7": "Available 24/7",
             "tags": "Tags"
         },
-        "submit": "Add resource",
+        "submit": "Add Resource",
         "success": {
-            "title": "Successfully added!",
-            "message": "Your resource has been added and will be published after review."
+            "title": "Successfully Added!",
+            "message": "Your resource has been successfully added and will be reviewed before being published."
         },
         "error": {
             "title": "Error",
@@ -130,29 +137,29 @@
         "apply": "Apply"
     },
     "auth": {
-        "login_title": "Log in",
+        "login_title": "Log In",
         "login_email": "Email",
         "login_password": "Password",
-        "login_submit": "Log in",
+        "login_submit": "Log In",
         "login_loading": "Logging in…",
-        "login_no_account": "No account yet?",
+        "login_no_account": "Don't have an account?",
         "register_link": "Register now",
         "register_title": "Register",
         "register_name": "Name",
         "register_email": "Email",
         "register_password": "Password",
-        "register_submit": "Create account",
+        "register_submit": "Create Account",
         "register_loading": "Registering…",
         "register_has_account": "Already have an account?",
         "login_link": "Log in now",
-        "back_to_home": "Back to home"
+        "back_to_home": "Back to Home"
     },
     "profile": {
         "title": "Profile",
-        "not_logged_in": "Not logged in",
-        "login_prompt": "Log in to view your profile.",
-        "login": "Log in",
-        "logout": "Log out",
+        "not_logged_in": "Not Logged In",
+        "login_prompt": "Log in to see your profile.",
+        "login": "Log In",
+        "logout": "Log Out",
         "settings": "Settings",
         "notifications": "Notifications",
         "privacy": "Privacy",
@@ -166,24 +173,70 @@
         "reputation": "Reputation",
         "points": "Points",
         "badges": "Badges",
+        "privacy_public": "Public",
+        "privacy_friends": "Friends Only",
+        "privacy_private": "Private",
         "in_development": "In Development",
         "edit_title": "Edit Profile",
         "edit_name": "Name",
-        "edit_bio": "About me",
-        "edit_bio_placeholder": "A few words about yourself…",
+        "edit_bio": "About Me",
+        "edit_bio_placeholder": "A few words about you…",
         "edit_avatar_hint": "Tap to change profile picture",
         "edit_name_required": "Please enter a name.",
         "edit_success": "Profile saved.",
         "edit_error": "Save failed. Please try again.",
         "activity_feed": "Community Feed",
-        "enable_notifications": "Enable browser notifications"
+        "enable_notifications": "Enable browser notifications",
+        "delete_account": "Delete Account",
+        "delete_account_confirm": "Are you sure? Your account and all your data (favorites, reviews, reports) will be permanently deleted. Your created locations will remain anonymized.",
+        "delete_account_action": "Delete Permanently",
+        "delete_account_success": "Your account has been successfully deleted.",
+        "delete_account_error": "Error deleting account."
     },
     "activity": {
         "title": "Community Feed",
         "loading": "Loading activities…",
-        "empty_title": "No activities yet",
+        "empty_title": "No Activities Yet",
         "empty_description": "Community news will appear here soon.",
-        "load_more": "Load more"
+        "load_more": "Load More"
+    },
+    "onboarding": {
+        "screen1_title": "Welcome to ShareApp",
+        "screen1_description": "Discover free resources near you — food sharing fridges, clothing exchanges, water sources and more.",
+        "screen2_title": "Find Resources on the Map",
+        "screen2_description": "Tap on markers to see details. Use search and filters to find exactly what you need.",
+        "screen3_title": "Your Data is Safe",
+        "screen3_description": "We only store what's necessary. Your location is never shared without your consent. You stay in full control.",
+        "skip": "Skip",
+        "start": "Let's Go"
+    },
+    "mapHelp": {
+        "title": "How the Map Works",
+        "tip_markers": "Tap on markers to see location details",
+        "tip_search": "Use the search bar above to find places and addresses",
+        "tip_add": "Use the + button to add new locations",
+        "got_it": "Got it!"
+    },
+    "legal": {
+        "imprint_title": "Imprint",
+        "imprint_responsible": "Responsible Party",
+        "imprint_contact": "Contact",
+        "imprint_disclaimer": "Disclaimer",
+        "imprint_disclaimer_text": "The content of this app was created with the utmost care. We cannot guarantee the accuracy, completeness, or timeliness of the content, especially locations submitted by users.",
+        "privacy_title": "Privacy Policy",
+        "privacy_overview": "Overview",
+        "privacy_overview_text": "Protecting your personal data is important to us. This privacy policy informs you about the nature, scope, and purpose of personal data processing in ShareApp.",
+        "privacy_data_collected": "What Data Do We Collect?",
+        "privacy_data_email": "Email address (for registration and login)",
+        "privacy_data_name": "Name (for your public profile)",
+        "privacy_data_location": "Location data (only with your consent, for map display)",
+        "privacy_data_content": "Content you create (locations, reviews, comments)",
+        "privacy_purpose": "Purpose of Data Processing",
+        "privacy_purpose_text": "Your data is used exclusively to provide app functionality: displaying resources on the map, user profiles, reviews, and community features.",
+        "privacy_rights": "Your Rights (GDPR)",
+        "privacy_rights_text": "You have the right to access, correct, delete, and transfer your data. Contact us at info@shareapp.local for inquiries.",
+        "privacy_mapbox": "Map Service (Mapbox)",
+        "privacy_mapbox_text": "We use Mapbox for map display. Map tiles are loaded from Mapbox servers. Mapbox receives your IP address. For more information, see Mapbox's privacy policy."
     },
     "locationDetail": {
         "reviews_coming_soon": "Reviews coming soon",

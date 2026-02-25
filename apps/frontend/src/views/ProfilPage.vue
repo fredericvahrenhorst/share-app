@@ -58,10 +58,14 @@
                             <ion-label>{{ t('profile.settings') }}</ion-label>
                             <ion-icon :icon="chevronForward" slot="end" />
                         </ion-item>
-                        <ion-item button @click="openNotifications" class="rounded-none">
+                        <ion-item class="rounded-none">
                             <ion-icon :icon="notifications" slot="start" />
-                            <ion-label>{{ t('profile.notifications') }}</ion-label>
-                            <ion-icon :icon="chevronForward" slot="end" />
+                            <ion-toggle
+                                :checked="notificationsEnabled"
+                                @ionChange="toggleNotifications($event)"
+                            >
+                                <ion-label>{{ t('profile.notifications') }}</ion-label>
+                            </ion-toggle>
                         </ion-item>
                         <ion-item v-if="notificationsEnabled && notifPermission !== 'granted'" class="rounded-none" lines="none">
                             <ion-note class="text-xs">
@@ -73,7 +77,15 @@
                         <ion-item button @click="openPrivacy" class="rounded-none">
                             <ion-icon :icon="shield" slot="start" />
                             <ion-label>{{ t('profile.privacy') }}</ion-label>
-                            <ion-icon :icon="chevronForward" slot="end" />
+                            <ion-select
+                                :value="privacySetting"
+                                interface="popover"
+                                @ionChange="changePrivacy($event)"
+                            >
+                                <ion-select-option value="public">{{ t('profile.privacy_public') }}</ion-select-option>
+                                <ion-select-option value="friends">{{ t('profile.privacy_friends') }}</ion-select-option>
+                                <ion-select-option value="private">{{ t('profile.privacy_private') }}</ion-select-option>
+                            </ion-select>
                         </ion-item>
                         <ion-item button @click="openHelp" class="rounded-none">
                             <ion-icon :icon="helpCircle" slot="start" />
@@ -155,9 +167,15 @@
                     </ion-button>
 
                     <!-- Abmelden -->
-                    <ion-button expand="block" fill="outline" color="danger" @click="handleLogout">
+                    <ion-button expand="block" fill="outline" color="danger" class="mb-3" @click="handleLogout">
                         <ion-icon :icon="logOut" slot="start" />
                         {{ t('profile.logout') }}
+                    </ion-button>
+
+                    <!-- Account löschen -->
+                    <ion-button expand="block" fill="clear" color="medium" size="small" @click="handleDeleteAccount">
+                        <ion-icon :icon="trashOutline" slot="start" />
+                        {{ t('profile.delete_account') }}
                     </ion-button>
                 </template>
             </div>
@@ -180,6 +198,9 @@ import {
     IonButton,
     IonImg,
     IonNote,
+    IonToggle,
+    IonSelect,
+    IonSelectOption,
 } from '@ionic/vue'
 import {
     settings,
@@ -192,8 +213,9 @@ import {
     personCircleOutline,
     createOutline,
     peopleOutline,
+    trashOutline,
 } from 'ionicons/icons'
-import { modalController } from '@ionic/vue'
+import { modalController, alertController } from '@ionic/vue'
 import EditProfileModal from '../components/EditProfileModal.vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -218,6 +240,31 @@ const { favorites } = storeToRefs(favoritesStore)
 const favoritesCount = computed(() => favorites.value?.length ?? 0)
 
 const avatarUrl = computed(() => useAvatarUrl(user.value?.avatar))
+
+const notificationsEnabled = computed(() => user.value?.preferences?.notifications ?? true)
+const privacySetting = computed(() => user.value?.preferences?.privacy || 'public')
+
+async function toggleNotifications(event) {
+    const enabled = event.detail.checked
+    try {
+        await userStore.updateUser({
+            preferences: { ...user.value?.preferences, notifications: enabled },
+        })
+    } catch (err) {
+        // apiCall zeigt Toast
+    }
+}
+
+async function changePrivacy(event) {
+    const value = event.detail.value
+    try {
+        await userStore.updateUser({
+            preferences: { ...user.value?.preferences, privacy: value },
+        })
+    } catch (err) {
+        // apiCall zeigt Toast
+    }
+}
 
 const REPUTATION_LEVEL_LABELS = {
     newcomer: 'Neuling',
@@ -310,20 +357,47 @@ function openSettings() {
     showInDevelopmentToast()
 }
 
-function openNotifications() {
-    showInDevelopmentToast()
-}
-
-function openPrivacy() {
-    showInDevelopmentToast()
-}
-
 function openHelp() {
     showInDevelopmentToast()
 }
 
 function openAbout() {
     showInDevelopmentToast()
+}
+
+async function handleDeleteAccount() {
+    const alert = await alertController.create({
+        header: t('profile.delete_account'),
+        message: t('profile.delete_account_confirm'),
+        buttons: [
+            { text: t('common.cancel'), role: 'cancel' },
+            {
+                text: t('profile.delete_account_action'),
+                role: 'destructive',
+                handler: async () => {
+                    const result = await userStore.deleteAccount()
+                    if (result.success) {
+                        await favoritesStore.fetchFavorites()
+                        const toast = await toastController.create({
+                            message: t('profile.delete_account_success'),
+                            duration: 3000,
+                            color: 'success',
+                        })
+                        await toast.present()
+                        router.push({ name: 'Home' })
+                    } else {
+                        const toast = await toastController.create({
+                            message: result.errors?.[0] || t('profile.delete_account_error'),
+                            duration: 3000,
+                            color: 'danger',
+                        })
+                        await toast.present()
+                    }
+                },
+            },
+        ],
+    })
+    await alert.present()
 }
 
 async function openEditProfile() {

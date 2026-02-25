@@ -48,6 +48,11 @@ const routes = [
         beforeEnter: requireAuth,
     },
     {
+        path: '/legal',
+        name: 'Legal',
+        component: () => import('@/views/LegalPage.vue'), /* eslint-disable-line */
+    },
+    {
         path: '/activity',
         name: 'Activity',
         component: () => import('@/views/ActivityFeedPage.vue'), /* eslint-disable-line */

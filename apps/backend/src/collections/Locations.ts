@@ -33,6 +33,7 @@ export const Locations: CollectionConfig = {
   slug: 'locations',
   admin: {
     useAsTitle: 'name',
+    listSearchableFields: ['name', 'address.city', 'address.street'],
   },
   access: {
     read: () => true,
@@ -68,6 +69,9 @@ export const Locations: CollectionConfig = {
       type: 'point',
       label: 'Koordinaten',
       required: true,
+      admin: {
+        step: 0.0001,
+      },
     },
     {
       name: 'address',

@@ -74,6 +74,10 @@ export interface Config {
     reviews: Review;
     favorites: Favorite;
     reports: Report;
+    'review-votes': ReviewVote;
+    activities: Activity;
+    'location-confirmations': LocationConfirmation;
+    'status-comments': StatusComment;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -87,6 +91,10 @@ export interface Config {
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     favorites: FavoritesSelect<false> | FavoritesSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
+    'review-votes': ReviewVotesSelect<false> | ReviewVotesSelect<true>;
+    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    'location-confirmations': LocationConfirmationsSelect<false> | LocationConfirmationsSelect<true>;
+    'status-comments': StatusCommentsSelect<false> | StatusCommentsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -148,6 +156,8 @@ export interface User {
     notifications?: boolean | null;
     privacy?: ('public' | 'friends' | 'private') | null;
   };
+  reputation?: number | null;
+  reputationLevel?: ('newcomer' | 'active' | 'hero' | 'legend') | null;
   stats?: {
     locationsCreated?: number | null;
     reviewsWritten?: number | null;
@@ -278,6 +288,7 @@ export interface Location {
   verified?: boolean | null;
   averageRating?: number | null;
   reviewCount?: number | null;
+  confirmationCount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -292,6 +303,8 @@ export interface Review {
   rating: number;
   comment?: string | null;
   status?: ('active' | 'pending' | 'blocked') | null;
+  upvotes?: number | null;
+  downvotes?: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -320,6 +333,65 @@ export interface Report {
   adminNotes?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-votes".
+ */
+export interface ReviewVote {
+  id: string;
+  review: string | Review;
+  user: string | User;
+  type: 'up' | 'down';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities".
+ */
+export interface Activity {
+  id: string;
+  type: 'location_created' | 'review_added' | 'location_verified' | 'badge_earned' | 'location_confirmed';
+  actor: string | User;
+  location?: (string | null) | Location;
+  review?: (string | null) | Review;
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "location-confirmations".
+ */
+export interface LocationConfirmation {
+  id: string;
+  location: string | Location;
+  user: string | User;
+  comment?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "status-comments".
+ */
+export interface StatusComment {
+  id: string;
+  location: string | Location;
+  user: string | User;
+  message: string;
+  type?: ('status_update' | 'info' | 'warning') | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -355,6 +427,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'reports';
         value: string | Report;
+      } | null)
+    | ({
+        relationTo: 'review-votes';
+        value: string | ReviewVote;
+      } | null)
+    | ({
+        relationTo: 'activities';
+        value: string | Activity;
+      } | null)
+    | ({
+        relationTo: 'location-confirmations';
+        value: string | LocationConfirmation;
+      } | null)
+    | ({
+        relationTo: 'status-comments';
+        value: string | StatusComment;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -426,6 +514,8 @@ export interface UsersSelect<T extends boolean = true> {
         notifications?: T;
         privacy?: T;
       };
+  reputation?: T;
+  reputationLevel?: T;
   stats?:
     | T
     | {
@@ -544,6 +634,7 @@ export interface LocationsSelect<T extends boolean = true> {
   verified?: T;
   averageRating?: T;
   reviewCount?: T;
+  confirmationCount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -557,6 +648,8 @@ export interface ReviewsSelect<T extends boolean = true> {
   rating?: T;
   comment?: T;
   status?: T;
+  upvotes?: T;
+  downvotes?: T;
   createdAt?: T;
   updatedAt?: T;
 }
@@ -583,6 +676,53 @@ export interface ReportsSelect<T extends boolean = true> {
   adminNotes?: T;
   createdAt?: T;
   updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-votes_select".
+ */
+export interface ReviewVotesSelect<T extends boolean = true> {
+  review?: T;
+  user?: T;
+  type?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities_select".
+ */
+export interface ActivitiesSelect<T extends boolean = true> {
+  type?: T;
+  actor?: T;
+  location?: T;
+  review?: T;
+  metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "location-confirmations_select".
+ */
+export interface LocationConfirmationsSelect<T extends boolean = true> {
+  location?: T;
+  user?: T;
+  comment?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "status-comments_select".
+ */
+export interface StatusCommentsSelect<T extends boolean = true> {
+  location?: T;
+  user?: T;
+  message?: T;
+  type?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
