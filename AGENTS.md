@@ -18,9 +18,9 @@ ShareApp is a Turborepo monorepo with two apps and three packages. See `README.m
 2. Backend must be running before the frontend can fetch data.
 
 ### Environment files
-Copy from `.env.example` if `.env` doesn't exist:
-- `apps/backend/.env` — requires `DATABASE_URI` (MongoDB connection), `PAYLOAD_SECRET`
-- `apps/frontend/.env` — requires `API_URL` (default `http://localhost:3000/api`)
+The `.env` files should be generated from injected Cursor Cloud secrets (environment variables):
+- `apps/frontend/.env` — uses `MAPBOX_ACCESS_TOKEN`, `BASE_URL`, `API_URL`
+- `apps/backend/.env` — uses `DATABASE_URI`, `PAYLOAD_SECRET`, `FRONTEND_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_ADDRESS`, `SMTP_FROM_NAME`
 
 The backend database name in `DATABASE_URI` should be `share-app` (the name Payload creates by default).
 
