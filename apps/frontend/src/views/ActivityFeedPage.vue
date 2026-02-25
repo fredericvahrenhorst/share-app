@@ -43,7 +43,7 @@
                                     „{{ badgeLabel(activity.metadata.badge) }}"
                                 </span>
                             </p>
-                            <p class="text-xs text-gray-400 mt-0.5">
+                            <p class="text-xs text-neutral-400 mt-0.5">
                                 {{ formatTimeAgo(activity.createdAt) }}
                             </p>
                         </div>
