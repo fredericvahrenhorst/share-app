@@ -26,13 +26,16 @@ import 'tailwindcss/utilities.css' /* eslint-disable-line */
 import './css/main.css';
 
 import de from './locales/de.json';
+import en from './locales/en.json';
 
 const pinia = createPinia();
 const i18n = createI18n({
     locale: 'de',
+    fallbackLocale: 'de',
     legacy: false,
     messages: {
-        de
+        de,
+        en,
     },
 });
 

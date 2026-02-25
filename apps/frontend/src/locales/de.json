@@ -203,5 +203,26 @@
         "status_pending": "In Bearbeitung",
         "slider_previous": "Vorheriges Bild",
         "slider_next": "Nächstes Bild"
+    },
+    "tabs": {
+        "map": "Karte",
+        "categories": "Kategorien",
+        "favorites": "Favoriten",
+        "profile": "Profil"
+    },
+    "errors": {
+        "generic": "Ein Fehler ist aufgetreten. Bitte versuche es später erneut.",
+        "not_authenticated": "Nicht angemeldet",
+        "login_failed": "Anmeldung fehlgeschlagen. Bitte E-Mail und Passwort prüfen.",
+        "register_failed": "Registrierung fehlgeschlagen. Bitte Eingaben prüfen.",
+        "forgot_password_failed": "Anfrage fehlgeschlagen. Bitte E-Mail prüfen.",
+        "reset_password_failed": "Passwort-Reset fehlgeschlagen.",
+        "delete_account_failed": "Account-Löschung fehlgeschlagen.",
+        "invalid_response": "Ungültige Antwort vom Server",
+        "unexpected": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "searchHistory": {
+        "title": "Letzte Suchen",
+        "clear": "Verlauf löschen"
     }
 }

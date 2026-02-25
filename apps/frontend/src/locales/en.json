@@ -1,0 +1,228 @@
+{
+    "pages": {
+        "start": {
+            "title": "App Start",
+            "welcome": "Welcome to the Ionic App!"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "imprint": "Imprint",
+        "data_protection": "Privacy Policy",
+        "dark_mode": "Dark Mode"
+    },
+    "menu": {
+        "settings": "Settings"
+    },
+    "search": {
+        "title": "Search",
+        "placeholder": "Search location, POI or address...",
+        "placeholder-local": "Search Point of Interest...",
+        "placeholder_external": "Search place or address...",
+        "local_places": "Find POI",
+        "external_places": "Your Location",
+        "category_label": "Category",
+        "all_categories": "All Categories",
+        "loading": "Searching...",
+        "results_found": "result found",
+        "results_found_plural": "results found",
+        "no_results_title": "No results found",
+        "no_results_description": "Try different search terms or change the category",
+        "no_results_description_external": "Try different search terms or a different spelling",
+        "start_title": "Browse Points of Interest",
+        "start_title_external": "Search your location",
+        "start_description": "Enter a search term to find POIs",
+        "start_description_external": "Enter a place or address",
+        "pagination": {
+            "page": "Page",
+            "of": "of",
+            "back": "Back",
+            "next": "Next"
+        }
+    },
+    "filter": {
+        "title": "Filter",
+        "categories": "Categories",
+        "radius": "Radius",
+        "availability": "Availability",
+        "all": "All",
+        "open": "Open",
+        "closed": "Closed",
+        "all_distances": "All distances",
+        "1_km": "1 km",
+        "5_km": "5 km",
+        "10_km": "10 km",
+        "25_km": "25 km",
+        "50_km": "50 km",
+        "apply": "Apply filters",
+        "reset": "Reset filters",
+        "clear_all": "Clear all filters",
+        "radius_label": "Radius",
+        "locations_found": "locations found",
+        "locations_found_plural": "locations found"
+    },
+    "radius": {
+        "unit": "km",
+        "label": "Radius",
+        "searchHere": "Search here"
+    },
+    "favorites": {
+        "title": "Favorites",
+        "loading": "Loading favorites…",
+        "empty_title": "No Favorites",
+        "empty_description": "You have not added any places to your favorites yet.",
+        "login_required_title": "Login required",
+        "login_required_description": "Log in to view and manage your favorites.",
+        "login": "Log in",
+        "add": "Save",
+        "remove": "Remove from favorites"
+    },
+    "addResource": {
+        "title": "Add Resource",
+        "steps": {
+            "location": "Location",
+            "category": "Category",
+            "details": "Details"
+        },
+        "step1": {
+            "title": "Where is the resource located?",
+            "searchPlaceholder": "Search address or place...",
+            "useCurrentLocation": "Use current location"
+        },
+        "step2": {
+            "title": "What kind of resource is it?"
+        },
+        "step3": {
+            "title": "Tell us more about the resource",
+            "name": "Resource name",
+            "namePlaceholder": "e.g. Foodsharing fridge downtown",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe the resource and how it can be used...",
+            "rules": "Rules & Notes",
+            "rulesPlaceholder": "e.g. No meat please, only non-perishable food",
+            "is24_7": "Available 24/7",
+            "tags": "Tags"
+        },
+        "submit": "Add resource",
+        "success": {
+            "title": "Successfully added!",
+            "message": "Your resource has been added and will be published after review."
+        },
+        "error": {
+            "title": "Error",
+            "message": "An error occurred while adding the resource. Please try again."
+        }
+    },
+    "common": {
+        "ok": "OK",
+        "back": "Back",
+        "next": "Next",
+        "cancel": "Cancel",
+        "save": "Save"
+    },
+    "misc": {
+        "close": "Close",
+        "cancel": "Cancel",
+        "back": "Back",
+        "to": "to",
+        "oclock": "o'clock",
+        "is_loading": "Loading data…",
+        "apply": "Apply"
+    },
+    "auth": {
+        "login_title": "Log in",
+        "login_email": "Email",
+        "login_password": "Password",
+        "login_submit": "Log in",
+        "login_loading": "Logging in…",
+        "login_no_account": "No account yet?",
+        "register_link": "Register now",
+        "register_title": "Register",
+        "register_name": "Name",
+        "register_email": "Email",
+        "register_password": "Password",
+        "register_submit": "Create account",
+        "register_loading": "Registering…",
+        "register_has_account": "Already have an account?",
+        "login_link": "Log in now",
+        "back_to_home": "Back to home"
+    },
+    "profile": {
+        "title": "Profile",
+        "not_logged_in": "Not logged in",
+        "login_prompt": "Log in to view your profile.",
+        "login": "Log in",
+        "logout": "Log out",
+        "settings": "Settings",
+        "notifications": "Notifications",
+        "privacy": "Privacy",
+        "help": "Help & Support",
+        "about": "About the App",
+        "activity": "Your Activity",
+        "favorites_count": "Favorites",
+        "locations_count": "Created",
+        "visited_count": "Visited",
+        "reviews_count": "Reviews",
+        "reputation": "Reputation",
+        "points": "Points",
+        "badges": "Badges",
+        "in_development": "In Development",
+        "edit_title": "Edit Profile",
+        "edit_name": "Name",
+        "edit_bio": "About me",
+        "edit_bio_placeholder": "A few words about yourself…",
+        "edit_avatar_hint": "Tap to change profile picture",
+        "edit_name_required": "Please enter a name.",
+        "edit_success": "Profile saved.",
+        "edit_error": "Save failed. Please try again.",
+        "activity_feed": "Community Feed"
+    },
+    "activity": {
+        "title": "Community Feed",
+        "loading": "Loading activities…",
+        "empty_title": "No activities yet",
+        "empty_description": "Community news will appear here soon.",
+        "load_more": "Load more"
+    },
+    "locationDetail": {
+        "reviews_coming_soon": "Reviews coming soon",
+        "no_description": "No description",
+        "address": "Address",
+        "availability": "Availability",
+        "contact": "Contact",
+        "description": "Description",
+        "route": "Directions",
+        "share": "Share",
+        "favorite_login_hint": "Please log in to save places",
+        "tags": "Tags",
+        "accessibility": "Accessibility",
+        "wheelchair_accessible": "Wheelchair accessible",
+        "accessible_toilet": "Accessible toilet",
+        "accessible_parking": "Accessible parking",
+        "verified": "Verified",
+        "status_pending": "Pending",
+        "slider_previous": "Previous image",
+        "slider_next": "Next image"
+    },
+    "tabs": {
+        "map": "Map",
+        "categories": "Categories",
+        "favorites": "Favorites",
+        "profile": "Profile"
+    },
+    "errors": {
+        "generic": "An error occurred. Please try again later.",
+        "not_authenticated": "Not authenticated",
+        "login_failed": "Login failed. Please check email and password.",
+        "register_failed": "Registration failed. Please check your input.",
+        "forgot_password_failed": "Request failed. Please check your email.",
+        "reset_password_failed": "Password reset failed.",
+        "delete_account_failed": "Account deletion failed.",
+        "invalid_response": "Invalid server response",
+        "unexpected": "An unexpected error occurred."
+    },
+    "searchHistory": {
+        "title": "Recent Searches",
+        "clear": "Clear History"
+    }
+}
