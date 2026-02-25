@@ -116,12 +116,12 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
 
 - [ ] **4.1.1** „Beliebte in deiner Nähe" auf Kategorien-Seite
   - Nearby-Locations pro Kategorie via `/api/search/locations/nearby` + Category-Filter
-- [ ] **4.1.2** Barrierefreiheits-Filter in LocationFilter
-  - Felder `accessibility.wheelchairAccessible/accessibleToilet/accessibleParking` existieren im Backend
-  - Frontend-Filter (Checkboxen) + Backend-Query fehlen
-- [ ] **4.1.3** Öffnungszeiten-Filter
-  - „Jetzt geöffnet": Client-seitig gegen `openingHours.schedule` prüfen
-  - „24/7": Filter auf `openingHours.is24_7 === true`
+- [x] **4.1.2** Barrierefreiheits-Filter in LocationFilter
+  - 3 Checkboxen: Rollstuhlgerecht, Barrierefreies WC, Behindertenparkplatz
+  - locationsStore filtert nach accessibility-Feldern; getAllLocations lädt accessibility mit
+- [x] **4.1.3** Öffnungszeiten-Filter
+  - Radio-Gruppe: Alle / Jetzt geöffnet / 24/7 geöffnet
+  - Client-seitige Prüfung gegen openingHours.schedule + Wochentag/Uhrzeit
 - [ ] **4.1.4** Breadcrumb-Navigation für aktive Filter
   - Chips/Tags über der Karte, die aktive Filter anzeigen und einzeln entfernbar sind
 
@@ -186,15 +186,15 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
 
 ### 4.6 Backend-Härtung
 
-- [~] **4.6.1** Rate-Limiting aktivieren
-  - `rate-limit.ts` Middleware existiert, ist aber **nicht in Routes integriert**
-  - In Payload-Endpoints und Next.js-Middleware einbinden
+- [x] **4.6.1** Rate-Limiting aktiviert
+  - Next.js `middleware.ts` für `/api/*` Routen; API: 100 req/15min, Auth: 10 req/15min
+  - 429-Response mit Retry-After + X-RateLimit Headers
 - [ ] **4.6.2** Geospatial-Indexing
   - MongoDB 2dsphere-Index auf `locations.coordinates` für performante Nearby-Queries
   - Aktuell nutzt `/search/locations/nearby` Turf.js client-seitig (lädt alle Locations)
-- [ ] **4.6.3** Admin-UI Location-Formular fixen
-  - React Infinite-Render-Loop bei Namenseingabe im Payload Admin (Max update depth exceeded)
-  - Vermutlich `useAsTitle: 'name'` Konflikt mit einem Re-Render-Trigger
+- [~] **4.6.3** Admin-UI Location-Formular
+  - `listSearchableFields` und `admin.step` auf coordinates gesetzt
+  - Render-Loop kann Payload-Version-spezifisch sein; bei Persistenz → Payload-Update prüfen
 
 ---
 
@@ -243,8 +243,9 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
   - Endpoint: `/api/users/:id/export`
 - [ ] **5.3.3** Cookie-/Consent-Banner
   - Derzeit kein Consent-Flow; für Mapbox-Tiles und Analytics relevant
-- [ ] **5.3.4** Datenschutzerklärung & Impressum
-  - SettingsModal-Links sind Platzhalter; echte Seiten/Modals anlegen
+- [x] **5.3.4** Datenschutzerklärung & Impressum
+  - LegalPage.vue mit ?type=imprint/privacy; SettingsModal verlinkt korrekt
+  - DSGVO-konforme Inhalte: Datenerhebung, Rechte, Mapbox-Hinweis
 
 ### 5.4 PWA & Mobile-Optimierung
 
