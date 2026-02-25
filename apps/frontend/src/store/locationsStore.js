@@ -3,11 +3,7 @@ import { defineStore } from 'pinia';
 import apiCall from '../composables/apiCall';
 import { distance as turfDistance } from '@turf/distance';
 import { point } from '@turf/helpers';
-import { storeToRefs } from 'pinia';
 import { useAppStore } from './appStore';
-
-const appStore = useAppStore();
-const { geo } = storeToRefs(appStore);
 
 export const useLocationsStore = defineStore('locations', {
     state: () => ({
@@ -197,7 +193,8 @@ export const useLocationsStore = defineStore('locations', {
                     // Distanzberechnung und Sortierung
 
 
-                    if (geo.value && Array.isArray(results)) {
+                    const geoRef = useAppStore().geo
+                    if (geoRef && Array.isArray(results)) {
                         results = this.addDistanceToLocations(results);
                         results = this.sortLocationsByDistance(results);
                     }
@@ -261,7 +258,8 @@ export const useLocationsStore = defineStore('locations', {
             }
         },
         addDistanceToLocations(locations) {
-            const userPoint = point([geo.value.long, geo.value.lat]);
+            const geoData = useAppStore().geo
+            const userPoint = point([geoData.long, geoData.lat]);
             return locations.map(location => {
                 if (location.coordinates && Array.isArray(location.coordinates) && location.coordinates.length === 2) {
                     const locationPoint = point(location.coordinates);
