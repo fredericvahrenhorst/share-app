@@ -201,20 +201,23 @@ Begriffe im Code: **Location** (nicht Resource). Stand: **25. Februar 2026**.
 
 ### 5.1 Community & Engagement
 
-- [ ] **5.1.1** Upvote/Downvote für Reviews
-  - Bewertungen nach Hilfsbereitschaft sortierbar; Missbrauchsschutz (1 Vote pro User)
-- [ ] **5.1.2** Reputation-System
-  - Punkte für: Location erstellt (+10), Review geschrieben (+5), Favorisiert werden (+2)
-  - Level/Ränge anzeigen (z. B. „Neuling", „Aktiver Teiler", „Community-Held")
-- [ ] **5.1.3** Automatische Badge-Vergabe
-  - Backend-Hook: Badge „Ersteller" nach erster Location, „Verifiziert" nach 10 Reviews etc.
-  - Badge-Felder existieren bereits im User-Schema
-- [ ] **5.1.4** Community-Validierung
-  - Neue Standorte bekommen Status `pending`; nach X Bestätigungen → `active`
-  - Verhindert Spam und falsche Einträge
-- [ ] **5.1.5** Aktivitäts-Feed
-  - Timeline: „Neuer Standort in deiner Nähe", „Neue Bewertung für deinen Standort"
-  - Entweder auf der Karte als Overlay oder als eigener Tab
+- [x] **5.1.1** Upvote/Downvote für Reviews
+  - ReviewVotes Collection mit 1-Vote-pro-User; Thumbs-Up/Down Buttons in LocationDetail
+  - Automatische Zähler-Aktualisierung (upvotes/downvotes auf Reviews)
+- [x] **5.1.2** Reputation-System
+  - Punkte: Location erstellt (+10), Review geschrieben (+5), Favorisiert (+2)
+  - Level: Neuling (0-14), Aktiver Teiler (15-49), Community-Held (50-99), Legende (100+)
+  - Anzeige in ProfilPage mit Fortschrittsbalken + in Reviews (Level-Badge am Autorname)
+- [x] **5.1.3** Automatische Badge-Vergabe
+  - Backend afterChange-Hooks: „Ersteller" (1+ Location), „Verifiziert" (10+ Reviews), „Helfer" (5+ Reviews + 3+ Locations)
+  - Badges in ProfilPage mit Icons und Labels angezeigt; Activity-Feed-Eintrag bei Vergabe
+- [x] **5.1.4** Community-Validierung
+  - LocationConfirmations Collection; 3 Bestätigungen → auto-activate + verified
+  - UI-Banner in LocationDetail für unverifizierte Standorte mit „Bestätigen"-Button
+- [x] **5.1.5** Aktivitäts-Feed
+  - Activities Collection + GET /api/community/feed Endpoint mit Pagination
+  - ActivityFeedPage (/activity) mit Timeline, Icons pro Typ, relative Zeitangaben
+  - Erreichbar über „Community-Feed"-Button in ProfilPage
 
 ### 5.2 Erweiterte Suche & Discovery
 
