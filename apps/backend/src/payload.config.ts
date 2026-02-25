@@ -27,6 +27,7 @@ import { exportDataEndpoint } from './endpoints/exportData'
 import { tagSearchEndpoint } from './endpoints/tagSearch'
 import { bulkImportEndpoint } from './endpoints/bulkImport'
 import { apiDocsEndpoint } from './endpoints/apiDocs'
+import { adminDashboardEndpoint } from './endpoints/adminDashboard'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -88,6 +89,7 @@ export default buildConfig({
     tagSearchEndpoint,
     bulkImportEndpoint,
     apiDocsEndpoint,
+    adminDashboardEndpoint,
   ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_FROM_ADDRESS || 'info@shareapp.local',
