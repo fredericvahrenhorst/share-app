@@ -175,7 +175,8 @@
         "edit_name_required": "Bitte gib einen Namen ein.",
         "edit_success": "Profil gespeichert.",
         "edit_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
-        "activity_feed": "Community-Feed"
+        "activity_feed": "Community-Feed",
+        "enable_notifications": "Browser-Benachrichtigungen aktivieren"
     },
     "activity": {
         "title": "Community-Feed",
@@ -203,5 +204,37 @@
         "status_pending": "In Bearbeitung",
         "slider_previous": "Vorheriges Bild",
         "slider_next": "Nächstes Bild"
+    },
+    "tabs": {
+        "map": "Karte",
+        "categories": "Kategorien",
+        "favorites": "Favoriten",
+        "profile": "Profil"
+    },
+    "errors": {
+        "generic": "Ein Fehler ist aufgetreten. Bitte versuche es später erneut.",
+        "not_authenticated": "Nicht angemeldet",
+        "login_failed": "Anmeldung fehlgeschlagen. Bitte E-Mail und Passwort prüfen.",
+        "register_failed": "Registrierung fehlgeschlagen. Bitte Eingaben prüfen.",
+        "forgot_password_failed": "Anfrage fehlgeschlagen. Bitte E-Mail prüfen.",
+        "reset_password_failed": "Passwort-Reset fehlgeschlagen.",
+        "delete_account_failed": "Account-Löschung fehlgeschlagen.",
+        "invalid_response": "Ungültige Antwort vom Server",
+        "unexpected": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "searchHistory": {
+        "title": "Letzte Suchen",
+        "clear": "Verlauf löschen"
+    },
+    "consent": {
+        "title": "Kartenanzeige & Datenschutz",
+        "text": "Diese App nutzt Mapbox für die Kartenanzeige. Dabei werden Kartenkacheln von externen Servern geladen und deine IP-Adresse übertragen. Ohne Mapbox kann die Karte nicht angezeigt werden.",
+        "accept": "Akzeptieren & Weiter",
+        "learn_more": "Mehr erfahren"
+    },
+    "search_tags": {
+        "title": "Populäre Tags",
+        "loading": "Tags werden geladen…",
+        "error": "Tags konnten nicht geladen werden"
     }
 }

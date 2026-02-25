@@ -1,0 +1,141 @@
+/* Style: Bold — Font: Space Grotesk */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+.style-bold .popupLocation {
+    --font-detail: 'Space Grotesk', system-ui, sans-serif;
+}
+
+.style-bold .popupLocation ion-toolbar {
+    --background: #333333;
+    --color: #ffffff;
+    --border-color: transparent;
+    font-family: var(--font-detail);
+}
+
+.style-bold .popupLocation ion-toolbar ion-icon {
+    color: #D7EB80;
+}
+
+.style-bold .popupLocation ion-content {
+    --background: #f8f8f6;
+    font-family: var(--font-detail);
+}
+
+.style-bold .popupLocation ion-title {
+    font-family: var(--font-detail);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+}
+
+/* Image area: no border-radius, full-bleed feel */
+.style-bold .popupLocation .relative.mb-4 .rounded-xl {
+    border-radius: 0;
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+.style-bold .popupLocation .relative.mb-4 img {
+    border-radius: 0;
+}
+
+/* Section titles: big and bold */
+.style-bold .popupLocation h3 {
+    font-family: var(--font-detail);
+    font-weight: 700;
+    font-size: 1rem;
+    color: #333333;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 3px solid #D7EB80;
+    display: inline-block;
+}
+
+/* Info cards: bold colored blocks */
+.style-bold .popupLocation .bg-blue-50 {
+    background: #275243;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.style-bold .popupLocation .bg-blue-50 .font-medium,
+.style-bold .popupLocation .bg-blue-50 .text-gray-700 {
+    color: #ffffff;
+}
+
+.style-bold .popupLocation .bg-blue-50 ion-icon {
+    color: #D7EB80;
+}
+
+.style-bold .popupLocation .bg-purple-50 {
+    background: #333333;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.style-bold .popupLocation .bg-purple-50 .font-medium,
+.style-bold .popupLocation .bg-purple-50 .text-gray-700 {
+    color: #ffffff;
+}
+
+.style-bold .popupLocation .bg-purple-50 ion-icon {
+    color: #D7EB80;
+}
+
+/* Tags: filled chips with brand color */
+.style-bold .popupLocation .bg-gray-100 {
+    background: #D7EB80;
+    color: #333333;
+    font-weight: 600;
+    border-radius: 0.25rem;
+}
+
+/* Rating: use featured color */
+.style-bold .popupLocation .text-yellow-400 {
+    color: #D7EB80;
+}
+
+/* Action buttons: chunky with featured color */
+.style-bold .popupLocation .border-t {
+    border-color: #deded9;
+    padding-top: 1rem;
+}
+
+.style-bold .popupLocation ion-button[fill="clear"] {
+    --color: #333333;
+    font-family: var(--font-detail);
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+.style-bold .popupLocation ion-button[fill="solid"] {
+    --background: #D7EB80;
+    --background-hover: #BBCF65;
+    --color: #333333;
+    --border-radius: 0.5rem;
+    font-family: var(--font-detail);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Reviews: bold divider */
+.style-bold .popupLocation .border-b {
+    border-color: #deded9;
+    border-width: 2px;
+}
+
+/* Community confirmation: lime accent */
+.style-bold .popupLocation .bg-amber-50 {
+    background: #D7EB80;
+    border-color: #A1B353;
+    color: #333333;
+}
+
+.style-bold .popupLocation .text-amber-800,
+.style-bold .popupLocation .text-amber-600 {
+    color: #333333;
+}

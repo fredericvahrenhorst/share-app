@@ -1,7 +1,22 @@
-import type { CollectionConfig, CollectionAfterChangeHook } from 'payload'
+import type {
+  CollectionConfig,
+  CollectionAfterChangeHook,
+  CollectionBeforeChangeHook,
+} from 'payload'
 
 import { adminOnlyFieldUpdate, isAdmin, isAdminOrCreator, isAuthenticated } from '../accessControl'
 import { onLocationCreated } from '../hooks/communityHooks'
+import { checkDuplicateLocation } from '../hooks/spamDetection'
+
+const locationBeforeChangeHook: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
+  if (operation === 'create' && data.coordinates && data.name) {
+    const { isDuplicate } = await checkDuplicateLocation(req.payload, data.coordinates, data.name)
+    if (isDuplicate) {
+      throw new Error('Ein ähnlicher Standort existiert bereits in der Nähe.')
+    }
+  }
+  return data
+}
 
 const locationAfterChangeHook: CollectionAfterChangeHook = async ({ doc, req, operation }) => {
   if (operation === 'create') {
@@ -26,6 +41,7 @@ export const Locations: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
+    beforeChange: [locationBeforeChangeHook],
     afterChange: [locationAfterChangeHook],
   },
   fields: [

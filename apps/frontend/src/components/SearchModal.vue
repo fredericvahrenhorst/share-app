@@ -195,14 +195,68 @@
             </div>
 
             <!-- Start-Zustand -->
-            <div v-else class="text-center py-12">
-                <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
-                <h3 class="text-lg font-medium text-gray-600 mb-2">
-                    {{ searchMode === 'local' ? t('search.start_title') : t('search.start_title_external') }}
-                </h3>
-                <p class="text-sm text-gray-500">
-                    {{ searchMode === 'local' ? t('search.start_description') : t('search.start_description_external') }}
-                </p>
+            <div v-else class="py-4">
+                <!-- Search History -->
+                <div v-if="searchHistory.length > 0" class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-sm font-semibold text-gray-700">
+                            {{ t('searchHistory.title') }}
+                        </h4>
+                        <ion-button
+                            fill="clear"
+                            size="small"
+                            class="text-xs"
+                            @click="clearSearchHistory"
+                        >
+                            {{ t('searchHistory.clear') }}
+                        </ion-button>
+                    </div>
+                    <div class="space-y-1">
+                        <ion-item
+                            v-for="(item, index) in searchHistory"
+                            :key="index"
+                            button
+                            lines="none"
+                            class="cursor-pointer"
+                            @click="selectHistoryItem(item)"
+                        >
+                            <ion-icon
+                                :icon="timeOutline"
+                                slot="start"
+                                class="text-gray-400 mr-2"
+                                size="small"
+                            />
+                            <ion-label class="text-sm text-gray-700">{{ item }}</ion-label>
+                        </ion-item>
+                    </div>
+                </div>
+
+                <!-- Popular Tags -->
+                <div v-if="popularTags.length > 0" class="mb-6">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                        {{ t('search_tags.title') }}
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            v-for="tag in popularTags"
+                            :key="typeof tag === 'string' ? tag : tag.tag || tag.id"
+                            class="px-3 py-1.5 rounded-full text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
+                            @click="selectTag(tag)"
+                        >
+                            {{ typeof tag === 'string' ? tag : tag.tag || tag.name }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center py-8">
+                    <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
+                    <h3 class="text-lg font-medium text-gray-600 mb-2">
+                        {{ searchMode === 'local' ? t('search.start_title') : t('search.start_title_external') }}
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                        {{ searchMode === 'local' ? t('search.start_description') : t('search.start_description_external') }}
+                    </p>
+                </div>
             </div>
         </ion-content>
     </ion-modal>
@@ -242,12 +296,14 @@ import {
     chevronForwardOutline,
     chevronDownOutline,
     locationOutline,
-    globeOutline
+    globeOutline,
+    timeOutline
 } from 'ionicons/icons';
 import { useI18n } from 'vue-i18n';
 import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
 import LocationCard from './LocationCard.vue';
+import apiCall from '../composables/apiCall';
 
 // Props
 const props = defineProps({
@@ -287,8 +343,69 @@ const searchMode = ref('external'); // 'local' oder 'external'
 const mapboxResults = ref([]);
 const isMapboxSearching = ref(false);
 
+// Popular Tags
+const popularTags = ref([])
+const isLoadingTags = ref(false)
+
+async function fetchPopularTags() {
+    if (popularTags.value.length > 0) return
+    isLoadingTags.value = true
+    try {
+        const response = await apiCall('search/tags', { method: 'GET' })
+        if (response?.data) {
+            popularTags.value = response.data
+        } else if (Array.isArray(response)) {
+            popularTags.value = response
+        }
+    } catch {
+        // Fail silently
+    } finally {
+        isLoadingTags.value = false
+    }
+}
+
+function selectTag(tag) {
+    const tagText = typeof tag === 'string' ? tag : tag.tag || tag.name || ''
+    if (!tagText) return
+    searchQuery.value = tagText
+    performSearch()
+}
+
 // Mapbox API Token
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
+
+// Search History
+const SEARCH_HISTORY_KEY = 'searchHistory'
+const MAX_HISTORY_ITEMS = 10
+const searchHistory = ref(loadSearchHistory())
+
+function loadSearchHistory() {
+    try {
+        const stored = localStorage.getItem(SEARCH_HISTORY_KEY)
+        return stored ? JSON.parse(stored) : []
+    } catch {
+        return []
+    }
+}
+
+function addToSearchHistory(query) {
+    if (!query || query.trim().length < 3) return
+    const trimmed = query.trim()
+    const filtered = searchHistory.value.filter((item) => item !== trimmed)
+    filtered.unshift(trimmed)
+    searchHistory.value = filtered.slice(0, MAX_HISTORY_ITEMS)
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(searchHistory.value))
+}
+
+function clearSearchHistory() {
+    searchHistory.value = []
+    localStorage.removeItem(SEARCH_HISTORY_KEY)
+}
+
+function selectHistoryItem(query) {
+    searchQuery.value = query
+    performSearch()
+}
 
 // Debouncing für Live-Suche
 let searchTimeout = null;
@@ -330,6 +447,8 @@ const performSearch = async() => {
     if (query.length < 3) {
         return;
     }
+
+    addToSearchHistory(query);
 
     if (searchMode.value === 'local') {
         await performLocalSearch(query);
@@ -477,6 +596,7 @@ const handleClickOutside = (event) => {
 // Load
 onMounted(async() => {
     document.addEventListener('click', handleClickOutside);
+    fetchPopularTags();
 });
 
 onUnmounted(() => {

@@ -14,6 +14,7 @@
                 class="flex gap-2 grow blur-bg-light text-light-gray-96"
                 lines="none"
                 color="transparent"
+                aria-label="Search locations"
             >
                 <ion-icon
                     :icon="searchOutline"
@@ -35,6 +36,7 @@
                 fill="clear"
                 class="p-0 shrink-0 blur-bg-light min-h-11 text-light-gray-96"
                 size="small"
+                aria-label="Open filters"
             >
                 <ion-icon
                     :icon="funnelOutline"
@@ -42,6 +44,23 @@
                     class="text-current"
                 />
             </ion-button>
+        </div>
+
+        <!-- Filter Chips -->
+        <div
+            v-if="activeFilterChips.length > 0"
+            class="fixed top-[calc(var(--ion-statusbar-padding)+5.5rem)] left-2 right-2 z-50
+            flex flex-wrap gap-1.5"
+        >
+            <ion-chip
+                v-for="chip in activeFilterChips"
+                :key="chip.key"
+                class="blur-bg-light text-xs"
+                @click="removeFilter(chip)"
+            >
+                <ion-label>{{ chip.label }}</ion-label>
+                <ion-icon :icon="closeCircle" />
+            </ion-chip>
         </div>
 
         <mapbox-map
@@ -135,6 +154,8 @@
 
             <div
                 class="w-10 h-10 rounded-full flex items-center justify-center blur-bg-light text-blue-500"
+                role="button"
+                aria-label="Go to my location"
                 @click="getGeoLocation(true)"
             >
                 <ion-icon
@@ -153,6 +174,7 @@
                 color="primary"
                 class="w-14 h-14 shadow-lg"
                 @click="goToAddLocation"
+                aria-label="Add new location"
             >
                 <ion-icon :icon="addOutline" size="large" />
             </ion-button>
@@ -190,8 +212,8 @@ import { point } from '@turf/helpers';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { MapboxMap, MapboxMarker, MapboxGeogeometryCircle } from 'vue-mapbox-ts';
-import { IonItem, IonInput, IonIcon, IonButton } from '@ionic/vue';
-import { navigate, searchOutline, funnelOutline, heartOutline, addOutline } from 'ionicons/icons';
+import { IonItem, IonInput, IonIcon, IonButton, IonChip, IonLabel } from '@ionic/vue';
+import { navigate, searchOutline, funnelOutline, heartOutline, addOutline, closeCircle } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
@@ -221,6 +243,43 @@ const userStore = useUserStore();
 const { filterState, filteredLocations } = storeToRefs(locationsStore);
 
 const isAuthenticated = computed(() => userStore.authenticated);
+
+const activeFilterChips = computed(() => {
+    const chips = []
+
+    if (filterState.value.categories && filterState.value.categories.length > 0) {
+        const allCategories = locationsStore.categories || []
+        filterState.value.categories.forEach((catId) => {
+            const cat = allCategories.find((c) => c.id === catId)
+            chips.push({
+                key: `cat-${catId}`,
+                type: 'category',
+                value: catId,
+                label: cat ? cat.name : catId,
+            })
+        })
+    }
+
+    if (filterState.value.radius && filterState.value.radius > 0) {
+        chips.push({
+            key: 'radius',
+            type: 'radius',
+            value: filterState.value.radius,
+            label: `< ${filterState.value.radius}${t('radius.unit')}`,
+        })
+    }
+
+    return chips
+})
+
+const removeFilter = (chip) => {
+    if (chip.type === 'category') {
+        const updated = filterState.value.categories.filter((id) => id !== chip.value)
+        locationsStore.applyFilters({ ...filterState.value, categories: updated })
+    } else if (chip.type === 'radius') {
+        locationsStore.applyFilters({ ...filterState.value, radius: 0 })
+    }
+}
 
 const defaultCenter = [13.354336, 52.477697];
 const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;

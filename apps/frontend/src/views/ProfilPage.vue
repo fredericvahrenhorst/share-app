@@ -63,6 +63,13 @@
                             <ion-label>{{ t('profile.notifications') }}</ion-label>
                             <ion-icon :icon="chevronForward" slot="end" />
                         </ion-item>
+                        <ion-item v-if="notificationsEnabled && notifPermission !== 'granted'" class="rounded-none" lines="none">
+                            <ion-note class="text-xs">
+                                <ion-button fill="clear" size="small" @click="requestPermission">
+                                    {{ t('profile.enable_notifications') }}
+                                </ion-button>
+                            </ion-note>
+                        </ion-item>
                         <ion-item button @click="openPrivacy" class="rounded-none">
                             <ion-icon :icon="shield" slot="start" />
                             <ion-label>{{ t('profile.privacy') }}</ion-label>
@@ -172,6 +179,7 @@ import {
     IonAvatar,
     IonButton,
     IonImg,
+    IonNote,
 } from '@ionic/vue'
 import {
     settings,
@@ -196,6 +204,8 @@ import { toastController } from '@ionic/vue'
 import { useUserStore } from '../store/userStore'
 import { useFavoritesStore } from '../store/favoritesStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
+import usePushNotifications from '../composables/usePushNotifications'
+const { permission: notifPermission, requestPermission } = usePushNotifications()
 
 const { t } = useI18n()
 const router = useRouter()

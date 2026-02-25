@@ -50,33 +50,37 @@ import {
     heartOutline,
     personOutline,
 } from 'ionicons/icons';
+import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
 
-const tabs = [
+const { t } = useI18n();
+
+const tabs = computed(() => [
     {
         tab: 'home',
         href: '/home',
         icon: mapOutline,
-        label: 'Karte'
+        label: t('tabs.map'),
     },
     {
         tab: 'kategorien',
         href: '/kategorien',
         icon: gridOutline,
-        label: 'Kategorien'
+        label: t('tabs.categories'),
     },
     {
         tab: 'favoriten',
         href: '/favoriten',
         icon: heartOutline,
-        label: 'Favoriten'
+        label: t('tabs.favorites'),
     },
     {
         tab: 'profil',
         href: '/profil',
         icon: personOutline,
-        label: 'Profil'
-    }
-];
+        label: t('tabs.profile'),
+    },
+]);
 </script>
 
 <style scoped>

@@ -29,7 +29,8 @@ The backend database name in `DATABASE_URI` should be `share-app` (the name Payl
 - The `turbo.json` only defines `build` and `dev` tasks. Running `pnpm lint` from the root fails because there's no `lint` task in turbo. Run lint per-app instead: `pnpm --filter ./apps/frontend lint` and `pnpm --filter ./apps/backend lint`.
 - The frontend Vite dev server runs on port **5173** (not 8100 as some docs suggest).
 - The `packages/ui` stub references `@repo/typescript-config/react-library.json` which doesn't exist. This causes harmless tsconfig warnings in vitest but doesn't affect test execution.
-- Frontend lint has ~51 pre-existing style errors (mostly missing semicolons); backend lint passes with warnings only.
+- Frontend lint has ~130 pre-existing style errors (mostly missing semicolons due to Prettier `semi: false` conflicting with ESLint `semi` rule); backend lint passes with warnings only.
+- `pnpm build` for the frontend fails due to a pre-existing BigInt incompatibility between `mapbox-gl` and `@vitejs/plugin-legacy`. The dev server (`pnpm dev`) works fine. If a production build is needed, the legacy plugin must be updated or removed.
 - First user registration via `/api/users/first-register` creates a user with `["user"]` role. To get admin access, update the role in MongoDB directly: `db.users.updateOne({email:"..."},{$set:{roles:["admin","user"]}})` in the `share-app` database.
 
 ### Commands reference

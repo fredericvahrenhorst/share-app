@@ -1,0 +1,149 @@
+/* Style: Blur — Font: Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+.style-blur .popupLocation {
+    --font-detail: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.style-blur .popupLocation ion-toolbar {
+    --background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    --border-color: rgba(255, 255, 255, 0.24);
+    font-family: var(--font-detail);
+}
+
+.style-blur .popupLocation ion-content {
+    --background: linear-gradient(180deg, #f8f8f6 0%, #ffffff 100%);
+    font-family: var(--font-detail);
+}
+
+.style-blur .popupLocation ion-title {
+    font-family: var(--font-detail);
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+    color: #333333;
+}
+
+/* Image area: overlay gradient at bottom for text readability */
+.style-blur .popupLocation .relative.mb-4 .rounded-xl {
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(39, 82, 67, 0.12);
+}
+
+/* Section titles: light, elegant */
+.style-blur .popupLocation h3 {
+    font-family: var(--font-detail);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #275243;
+    opacity: 0.8;
+}
+
+/* Info cards: frosted glass effect */
+.style-blur .popupLocation .bg-blue-50 {
+    background: rgba(39, 82, 67, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(39, 82, 67, 0.12);
+    border-radius: 1rem;
+    padding: 0.875rem 1rem;
+}
+
+.style-blur .popupLocation .bg-blue-50 ion-icon {
+    color: #275243;
+}
+
+.style-blur .popupLocation .bg-purple-50 {
+    background: rgba(215, 235, 128, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(215, 235, 128, 0.24);
+    border-radius: 1rem;
+    padding: 0.875rem 1rem;
+}
+
+.style-blur .popupLocation .bg-purple-50 ion-icon {
+    color: #275243;
+}
+
+/* Tags: glassmorphism pills */
+.style-blur .popupLocation .bg-gray-100 {
+    background: rgba(51, 51, 51, 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(51, 51, 51, 0.08);
+    color: #333333;
+    font-weight: 500;
+    border-radius: 2rem;
+}
+
+/* Rating stars: warm accent */
+.style-blur .popupLocation .text-yellow-400 {
+    color: #D7EB80;
+    filter: drop-shadow(0 0 4px rgba(215, 235, 128, 0.4));
+}
+
+/* Action bar: frosted glass */
+.style-blur .popupLocation .border-t {
+    border-color: rgba(51, 51, 51, 0.08);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.style-blur .popupLocation ion-button[fill="clear"] {
+    --color: #275243;
+    font-family: var(--font-detail);
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.style-blur .popupLocation ion-button[fill="solid"] {
+    --background: linear-gradient(135deg, #275243, #357a62);
+    --background-hover: #1e3f34;
+    --border-radius: 1rem;
+    --box-shadow: 0 4px 16px rgba(39, 82, 67, 0.24);
+    font-family: var(--font-detail);
+    font-weight: 700;
+}
+
+/* Review cards: soft separators */
+.style-blur .popupLocation .border-b {
+    border-color: rgba(51, 51, 51, 0.06);
+}
+
+/* Community confirmation: glass green */
+.style-blur .popupLocation .bg-amber-50 {
+    background: rgba(215, 235, 128, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: rgba(215, 235, 128, 0.3);
+    border-radius: 1rem;
+}
+
+/* Vote buttons: glass effect */
+.style-blur .popupLocation .bg-green-100 {
+    background: rgba(0, 128, 9, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.style-blur .popupLocation .bg-red-100 {
+    background: rgba(185, 10, 50, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+/* Verified badge glow */
+.style-blur .popupLocation .text-green-500 {
+    color: #008009;
+    filter: drop-shadow(0 0 6px rgba(0, 128, 9, 0.3));
+}
