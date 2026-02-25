@@ -32,6 +32,11 @@ const routes = [
         component: () => import('@/views/AddLocationPage.vue') /* eslint-disable-line */
     },
     {
+        path: '/activity',
+        name: 'Activity',
+        component: () => import('@/views/ActivityFeedPage.vue') /* eslint-disable-line */
+    },
+    {
         path: '/',
         component: pageLayout,
         children: [

@@ -291,7 +291,20 @@
                                     />
                                     <ion-icon v-else :icon="personCircleOutline" class="text-gray-500" />
                                 </div>
-                                <span class="font-medium text-sm">{{ review.user?.name || 'Unbekannt' }}</span>
+                                <div>
+                                    <span class="font-medium text-sm">{{ review.user?.name || 'Unbekannt' }}</span>
+                                    <span
+                                        v-if="review.user?.reputationLevel && review.user.reputationLevel !== 'newcomer'"
+                                        class="ml-1 text-xs px-1.5 py-0.5 rounded-full"
+                                        :class="{
+                                            'bg-green-100 text-green-700': review.user.reputationLevel === 'active',
+                                            'bg-purple-100 text-purple-700': review.user.reputationLevel === 'hero',
+                                            'bg-yellow-100 text-yellow-700': review.user.reputationLevel === 'legend',
+                                        }"
+                                    >
+                                        {{ reputationLevelLabel(review.user.reputationLevel) }}
+                                    </span>
+                                </div>
                             </div>
                             <span class="text-xs text-gray-400">
                                 {{ new Date(review.createdAt).toLocaleDateString() }}
@@ -307,6 +320,30 @@
                             />
                         </div>
                         <p v-if="review.comment" class="text-sm text-gray-700 pl-10">{{ review.comment }}</p>
+                        <div class="flex items-center gap-3 pl-10 mt-1">
+                            <button
+                                class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
+                                :class="getUserVote(review.id) === 'up'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'text-gray-400 hover:text-green-600 hover:bg-green-50'"
+                                :disabled="!isAuthenticated"
+                                @click="handleVote(review.id, 'up')"
+                            >
+                                <ion-icon :icon="thumbsUpOutline" class="text-sm" />
+                                <span>{{ getVoteCounts(review.id).upvotes }}</span>
+                            </button>
+                            <button
+                                class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
+                                :class="getUserVote(review.id) === 'down'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'text-gray-400 hover:text-red-600 hover:bg-red-50'"
+                                :disabled="!isAuthenticated"
+                                @click="handleVote(review.id, 'down')"
+                            >
+                                <ion-icon :icon="thumbsDownOutline" class="text-sm" />
+                                <span>{{ getVoteCounts(review.id).downvotes }}</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Load More Button -->
@@ -317,6 +354,33 @@
                     </div>
                 </div>
                 <p v-else class="text-sm text-gray-500 italic text-center py-2">Noch keine Bewertungen vorhanden.</p>
+            </div>
+
+            <!-- Community-Bestätigung -->
+            <div
+                v-if="popupLocation?.status === 'pending' || (popupLocation && !popupLocation.verified)"
+                class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4"
+            >
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-amber-800">Standort bestätigen</p>
+                    <p class="text-xs text-amber-600">
+                        {{ confirmationCount }} von 3 Bestätigungen
+                    </p>
+                </div>
+                <ion-button
+                    v-if="isAuthenticated && !hasUserConfirmed"
+                    size="small"
+                    fill="outline"
+                    color="warning"
+                    @click="handleConfirmLocation"
+                >
+                    <ion-icon :icon="checkmarkCircleOutline" slot="start" />
+                    Bestätigen
+                </ion-button>
+                <ion-chip v-else-if="hasUserConfirmed" color="success" class="text-xs">
+                    <ion-icon :icon="checkmarkCircleOutline" />
+                    Bestätigt
+                </ion-chip>
             </div>
 
             <!-- Aktionen -->
@@ -361,6 +425,7 @@ import {
     IonImg,
     IonTextarea,
     IonSpinner,
+    IonChip,
     actionSheetController,
     alertController,
     toastController,
@@ -385,6 +450,8 @@ import {
     chevronForwardOutline,
     ellipsisVertical,
     flagOutline,
+    thumbsUpOutline,
+    thumbsDownOutline,
 } from 'ionicons/icons'
 import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -394,6 +461,8 @@ import { useFavoritesStore } from '../store/favoritesStore'
 import { useUserStore } from '../store/userStore'
 import { useReviewsStore } from '../store/reviewsStore'
 import { useReportsStore } from '../store/reportsStore'
+import { useReviewVotesStore } from '../store/reviewVotesStore'
+import { useConfirmationsStore } from '../store/confirmationsStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
 
 const locationsStore = useLocationsStore()
@@ -401,6 +470,8 @@ const favoritesStore = useFavoritesStore()
 const userStore = useUserStore()
 const reviewsStore = useReviewsStore()
 const reportsStore = useReportsStore()
+const reviewVotesStore = useReviewVotesStore()
+const confirmationsStore = useConfirmationsStore()
 
 const { popupLocation } = storeToRefs(locationsStore)
 const { t } = useI18n()
@@ -507,10 +578,18 @@ watch(
         imageSliderActiveIndex.value = 0
         if (newId) {
             isReviewsLoading.value = true
-            visibleReviewsCount.value = 3 // Reset visible count
+            visibleReviewsCount.value = 3
             await reviewsStore.fetchReviews(newId)
+            const fetchedReviews = reviewsStore.getReviewsByLocationId(newId)
+            for (const r of fetchedReviews) {
+                reviewVotesStore.setVoteCountsFromReview(r)
+            }
+            if (userStore.userId) {
+                await reviewVotesStore.fetchUserVotesForLocation(newId, userStore.userId)
+                await confirmationsStore.fetchUserConfirmation(newId, userStore.userId)
+            }
+            await confirmationsStore.fetchConfirmations(newId)
             isReviewsLoading.value = false
-            // Reset Form
             showReviewForm.value = false
             newReviewRating.value = 0
             newReviewComment.value = ''
@@ -779,6 +858,57 @@ async function presentReportAlert() {
         ],
     })
     await alert.present()
+}
+
+const REPUTATION_LABELS = {
+    newcomer: 'Neuling',
+    active: 'Aktiver Teiler',
+    hero: 'Community-Held',
+    legend: 'Legende',
+}
+
+function reputationLevelLabel(level) {
+    return REPUTATION_LABELS[level] || ''
+}
+
+function getUserVote(reviewId) {
+    const vote = reviewVotesStore.getUserVoteForReview(reviewId)
+    return vote?.type || null
+}
+
+function getVoteCounts(reviewId) {
+    return reviewVotesStore.getVoteCounts(reviewId)
+}
+
+async function handleVote(reviewId, type) {
+    if (!isAuthenticated.value) return
+    await reviewVotesStore.vote(reviewId, type, userStore.userId)
+}
+
+const confirmationCount = computed(() =>
+    confirmationsStore.getConfirmationCount(popupLocation.value?.id)
+)
+
+const hasUserConfirmed = computed(() =>
+    confirmationsStore.hasUserConfirmed(popupLocation.value?.id)
+)
+
+async function handleConfirmLocation() {
+    if (!isAuthenticated.value || !popupLocation.value?.id) return
+    try {
+        await confirmationsStore.confirmLocation(
+            popupLocation.value.id,
+            userStore.userId
+        )
+        const toast = await toastController.create({
+            message: 'Danke für deine Bestätigung!',
+            duration: 2000,
+            color: 'success',
+        })
+        await toast.present()
+    } catch (e) {
+        // apiCall zeigt Toast bei Fehler
+    }
 }
 
 async function submitReview() {
