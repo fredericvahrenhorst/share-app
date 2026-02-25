@@ -14,6 +14,7 @@
                 class="flex gap-2 grow blur-bg-light text-light-gray-96"
                 lines="none"
                 color="transparent"
+                aria-label="Search locations"
             >
                 <ion-icon
                     :icon="searchOutline"
@@ -35,6 +36,7 @@
                 fill="clear"
                 class="p-0 shrink-0 blur-bg-light min-h-11 text-light-gray-96"
                 size="small"
+                aria-label="Open filters"
             >
                 <ion-icon
                     :icon="funnelOutline"
@@ -152,6 +154,8 @@
 
             <div
                 class="w-10 h-10 rounded-full flex items-center justify-center blur-bg-light text-blue-500"
+                role="button"
+                aria-label="Go to my location"
                 @click="getGeoLocation(true)"
             >
                 <ion-icon
@@ -170,6 +174,7 @@
                 color="primary"
                 class="w-14 h-14 shadow-lg"
                 @click="goToAddLocation"
+                aria-label="Add new location"
             >
                 <ion-icon :icon="addOutline" size="large" />
             </ion-button>

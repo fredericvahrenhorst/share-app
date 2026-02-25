@@ -6,6 +6,8 @@
         :breakpoints="[0, 0.5, 0.75, 1]"
         @didDismiss="handleDidDismiss"
         class="popupLocation"
+        role="dialog"
+        :aria-label="popupLocation?.name || 'Location detail'"
     >
         <ion-header collapse="fade" translucent>
             <ion-toolbar>
@@ -388,12 +390,13 @@
                 <ion-button
                     fill="clear"
                     class="flex-1 flex flex-col items-center"
+                    :aria-label="isFavorite ? t('favorites.remove') : t('favorites.add')"
                     @click="handleFavoriteClick"
                 >
                     <ion-icon :icon="isFavorite ? heart : heartOutline" :color="isFavorite ? 'danger' : undefined" />
                     <span class="text-xs mt-1">{{ isFavorite ? t('favorites.remove') : t('favorites.add') }}</span>
                 </ion-button>
-                <ion-button fill="clear" class="flex-1 flex flex-col items-center" @click="handleShare">
+                <ion-button fill="clear" class="flex-1 flex flex-col items-center" :aria-label="t('locationDetail.share')" @click="handleShare">
                     <ion-icon :icon="shareOutline" />
                     <span class="text-xs mt-1">{{ t('locationDetail.share') }}</span>
                 </ion-button>
@@ -401,6 +404,7 @@
                     fill="solid"
                     color="primary"
                     class="flex-1 flex flex-col items-center"
+                    :aria-label="t('locationDetail.route')"
                     @click="handleRoute"
                 >
                     <ion-icon :icon="navigateOutline" />
