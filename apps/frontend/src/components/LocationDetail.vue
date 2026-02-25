@@ -463,6 +463,7 @@ import { useReportsStore } from '../store/reportsStore'
 import { useReviewVotesStore } from '../store/reviewVotesStore'
 import { useConfirmationsStore } from '../store/confirmationsStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
+import { hapticLight, hapticSuccess } from '../composables/useHaptics'
 
 const locationsStore = useLocationsStore()
 const favoritesStore = useFavoritesStore()
@@ -735,6 +736,7 @@ async function handleFavoriteClick() {
         } else {
             await favoritesStore.addFavorite(id)
         }
+        hapticSuccess()
     } catch (err) {
         // apiCall zeigt Toast bei Fehler
     }
@@ -889,6 +891,7 @@ function getVoteCounts(reviewId) {
 
 async function handleVote(reviewId, type) {
     if (!isAuthenticated.value) return
+    hapticLight()
     await reviewVotesStore.vote(reviewId, type, userStore.userId)
 }
 
