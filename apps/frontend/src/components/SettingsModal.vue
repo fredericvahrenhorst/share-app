@@ -25,10 +25,10 @@
 
         <div class="ion-padding text-xs text-medium-shade">
             <ion-text>
-                <a @click="openLink('https://google.com')">
+                <a @click="goToLegal('imprint')">
                     {{ $t('settings.imprint') }}
                 </a> |
-                <a  @click="openLink('https://google.com')">
+                <a @click="goToLegal('privacy')">
                     {{ $t('settings.data_protection') }}
                 </a>
             </ion-text>
@@ -57,7 +57,15 @@ import { storeToRefs } from 'pinia'; // eslint-disable-line
 import { Browser } from '@capacitor/browser'; // eslint-disable-line
 import { useAppStore } from '../store/appStore';
 
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const cancel = () => modalController.dismiss();
+
+const goToLegal = async (type) => {
+    await modalController.dismiss();
+    router.push({ name: 'Legal', query: { type } });
+};
 
 const appStore = useAppStore();
 const { theme } = storeToRefs(appStore);
