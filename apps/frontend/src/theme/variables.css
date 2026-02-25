@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts loaded via bold.css design system */
 
 @theme {
-  /* Font Families */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Poppins", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  /* Font Families — Fira Sans (Body) + Alegreya Sans (Headlines) */
+  --font-sans: "Fira Sans", system-ui, sans-serif;
+  --font-display: "Alegreya Sans", system-ui, sans-serif;
+  --font-mono: "Fira Sans", monospace;
 
   /* Primary Colors — Brand Primary #333333 (Charcoal) */
   --color-primary-50: #f8f8f6;

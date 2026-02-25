@@ -1,20 +1,16 @@
 @import 'mapbox-gl/dist/mapbox-gl.css';
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @import 'tailwindcss';
 @import './variables.css';
 @import './helper.css';
 @import './accessibility.css';
-@import './detail-styles/modern.css';
 @import './detail-styles/bold.css';
-@import './detail-styles/blur.css';
 
 @theme {
   /* Font Families */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Poppins", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Fira Sans", system-ui, sans-serif;
+  --font-display: "Alegreya Sans", system-ui, sans-serif;
+  --font-mono: "Fira Sans", monospace;
 
   /* Screens */
   --screens-sm: 576px;
