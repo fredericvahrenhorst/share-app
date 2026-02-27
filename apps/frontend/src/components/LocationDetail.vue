@@ -332,7 +332,7 @@
                                 :class="getUserVote(review.id) === 'up'
                                     ? 'bg-green-100 text-green-700'
                                     : 'text-neutral-400 hover:text-success-500 hover:bg-success-50'"
-                                :disabled="!isAuthenticated"
+                                :disabled="!isAuthenticated || votingReviewIds.has(review.id)"
                                 @click="handleVote(review.id, 'up')"
                             >
                                 <ion-icon :icon="thumbsUpOutline" class="text-sm" />
@@ -343,7 +343,7 @@
                                 :class="getUserVote(review.id) === 'down'
                                     ? 'bg-red-100 text-red-700'
                                     : 'text-neutral-400 hover:text-error-500 hover:bg-error-50'"
-                                :disabled="!isAuthenticated"
+                                :disabled="!isAuthenticated || votingReviewIds.has(review.id)"
                                 @click="handleVote(review.id, 'down')"
                             >
                                 <ion-icon :icon="thumbsDownOutline" class="text-sm" />
@@ -395,6 +395,7 @@
                     fill="clear"
                     class="flex-1 flex flex-col items-center"
                     :aria-label="isFavorite ? t('favorites.remove') : t('favorites.add')"
+                    :disabled="isFavoriteLoading"
                     @click="handleFavoriteClick"
                 >
                     <ion-icon :icon="isFavorite ? heart : heartOutline" :color="isFavorite ? 'danger' : undefined" />
@@ -561,6 +562,8 @@ const showReviewForm = ref(false)
 const newReviewRating = ref(0)
 const newReviewComment = ref('')
 const isSubmittingReview = ref(false)
+const isFavoriteLoading = ref(false)
+const votingReviewIds = ref(new Set())
 const visibleReviewsCount = ref(3)
 
 const visibleReviews = computed(() => {
@@ -736,8 +739,9 @@ async function handleFavoriteClick() {
         return
     }
     const id = popupLocation.value?.id
-    if (!id) return
+    if (!id || isFavoriteLoading.value) return
 
+    isFavoriteLoading.value = true
     try {
         if (isFavorite.value && currentFavorite.value) {
             await favoritesStore.removeFavorite(currentFavorite.value.id)
@@ -747,6 +751,8 @@ async function handleFavoriteClick() {
         hapticSuccess()
     } catch (err) {
         // apiCall zeigt Toast bei Fehler
+    } finally {
+        isFavoriteLoading.value = false
     }
 }
 
@@ -898,9 +904,14 @@ function getVoteCounts(reviewId) {
 }
 
 async function handleVote(reviewId, type) {
-    if (!isAuthenticated.value) return
+    if (!isAuthenticated.value || votingReviewIds.value.has(reviewId)) return
+    votingReviewIds.value.add(reviewId)
     hapticLight()
-    await reviewVotesStore.vote(reviewId, type, userStore.userId)
+    try {
+        await reviewVotesStore.vote(reviewId, type, userStore.userId)
+    } finally {
+        votingReviewIds.value.delete(reviewId)
+    }
 }
 
 const confirmationCount = computed(() =>
