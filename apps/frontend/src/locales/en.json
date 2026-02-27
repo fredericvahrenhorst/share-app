@@ -222,6 +222,9 @@
         "invalid_response": "Invalid server response",
         "unexpected": "An unexpected error occurred."
     },
+    "categories": {
+        "empty_title": "No Categories"
+    },
     "searchHistory": {
         "title": "Recent Searches",
         "clear": "Clear History"

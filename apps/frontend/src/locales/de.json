@@ -222,6 +222,9 @@
         "invalid_response": "Ungültige Antwort vom Server",
         "unexpected": "Ein unerwarteter Fehler ist aufgetreten."
     },
+    "categories": {
+        "empty_title": "Keine Kategorien"
+    },
     "searchHistory": {
         "title": "Letzte Suchen",
         "clear": "Verlauf löschen"
