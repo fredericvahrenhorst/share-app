@@ -203,6 +203,9 @@ import { toastController } from '@ionic/vue'
 
 import { useUserStore } from '../store/userStore'
 import { useFavoritesStore } from '../store/favoritesStore'
+import { useReviewVotesStore } from '../store/reviewVotesStore'
+import { useConfirmationsStore } from '../store/confirmationsStore'
+import { useActivityStore } from '../store/activityStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
 import usePushNotifications from '../composables/usePushNotifications'
 const { permission: notifPermission, requestPermission } = usePushNotifications()
@@ -211,6 +214,9 @@ const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const favoritesStore = useFavoritesStore()
+const reviewVotesStore = useReviewVotesStore()
+const confirmationsStore = useConfirmationsStore()
+const activityStore = useActivityStore()
 
 const { user, authenticated: isAuthenticated } = storeToRefs(userStore)
 const { favorites } = storeToRefs(favoritesStore)
@@ -291,6 +297,9 @@ async function handleLogout() {
     try {
         await userStore.logout()
         await favoritesStore.fetchFavorites()
+        reviewVotesStore.$reset()
+        confirmationsStore.$reset()
+        activityStore.$reset()
         router.push({ name: 'Home' })
     } catch (err) {
         router.push({ name: 'Home' })
