@@ -5,7 +5,7 @@
             class="fixed bottom-0 inset-x-0 z-[9998] backdrop-blur-md bg-white/95 rounded-t-2xl shadow-2xl p-5 pb-8"
         >
             <h3 class="font-semibold text-lg mb-2">{{ t('consent.title') }}</h3>
-            <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+            <p class="text-sm text-primary-400 mb-4 leading-relaxed">
                 {{ t('consent.text') }}
             </p>
             <div class="flex gap-3">

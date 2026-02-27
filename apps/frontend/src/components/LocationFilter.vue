@@ -11,8 +11,11 @@
             <ion-toolbar>
                 <ion-title>
                     {{ t('filter.title') }}
-                    <div class="text-sm text-gray-500 mt-1">
-                        {{ locationsStore.filteredLocations.length }} {{ t('filter.locations_found') }}
+                    <div
+                        class="text-sm mt-1 transition-colors duration-500"
+                        :class="countHighlight ? 'text-accent-500 font-semibold' : 'text-primary-400'"
+                    >
+                        {{ filteredCount }} {{ t('filter.locations_found') }}
                     </div>
                 </ion-title>
                 <ion-buttons slot="end">
@@ -38,7 +41,7 @@
                             'rounded-lg border cursor-pointer transition-colors',
                             selectedCategories.includes(category.id)
                                 ? 'bg-purple-50 border-purple-200'
-                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                : 'bg-white border-primary-200 hover:border-primary-300'
                         ]"
                         lines="none"
                         button
@@ -50,10 +53,10 @@
                             :style="{ color: category.color }"
                         />
                         <ion-label>
-                            <h4 class="font-medium text-gray-900">
+                            <h4 class="font-medium text-primary-700">
                                 {{ category.name }}
                             </h4>
-                            <p class="text-sm text-gray-500 mt-1">
+                            <p class="text-sm text-primary-400 mt-1">
                                 {{ category.description }}
                             </p>
                         </ion-label>
@@ -68,7 +71,7 @@
 
             <!-- Radius Sektion -->
             <div class="mb-6">
-                <ion-label class="text-base font-semibold text-gray-900 mb-3 block">
+                <ion-label class="text-base font-semibold text-primary-700 mb-3 block">
                     {{ t('filter.radius') }}
                 </ion-label>
                 <div class="px-4">
@@ -81,10 +84,10 @@
                         class="w-full"
                         @ionChange="onRadiusChange"
                     >
-                        <ion-label slot="start" class="text-sm text-gray-600">
+                        <ion-label slot="start" class="text-sm text-primary-400">
                             1 km
                         </ion-label>
-                        <ion-label slot="end" class="text-sm text-gray-600">
+                        <ion-label slot="end" class="text-sm text-primary-400">
                             25 km
                         </ion-label>
                     </ion-range>
@@ -108,7 +111,7 @@
                         shape="round"
                         size="default"
                     >
-                        {{ t('filter.apply') }}
+                        {{ filteredCount }} Standorte anzeigen
                     </ion-button>
 
                     <ion-button
@@ -133,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
     IonModal,
@@ -197,6 +200,17 @@ watch([selectedCategories, selectedRadius], () => {
 
 // Computed properties
 const hasActiveFilters = computed(() => selectedCategories.value.length > 0 || selectedRadius.value > 0);
+const filteredCount = computed(() => locationsStore.filteredLocations.length);
+const countHighlight = ref(false);
+
+watch(filteredCount, () => {
+    countHighlight.value = true;
+    nextTick(() => {
+        setTimeout(() => {
+            countHighlight.value = false;
+        }, 600);
+    });
+});
 
 // Methods
 const handleDismiss = () => {

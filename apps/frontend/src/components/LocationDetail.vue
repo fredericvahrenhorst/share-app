@@ -2,8 +2,8 @@
     <ion-modal
         ref="locationModal"
         :is-open="!!popupLocation"
-        :initial-breakpoint="0.5"
-        :breakpoints="[0, 0.5, 0.75, 1]"
+        :initial-breakpoint="0.65"
+        :breakpoints="[0, 0.65, 0.75, 1]"
         @didDismiss="handleDidDismiss"
         class="popupLocation"
         role="dialog"
@@ -74,16 +74,16 @@
                     <!-- Pfeile -->
                     <button
                         type="button"
-                        class="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
+                        class="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
                         :class="{ 'opacity-0 pointer-events-none': imageSliderActiveIndex <= 0 }"
                         :aria-label="t('locationDetail.slider_previous')"
                         @click="imageSliderScrollToPrev"
                     >
-                        <ion-icon :icon="chevronBackOutline" class="h-6 w-6 text-gray-700" />
+                        <ion-icon :icon="chevronBackOutline" class="h-6 w-6 text-primary-600" />
                     </button>
                     <button
                         type="button"
-                        class="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
+                        class="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
                         :class="{
                             'opacity-0 pointer-events-none':
                                 imageSliderActiveIndex >= allImageUrls.length - 1,
@@ -91,7 +91,7 @@
                         :aria-label="t('locationDetail.slider_next')"
                         @click="imageSliderScrollToNext"
                     >
-                        <ion-icon :icon="chevronForwardOutline" class="h-6 w-6 text-gray-700" />
+                        <ion-icon :icon="chevronForwardOutline" class="h-6 w-6 text-primary-600" />
                     </button>
 
                     <!-- Slider-Container -->
@@ -120,22 +120,26 @@
 
                     <!-- Pagination (Overlay unten) -->
                     <div
-                        class="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-2"
+                        class="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1"
                     >
                         <button
                             v-for="(_, idx) in allImageUrls"
                             :key="`dot-${idx}`"
                             type="button"
-                            class="pointer-events-auto rounded-full transition-colors"
-                            :class="
-                                idx === imageSliderActiveIndex
-                                    ? 'h-2.5 w-2.5 bg-white shadow'
-                                    : 'h-2 w-2 bg-white/60'
-                            "
+                            class="pointer-events-auto p-2 flex items-center justify-center"
                             :aria-label="`Slide ${idx + 1}`"
                             :aria-current="idx === imageSliderActiveIndex ? 'true' : 'false'"
                             @click="imageSliderScrollToIndex(idx)"
-                        />
+                        >
+                            <span
+                                class="block rounded-full transition-colors"
+                                :class="
+                                    idx === imageSliderActiveIndex
+                                        ? 'h-3 w-3 bg-white shadow'
+                                        : 'h-2.5 w-2.5 bg-white/60'
+                                "
+                            />
+                        </button>
                     </div>
                 </template>
             </div>
@@ -143,13 +147,13 @@
             <!-- Beschreibung -->
             <div v-if="descriptionText" class="mb-4">
                 <h3 class="font-semibold mb-1">{{ t('locationDetail.description') }}</h3>
-                <p class="text-gray-700 whitespace-pre-wrap">{{ descriptionText }}</p>
+                <p class="text-primary-600 whitespace-pre-wrap">{{ descriptionText }}</p>
             </div>
 
             <!-- Regeln (falls vorhanden) -->
             <div v-if="popupLocation?.rules" class="mb-4">
                 <h3 class="font-semibold mb-1">Regeln / Hinweise</h3>
-                <p class="text-gray-700 whitespace-pre-wrap">{{ popupLocation.rules }}</p>
+                <p class="text-primary-600 whitespace-pre-wrap">{{ popupLocation.rules }}</p>
             </div>
 
             <!-- Tags -->
@@ -159,7 +163,7 @@
                     <span
                         v-for="tag in locationTags"
                         :key="tag"
-                        class="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700"
+                        class="px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-600"
                     >
                         {{ tag }}
                     </span>
@@ -223,14 +227,14 @@
                     >
                         <ion-icon :icon="globeOutline" class="mr-2" />Website besuchen
                     </a>
-                    <span v-if="popupLocation?.contact?.phone" class="flex items-center text-gray-700">
+                    <span v-if="popupLocation?.contact?.phone" class="flex items-center text-primary-600">
                         <ion-icon :icon="callOutline" class="mr-2" />{{ popupLocation.contact.phone }}
                     </span>
                 </div>
             </div>
 
             <!-- Bewertungen (Detail) -->
-            <div class="mb-4 pt-4 border-t border-gray-100">
+            <div class="mb-4 pt-4 border-t border-primary-100">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold text-lg">Bewertungen</h3>
                     <ion-button
@@ -244,14 +248,14 @@
                 </div>
 
                 <!-- Review Form -->
-                <div v-if="showReviewForm" class="bg-gray-50 p-3 rounded-lg mb-4">
+                <div v-if="showReviewForm" class="bg-primary-50 p-3 rounded-lg mb-4">
                     <h4 class="font-semibold mb-2">Deine Bewertung</h4>
                     <div class="flex gap-2 mb-2">
                         <ion-icon
                             v-for="i in 5"
                             :key="i"
                             :icon="i <= newReviewRating ? star : starOutline"
-                            class="text-2xl cursor-pointer text-yellow-400"
+                            class="text-3xl cursor-pointer text-yellow-400"
                             @click="newReviewRating = i"
                         />
                     </div>
@@ -259,7 +263,7 @@
                         v-model="newReviewComment"
                         placeholder="Dein Kommentar (optional)"
                         rows="3"
-                        class="bg-white rounded-md border border-gray-200 mb-2"
+                        class="bg-white rounded-md border border-primary-200 mb-2"
                     />
                     <div class="flex justify-end gap-2">
                         <ion-button size="small" fill="clear" @click="showReviewForm = false">Abbrechen</ion-button>
@@ -279,11 +283,11 @@
                     <ion-spinner name="crescent" />
                 </div>
                 <div v-else-if="reviews.length > 0" class="space-y-4">
-                    <div v-for="review in visibleReviews" :key="review.id" class="border-b pb-3 last:border-0 border-gray-100">
+                    <div v-for="review in visibleReviews" :key="review.id" class="border-b pb-3 last:border-0 border-primary-100">
                         <div class="flex justify-between items-start mb-1">
                             <div class="flex items-center gap-2">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0"
+                                    class="w-8 h-8 rounded-full bg-primary-200 flex items-center justify-center overflow-hidden shrink-0"
                                 >
                                     <ion-img
                                         v-if="getReviewUserAvatarUrl(review.user)"
@@ -291,7 +295,7 @@
                                         class="object-cover w-full h-full"
                                         :alt="review.user?.name"
                                     />
-                                    <ion-icon v-else :icon="personCircleOutline" class="text-gray-500" />
+                                    <ion-icon v-else :icon="personCircleOutline" class="text-primary-400" />
                                 </div>
                                 <div>
                                     <span class="font-medium text-sm">{{ review.user?.name || 'Unbekannt' }}</span>
@@ -321,10 +325,10 @@
                                 :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-200'"
                             />
                         </div>
-                        <p v-if="review.comment" class="text-sm text-gray-700 pl-10">{{ review.comment }}</p>
+                        <p v-if="review.comment" class="text-sm text-primary-600 pl-10">{{ review.comment }}</p>
                         <div class="flex items-center gap-3 pl-10 mt-1">
                             <button
-                                class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
+                                class="flex items-center gap-1 text-xs px-3 py-2 min-h-[44px] min-w-[44px] rounded-full transition-colors"
                                 :class="getUserVote(review.id) === 'up'
                                     ? 'bg-green-100 text-green-700'
                                     : 'text-neutral-400 hover:text-success-500 hover:bg-success-50'"
@@ -335,7 +339,7 @@
                                 <span>{{ getVoteCounts(review.id).upvotes }}</span>
                             </button>
                             <button
-                                class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
+                                class="flex items-center gap-1 text-xs px-3 py-2 min-h-[44px] min-w-[44px] rounded-full transition-colors"
                                 :class="getUserVote(review.id) === 'down'
                                     ? 'bg-red-100 text-red-700'
                                     : 'text-neutral-400 hover:text-error-500 hover:bg-error-50'"

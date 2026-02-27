@@ -72,7 +72,7 @@
                         </span>
                         <ion-icon
                             :icon="chevronDownOutline"
-                            class="ml-2 h-4 w-4 text-gray-400"
+                            class="ml-2 h-4 w-4 text-primary-400"
                             :class="{ 'transform rotate-180': isCategoryDropdownOpen }"
                         />
                     </button>
@@ -87,7 +87,7 @@
                             @click="selectCategory('all')"
                             class="
                                 flex items-center w-full px-3 py-2 text-left
-                                hover:bg-gray-100 focus:bg-gray-100 focus:outline-none
+                                hover:bg-primary-100 focus:bg-primary-100 focus:outline-none
                             "
                         >
                             <div class="flex items-center">
@@ -102,7 +102,7 @@
                             @click="selectCategory(category.id)"
                             class="
                                 flex items-center w-full px-3 py-2 text-left
-                                hover:bg-gray-100 focus:bg-gray-100 focus:outline-none
+                                hover:bg-primary-100 focus:bg-primary-100 focus:outline-none
                             "
                         >
                             <div class="flex items-center">
@@ -120,12 +120,12 @@
             <!-- Loading State -->
             <div v-if="isSearching" class="flex justify-center py-8">
                 <ion-spinner name="crescent" />
-                <span class="ml-2 text-gray-600">{{ t('search.loading') }}</span>
+                <span class="ml-2 text-primary-400">{{ t('search.loading') }}</span>
             </div>
 
             <!-- Suchergebnisse -->
             <div v-else-if="hasSearchResults || mapboxResults.length > 0" class="space-y-3">
-                <div class="text-sm text-gray-600 mb-4">
+                <div class="text-sm text-primary-400 mb-4">
                     {{ searchMode === 'local' ? searchPagination.totalDocs : mapboxResults.length }}
                     {{ searchPagination.totalDocs !== 1 ? t('search.results_found_plural')
                         : t('search.results_found') }}
@@ -170,7 +170,7 @@
                         {{ t('search.pagination.back') }}
                     </ion-button>
 
-                    <span class="flex items-center px-4 text-sm text-gray-600">
+                    <span class="flex items-center px-4 text-sm text-primary-400">
                         {{ t('search.pagination.page') }}{{ searchPagination.page }} {{ t('search.pagination.of') }} {{ searchPagination.totalPages }}
                     </span>
 
@@ -188,8 +188,8 @@
             <!-- Keine Ergebnisse -->
             <div v-else-if="!searchQueryEmpty && !isSearching" class="text-center py-12">
                 <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
-                <h3 class="text-lg font-medium text-gray-600 mb-2">{{ t('search.no_results_title') }}</h3>
-                <p class="text-sm text-gray-500">
+                <h3 class="text-lg font-medium text-primary-400 mb-2">{{ t('search.no_results_title') }}</h3>
+                <p class="text-sm text-primary-400">
                     {{ searchMode === 'local' ? t('search.no_results_description') : t('search.no_results_description_external') }}
                 </p>
             </div>
@@ -199,7 +199,7 @@
                 <!-- Search History -->
                 <div v-if="searchHistory.length > 0" class="mb-6">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-semibold text-gray-700">
+                        <h4 class="text-sm font-semibold text-primary-600">
                             {{ t('searchHistory.title') }}
                         </h4>
                         <ion-button
@@ -223,17 +223,17 @@
                             <ion-icon
                                 :icon="timeOutline"
                                 slot="start"
-                                class="text-gray-400 mr-2"
+                                class="text-primary-400 mr-2"
                                 size="small"
                             />
-                            <ion-label class="text-sm text-gray-700">{{ item }}</ion-label>
+                            <ion-label class="text-sm text-primary-600">{{ item }}</ion-label>
                         </ion-item>
                     </div>
                 </div>
 
                 <!-- Popular Tags -->
                 <div v-if="popularTags.length > 0" class="mb-6">
-                    <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                    <h4 class="text-sm font-semibold text-primary-600 mb-3">
                         {{ t('search_tags.title') }}
                     </h4>
                     <div class="flex flex-wrap gap-2">
@@ -250,10 +250,10 @@
 
                 <div class="text-center py-8">
                     <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
-                    <h3 class="text-lg font-medium text-gray-600 mb-2">
+                    <h3 class="text-lg font-medium text-primary-400 mb-2">
                         {{ searchMode === 'local' ? t('search.start_title') : t('search.start_title_external') }}
                     </h3>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-primary-400">
                         {{ searchMode === 'local' ? t('search.start_description') : t('search.start_description_external') }}
                     </p>
                 </div>

@@ -28,13 +28,13 @@
             </div>
 
             <!-- Adresse -->
-            <div v-if="location.address" class="mb-2 text-sm text-gray-600">
+            <div v-if="location.address" class="mb-2 text-sm text-primary-400">
                 <ion-icon :icon="locationOutline" class="mr-1" />
                 {{ formatAddress(location.address) }}
             </div>
 
             <!-- Beschreibung -->
-            <div v-if="location.description" class="text-sm text-gray-700 line-clamp-2">
+            <div v-if="location.description" class="text-sm text-primary-600 line-clamp-2">
                 {{ stripHtml(location.description) }}
             </div>
         </ion-card-content>

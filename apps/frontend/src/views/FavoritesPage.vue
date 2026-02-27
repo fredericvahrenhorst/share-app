@@ -12,18 +12,18 @@
                 </ion-toolbar>
             </ion-header>
 
-            <div class="p-4" style="padding-bottom: var(--tab-bar-height)">
-                <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-gray-500">
+            <div class="p-4 pb-28">
+                <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 text-primary-400">
                     <ion-spinner name="crescent" />
                     <p class="mt-4">{{ t('favorites.loading') }}</p>
                 </div>
 
                 <div
                     v-else-if="!isAuthenticated"
-                    class="flex flex-col items-center justify-center py-16 text-center text-gray-500"
+                    class="flex flex-col items-center justify-center py-16 text-center text-primary-400"
                 >
                     <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4" />
-                    <h2 class="text-xl font-semibold mb-2">{{ t('favorites.login_required_title') }}</h2>
+                    <h2 class="text-xl font-display font-extrabold mb-2">{{ t('favorites.login_required_title') }}</h2>
                     <p class="text-sm mb-4">{{ t('favorites.login_required_description') }}</p>
                     <ion-button fill="outline" @click="goToLogin">
                         {{ t('favorites.login') }}
@@ -32,11 +32,14 @@
 
                 <div
                     v-else-if="favorites.length === 0"
-                    class="flex flex-col items-center justify-center py-16 text-center text-gray-500"
+                    class="flex flex-col items-center justify-center py-16 text-center text-primary-400"
                 >
                     <ion-icon :icon="heartOutline" size="large" class="text-6xl mb-4" />
-                    <h2 class="text-xl font-semibold mb-2">{{ t('favorites.empty_title') }}</h2>
+                    <h2 class="text-xl font-display font-extrabold mb-2">{{ t('favorites.empty_title') }}</h2>
                     <p class="text-sm">{{ t('favorites.empty_description') }}</p>
+                    <ion-button fill="outline" class="mt-4" router-link="/home">
+                        Standorte entdecken
+                    </ion-button>
                 </div>
 
                 <ion-list v-else class="space-y-2">
@@ -55,15 +58,15 @@
                             />
                             <div
                                 v-else
-                                class="w-full h-full flex items-center justify-center bg-gray-200"
+                                class="w-full h-full flex items-center justify-center bg-primary-200"
                             >
                                 <ion-icon :icon="locationOutline" class="text-2xl text-neutral-300" />
                             </div>
                         </ion-thumbnail>
                         <ion-label>
                             <h2 class="font-semibold">{{ getLocationName(favorite) }}</h2>
-                            <p class="text-sm text-gray-600">{{ formatAddress(getLocation(favorite)?.address) }}</p>
-                            <p v-if="getLocation(favorite)?.category?.name" class="text-xs text-gray-500">
+                            <p class="text-sm text-primary-400">{{ formatAddress(getLocation(favorite)?.address) }}</p>
+                            <p v-if="getLocation(favorite)?.category?.name" class="text-xs text-primary-400">
                                 {{ getLocation(favorite).category.name }}
                             </p>
                         </ion-label>

@@ -3,12 +3,12 @@
         <ion-content class="ion-padding">
             <div v-if="isLoading" class="flex flex-col items-center justify-center h-full">
                 <ion-spinner name="crescent" class="text-4xl" />
-                <p class="mt-4 text-gray-500">{{ t('misc.is_loading') }}</p>
+                <p class="mt-4 text-primary-400">{{ t('misc.is_loading') }}</p>
             </div>
 
             <div v-else-if="hasError" class="flex flex-col items-center justify-center h-full text-center">
                 <ion-icon :icon="alertCircleOutline" class="text-6xl text-red-400 mb-4" />
-                <h2 class="text-lg font-semibold text-gray-700 mb-2">
+                <h2 class="text-lg font-semibold text-primary-600 mb-2">
                     {{ t('errors.generic') }}
                 </h2>
                 <ion-button fill="outline" router-link="/home">

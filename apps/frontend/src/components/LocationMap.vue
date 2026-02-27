@@ -131,7 +131,7 @@
             <!-- Radius Info -->
             <div
                 v-if="geo"
-                class="px-3 py-1 rounded-full blur-bg-light text-xs text-gray-600
+                class="px-3 py-1 rounded-full blur-bg-light text-xs text-primary-400
                        flex items-center justify-center gap-2"
             >
                 <span>
@@ -168,7 +168,7 @@
         </div>
 
         <!-- Add Location FAB -->
-        <div class="fixed z-50 bottom-32 right-4">
+        <div class="fixed z-50 bottom-36 right-4">
             <ion-button
                 shape="circle"
                 color="primary"

@@ -12,16 +12,16 @@
                 </ion-toolbar>
             </ion-header>
 
-            <div class="p-4" style="padding-bottom: var(--tab-bar-height)">
-                <div v-if="isLoading" class="text-center py-16 text-gray-500">
+            <div class="p-4 pb-28">
+                <div v-if="isLoading" class="text-center py-16 text-primary-400">
                     <ion-spinner name="crescent"></ion-spinner>
-                    <p class="mt-4">Lade Kategorien...</p>
+                    <p class="mt-4">{{ t('misc.is_loading') }}</p>
                 </div>
 
-                <div v-else-if="categories.length === 0" class="text-center py-16 text-gray-500">
+                <div v-else-if="categories.length === 0" class="text-center py-16 text-primary-400">
                     <ion-icon :icon="gridOutline" size="large" class="text-6xl mb-4"></ion-icon>
-                    <h2 class="text-xl font-semibold mb-2">Keine Kategorien</h2>
-                    <p class="text-sm">Es sind noch keine Kategorien verfügbar.</p>
+                    <p class="text-xl font-display font-extrabold mb-2">{{ t('categories.empty_title') }}</p>
+                    <p class="text-sm text-primary-400">Kategorien werden geladen, sobald Standorte verfügbar sind.</p>
                 </div>
 
                 <div v-else class="grid grid-cols-2 gap-4 mb-6">
@@ -32,13 +32,13 @@
                         @click="selectCategory(category)"
                     >
                         <div
-                            class="w-15 h-15 rounded-full flex items-center justify-center mx-auto mb-3"
+                            class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"
                             :style="{ background: category.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }"
                         >
                             <ion-icon :icon="getCategoryIcon(category.icon)" class="text-2xl text-white"></ion-icon>
                         </div>
-                        <h3 class="text-base font-semibold text-gray-800 mb-2">{{ category.name }}</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed">{{ category.description }}</p>
+                        <h3 class="text-base font-display font-extrabold text-primary-600 mb-2">{{ category.name }}</h3>
+                        <p class="text-xs text-primary-400 leading-relaxed">{{ category.description }}</p>
                     </div>
                 </div>
 
@@ -80,8 +80,10 @@ import {
 } from 'ionicons/icons';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useLocationsStore } from '../store/locationsStore';
 
+const { t } = useI18n();
 const router = useRouter();
 const locationsStore = useLocationsStore();
 

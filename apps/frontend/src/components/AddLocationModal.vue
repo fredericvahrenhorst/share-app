@@ -34,12 +34,12 @@
             <div v-if="currentStep === 1" class="h-full flex flex-col">
                 <div class="text-center mb-4">
                     <h2 class="text-lg font-semibold">{{ t('addResource.step1.title') }}</h2>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-primary-400">
                         Verschiebe den Pin oder klicke auf die Karte, um den Standort festzulegen.
                     </p>
                 </div>
 
-                <div class="flex-grow relative rounded-xl overflow-hidden border border-gray-200 mb-4 min-h-[300px]">
+                <div class="flex-grow relative rounded-xl overflow-hidden border border-primary-200 mb-4 min-h-[300px]">
                     <MapboxMap
                         v-if="mapboxToken"
                         :accessToken="mapboxToken"
@@ -64,7 +64,7 @@
                     {{ t('addResource.step1.useCurrentLocation') }}
                 </ion-button>
 
-                <div v-if="selectedAddress" class="mb-4 p-3 bg-gray-50 rounded-lg text-sm">
+                <div v-if="selectedAddress" class="mb-4 p-3 bg-primary-50 rounded-lg text-sm">
                     <p class="font-semibold">Ausgewählter Standort:</p>
                     <p>{{ formatAddress(selectedAddress) }}</p>
                 </div>
@@ -85,7 +85,7 @@
                         v-for="category in categories"
                         :key="category.id"
                         class="p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center justify-center text-center h-32"
-                        :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                        :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-primary-200 hover:border-primary-300'"
                         @click="selectCategory(category.id)"
                     >
                         <!-- Icon Rendering: Falls Icon ein String (Emoji) ist -->
@@ -114,18 +114,18 @@
 
                 <div class="space-y-4 mb-6 overflow-y-auto">
                     <!-- Pflichtfelder -->
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
+                    <ion-item class="rounded-lg border border-primary-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.name') }} *</ion-label>
                         <ion-input v-model="formData.name" :placeholder="t('addResource.step3.namePlaceholder')" required />
                     </ion-item>
 
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
+                    <ion-item class="rounded-lg border border-primary-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.description') }} *</ion-label>
                         <ion-textarea v-model="formData.description" :placeholder="t('addResource.step3.descriptionPlaceholder')" rows="4" required />
                     </ion-item>
 
                     <!-- Bild Upload -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <div class="border-2 border-dashed border-primary-300 rounded-lg p-4 text-center">
                         <div v-if="imagePreview" class="relative mb-2">
                             <img :src="imagePreview" class="max-h-48 mx-auto rounded-lg" />
                             <ion-button
@@ -161,12 +161,12 @@
                     </div>
 
                     <div v-if="showMoreDetails" class="space-y-4 animate-fade-in">
-                        <ion-item class="rounded-lg border border-gray-200" lines="none">
+                        <ion-item class="rounded-lg border border-primary-200" lines="none">
                             <ion-label position="stacked">{{ t('addResource.step3.rules') }}</ion-label>
                             <ion-textarea v-model="formData.rules" :placeholder="t('addResource.step3.rulesPlaceholder')" rows="2" />
                         </ion-item>
 
-                        <ion-item class="rounded-lg border border-gray-200" lines="none">
+                        <ion-item class="rounded-lg border border-primary-200" lines="none">
                             <ion-label>{{ t('addResource.step3.is24_7') }}</ion-label>
                             <ion-toggle v-model="formData.is24_7" slot="end" />
                         </ion-item>

@@ -12,19 +12,22 @@
             <div class="p-4">
                 <div v-if="isLoading && activities.length === 0" class="text-center py-12">
                     <ion-spinner name="crescent" />
-                    <p class="text-sm text-gray-500 mt-2">{{ t('activity.loading') }}</p>
+                    <p class="text-sm text-primary-400 mt-2">{{ t('activity.loading') }}</p>
                 </div>
 
                 <div v-else-if="activities.length === 0" class="text-center py-12">
-                    <p class="text-lg font-semibold text-gray-600 mb-2">{{ t('activity.empty_title') }}</p>
-                    <p class="text-sm text-gray-500">{{ t('activity.empty_description') }}</p>
+                    <p class="text-xl font-display font-extrabold text-primary-400 mb-2">{{ t('activity.empty_title') }}</p>
+                    <p class="text-sm text-primary-400">{{ t('activity.empty_description') }}</p>
+                    <ion-button fill="outline" class="mt-4" router-link="/home">
+                        Karte öffnen
+                    </ion-button>
                 </div>
 
                 <div v-else class="space-y-3">
                     <div
                         v-for="activity in activities"
                         :key="activity.id"
-                        class="flex items-start gap-3 p-3 bg-white rounded-xl shadow-sm border border-gray-100"
+                        class="flex items-start gap-3 p-3 bg-white rounded-xl shadow-sm border border-primary-100"
                     >
                         <div
                             class="w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0"
@@ -33,7 +36,7 @@
                             {{ activityIcon(activity.type) }}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm text-gray-800">
+                            <p class="text-sm text-primary-600">
                                 <strong>{{ activity.actor?.name || 'Unbekannt' }}</strong>
                                 {{ activityVerb(activity.type) }}
                                 <strong v-if="activity.location?.name">{{ activity.location.name }}</strong>
@@ -102,7 +105,7 @@ function activityIcon(type) {
 }
 
 function activityIconClass(type) {
-    return ACTIVITY_CONFIG[type]?.class || 'bg-gray-100'
+    return ACTIVITY_CONFIG[type]?.class || 'bg-primary-100'
 }
 
 function activityVerb(type) {

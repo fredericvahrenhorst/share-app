@@ -18,7 +18,7 @@
                 </div>
 
                 <form v-else @submit.prevent="handleSubmit" class="space-y-4">
-                    <p class="text-gray-600 text-sm mb-4">
+                    <p class="text-primary-400 text-sm mb-4">
                         Bitte gib dein neues Passwort ein.
                     </p>
 
