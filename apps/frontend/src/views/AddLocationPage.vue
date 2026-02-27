@@ -336,18 +336,28 @@ async function submitLocation() {
 
         // 1. Bild hochladen (falls vorhanden)
         if (selectedFile.value) {
-            const uploadData = new FormData();
-            uploadData.append('file', selectedFile.value);
-            uploadData.append('_payload', JSON.stringify({ alt: formData.value.name }));
+            try {
+                const uploadData = new FormData();
+                uploadData.append('file', selectedFile.value);
+                uploadData.append('_payload', JSON.stringify({ alt: formData.value.name }));
 
-            // Spezieller API Call für Multipart
-            // Hinweis: apiCall muss FormData unterstützen oder wir nutzen axios direkt
-            // Hier nutzen wir apiCall und passen es gleich an (siehe Todo 4)
-            const mediaResponse = await apiCall('media', {
-                method: 'POST',
-                data: uploadData,
-            });
-            mediaId = mediaResponse.doc.id;
+                const mediaResponse = await apiCall('media', {
+                    method: 'POST',
+                    data: uploadData,
+                });
+                mediaId = mediaResponse.doc.id;
+            } catch (uploadError) {
+                console.error('Image upload failed:', uploadError)
+                const uploadToast = await toastController.create({
+                    position: 'top',
+                    color: 'warning',
+                    duration: 4000,
+                    icon: closeCircleOutline,
+                    message: 'Bild-Upload fehlgeschlagen. Standort wird ohne Bild erstellt.',
+                    swipeGesture: 'vertical',
+                })
+                await uploadToast.present()
+            }
         }
 
         // 2. Location erstellen
