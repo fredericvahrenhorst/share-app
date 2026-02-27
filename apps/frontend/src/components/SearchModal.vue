@@ -503,7 +503,6 @@ const performMapboxSearch = async (query) => {
 };
 
 const selectExternalPlace = (place) => {
-    console.log('place: ', place);
     // Konvertiere Mapbox-Ergebnis in Location-Format
     // this.geo = {
     //             lat: geoData.coords.latitude,

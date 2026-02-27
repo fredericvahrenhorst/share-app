@@ -348,8 +348,6 @@ const dynamicCircleOpacity = computed(() => {
     // Linear interpolieren zwischen maxOpacity und minOpacity
     const opacity = maxOpacity - ((zoomLevel - minZoom) / (maxZoom - minZoom)) * (maxOpacity - minOpacity);
 
-    console.log('opacity: ', opacity);
-    console.log('zoomLevel: ', zoomLevel);
     return opacity;
 });
 
@@ -424,7 +422,6 @@ const mapUpdated = (event) => {
         timestamp: Date.now()
     });
 
-    console.log('currentMapData: ', currentMapData.value);
 };
 
 // setup funktion für die Double click Abfrage – auskommentier weil nicht nötig
@@ -728,23 +725,14 @@ const updateClusterSource = () => {
 
 // Watch for filtered locations changes and update cluster source
 watch(filteredLocations, () => {
-    console.log('filteredLocations changed');
     updateClusterSource();
 }, { deep: true });
 
 // Watch for filter changes and update cluster source
 watch(filterState, () => {
-    console.log('filterState changed');
     locationsStore.updateFilteredLocations();
     updateClusterSource();
 }, { deep: true });
-
-watch([center, zoom, userLocation, geo], () => {
-    console.log('center: ', center.value);
-    console.log('zoom: ', zoom.value);
-    console.log('userLocation: ', userLocation.value);
-    console.log('geo: ', geo.value);
-});
 
 watch(geo, () => {
     if (geo.value) {

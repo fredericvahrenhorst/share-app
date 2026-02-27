@@ -108,15 +108,11 @@ function getCategoryIcon(iconName) {
 }
 
 function selectCategory(category) {
-    console.log('Category selected:', category.name);
-    // Filter setzen und zur Karte navigieren
     locationsStore.applyFilters({ categories: [category.id] });
     router.push('/home');
 }
 
 function showAllCategories() {
-    console.log('Show all categories');
-    // Filter zurücksetzen und zur Karte navigieren
     locationsStore.clearFilters();
     router.push('/home');
 }

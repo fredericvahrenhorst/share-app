@@ -397,7 +397,6 @@ export const useLocationsStore = defineStore('locations', {
                     // Only update if we have valid data
                     if (parsedFilters && typeof parsedFilters === 'object') {
                         this.filterState = { ...this.filterState, ...parsedFilters };
-                        console.log('Filters loaded from localStorage:', this.filterState);
                     }
                 }
             } catch (error) {
@@ -426,8 +425,6 @@ export const useLocationsStore = defineStore('locations', {
             // Apply filters if any are set
             if (this.filterState.categories.length > 0
             || (this.filterState.radius && this.filterState.radius !== 0)) {
-                console.log('Applying filters to locations...');
-
                 locations = locations.filter((loc) => {
                     // Category filter
                     if (this.filterState.categories.length > 0) {
@@ -460,9 +457,8 @@ export const useLocationsStore = defineStore('locations', {
                     return true;
                 });
 
-                console.log('Filtered locations count:', locations.length);
             } else {
-                console.log('No filters applied, showing all locations');
+                // No filters applied, showing all locations
             }
 
             this.filteredLocations = locations;
