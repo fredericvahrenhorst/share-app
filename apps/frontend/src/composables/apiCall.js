@@ -33,6 +33,12 @@ export default async function apiCall(endpoint, options, token) {
     } catch (error) {
         console.error('API call error:', error);
 
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('userId')
+            throw error
+        }
+
         const lang = typeof localStorage !== 'undefined'
             ? localStorage.getItem('appLanguage') || 'de'
             : 'de'
