@@ -9,6 +9,9 @@ import { onLocationCreated } from '../hooks/communityHooks'
 import { checkDuplicateLocation } from '../hooks/spamDetection'
 
 const locationBeforeChangeHook: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
+  if (operation === 'create' && req?.user?.id && !data.createdBy) {
+    data.createdBy = req.user.id
+  }
   if (operation === 'create' && data.coordinates && data.name) {
     const { isDuplicate } = await checkDuplicateLocation(req.payload, data.coordinates, data.name)
     if (isDuplicate) {
