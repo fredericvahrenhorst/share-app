@@ -18,10 +18,17 @@ import { Reports } from './collections/Reports'
 import { ReviewVotes } from './collections/ReviewVotes'
 import { Activities } from './collections/Activities'
 import { LocationConfirmations } from './collections/LocationConfirmations'
+import { StatusComments } from './collections/StatusComments'
 
 import { locationsEndpoint } from './endpoints/locations'
 import { searchEndpoint } from './endpoints/search'
 import { activityFeedEndpoint } from './endpoints/activityFeed'
+import { exportDataEndpoint } from './endpoints/exportData'
+import { tagSearchEndpoint } from './endpoints/tagSearch'
+import { bulkImportEndpoint } from './endpoints/bulkImport'
+import { apiDocsEndpoint } from './endpoints/apiDocs'
+import { adminDashboardEndpoint } from './endpoints/adminDashboard'
+import { deleteAccountEndpoint } from './endpoints/deleteAccount'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -44,6 +51,7 @@ export default buildConfig({
     ReviewVotes,
     Activities,
     LocationConfirmations,
+    StatusComments,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -63,6 +71,7 @@ export default buildConfig({
     '[REDACTED]',
     'http://localhost:8100',
     'http://localhost:3000',
+    '[REDACTED]',
     'http://192.168.1.155:5173',
     'http://192.168.2.195:5173',
   ],
@@ -71,6 +80,7 @@ export default buildConfig({
     '[REDACTED]',
     'http://localhost:8100',
     'http://localhost:3000',
+    '[REDACTED]',
     'http://192.168.1.155:5173',
     'http://192.168.2.195:5173',
   ],
@@ -78,6 +88,12 @@ export default buildConfig({
     locationsEndpoint,
     searchEndpoint,
     activityFeedEndpoint,
+    exportDataEndpoint,
+    tagSearchEndpoint,
+    bulkImportEndpoint,
+    apiDocsEndpoint,
+    adminDashboardEndpoint,
+    deleteAccountEndpoint,
   ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_FROM_ADDRESS || 'info@shareapp.local',

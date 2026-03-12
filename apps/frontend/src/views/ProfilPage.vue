@@ -12,15 +12,15 @@
                 </ion-toolbar>
             </ion-header>
 
-            <div class="p-4" style="padding-bottom: var(--tab-bar-height)">
+            <div class="p-4 pb-28">
                 <!-- Gast-Zustand -->
                 <div
                     v-if="!isAuthenticated"
                     class="flex flex-col items-center justify-center py-16 text-center"
                 >
-                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4 text-gray-400" />
-                    <h2 class="text-xl font-semibold mb-2 text-gray-800">{{ t('profile.not_logged_in') }}</h2>
-                    <p class="text-sm text-gray-600 mb-4">{{ t('profile.login_prompt') }}</p>
+                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4 text-neutral-300" />
+                    <h2 class="text-xl font-display font-extrabold mb-2 text-primary-600">{{ t('profile.not_logged_in') }}</h2>
+                    <p class="text-sm text-primary-400 mb-4">{{ t('profile.login_prompt') }}</p>
                     <ion-button fill="outline" @click="goToLogin">
                         {{ t('profile.login') }}
                     </ion-button>
@@ -38,13 +38,13 @@
                             />
                             <div
                                 v-else
-                                class="w-full h-full flex items-center justify-center bg-gray-200 rounded-full"
+                                class="w-full h-full flex items-center justify-center bg-primary-200 rounded-full"
                             >
-                                <ion-icon :icon="personCircleOutline" class="text-4xl text-gray-500" />
+                                <ion-icon :icon="personCircleOutline" class="text-4xl text-primary-400" />
                             </div>
                         </ion-avatar>
-                        <h2 class="text-xl font-semibold text-gray-800 m-0 mb-1">{{ user?.name || '–' }}</h2>
-                        <p class="text-sm text-gray-600 m-0">{{ user?.email || '–' }}</p>
+                        <h2 class="text-xl font-display font-extrabold text-primary-600 m-0 mb-1">{{ user?.name || '–' }}</h2>
+                        <p class="text-sm text-primary-400 m-0">{{ user?.email || '–' }}</p>
                         <ion-button fill="outline" size="small" class="mt-3" @click="openEditProfile">
                             <ion-icon :icon="createOutline" slot="start" />
                             {{ t('profile.edit_title') }}
@@ -62,6 +62,13 @@
                             <ion-icon :icon="notifications" slot="start" />
                             <ion-label>{{ t('profile.notifications') }}</ion-label>
                             <ion-icon :icon="chevronForward" slot="end" />
+                        </ion-item>
+                        <ion-item v-if="notificationsEnabled && notifPermission !== 'granted'" class="rounded-none" lines="none">
+                            <ion-note class="text-xs">
+                                <ion-button fill="clear" size="small" @click="requestPermission">
+                                    {{ t('profile.enable_notifications') }}
+                                </ion-button>
+                            </ion-note>
                         </ion-item>
                         <ion-item button @click="openPrivacy" class="rounded-none">
                             <ion-icon :icon="shield" slot="start" />
@@ -83,7 +90,7 @@
                     <!-- Reputation & Badges -->
                     <div v-if="user?.reputation !== undefined" class="mb-6">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-lg font-semibold text-gray-800">{{ t('profile.reputation') }}</h3>
+                            <h3 class="text-lg font-display font-extrabold text-primary-600">{{ t('profile.reputation') }}</h3>
                             <span
                                 class="text-sm font-medium px-3 py-1 rounded-full"
                                 :class="reputationLevelClass"
@@ -91,18 +98,18 @@
                                 {{ reputationLevelLabel }}
                             </span>
                         </div>
-                        <div class="bg-gray-100 rounded-full h-2 mb-2">
+                        <div class="bg-primary-100 rounded-full h-2 mb-2">
                             <div
                                 class="h-2 rounded-full transition-all duration-500"
                                 :class="reputationBarClass"
                                 :style="{ width: reputationBarWidth + '%' }"
                             />
                         </div>
-                        <p class="text-xs text-gray-500 text-right">{{ user.reputation || 0 }} {{ t('profile.points') }}</p>
+                        <p class="text-xs text-primary-400 text-right">{{ user.reputation || 0 }} {{ t('profile.points') }}</p>
                     </div>
 
                     <div v-if="userBadges.length > 0" class="mb-6">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ t('profile.badges') }}</h3>
+                        <h3 class="text-lg font-display font-extrabold mb-3 text-primary-600">{{ t('profile.badges') }}</h3>
                         <div class="flex flex-wrap gap-2">
                             <div
                                 v-for="badge in userBadges"
@@ -118,23 +125,23 @@
 
                     <!-- Statistiken -->
                     <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">{{ t('profile.activity') }}</h3>
+                        <h3 class="text-lg font-display font-extrabold mb-4 text-primary-600">{{ t('profile.activity') }}</h3>
                         <div class="grid grid-cols-3 gap-4">
-                            <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
+                            <div class="flex flex-col items-center p-4 bg-primary-100 rounded-xl">
                                 <span class="text-2xl font-bold text-primary">{{ favoritesCount }}</span>
-                                <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
+                                <span class="text-xs text-primary-400 uppercase tracking-wide mt-1">
                                     {{ t('profile.favorites_count') }}
                                 </span>
                             </div>
-                            <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
+                            <div class="flex flex-col items-center p-4 bg-primary-100 rounded-xl">
                                 <span class="text-2xl font-bold text-primary">{{ user?.stats?.locationsCreated || 0 }}</span>
-                                <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
+                                <span class="text-xs text-primary-400 uppercase tracking-wide mt-1">
                                     {{ t('profile.locations_count') }}
                                 </span>
                             </div>
-                            <div class="flex flex-col items-center p-4 bg-gray-100 rounded-xl">
+                            <div class="flex flex-col items-center p-4 bg-primary-100 rounded-xl">
                                 <span class="text-2xl font-bold text-primary">{{ user?.stats?.reviewsWritten || 0 }}</span>
-                                <span class="text-xs text-gray-600 uppercase tracking-wide mt-1">
+                                <span class="text-xs text-primary-400 uppercase tracking-wide mt-1">
                                     {{ t('profile.reviews_count') }}
                                 </span>
                             </div>
@@ -172,6 +179,7 @@ import {
     IonAvatar,
     IonButton,
     IonImg,
+    IonNote,
 } from '@ionic/vue'
 import {
     settings,
@@ -195,12 +203,20 @@ import { toastController } from '@ionic/vue'
 
 import { useUserStore } from '../store/userStore'
 import { useFavoritesStore } from '../store/favoritesStore'
+import { useReviewVotesStore } from '../store/reviewVotesStore'
+import { useConfirmationsStore } from '../store/confirmationsStore'
+import { useActivityStore } from '../store/activityStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
+import usePushNotifications from '../composables/usePushNotifications'
+const { permission: notifPermission, requestPermission } = usePushNotifications()
 
 const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const favoritesStore = useFavoritesStore()
+const reviewVotesStore = useReviewVotesStore()
+const confirmationsStore = useConfirmationsStore()
+const activityStore = useActivityStore()
 
 const { user, authenticated: isAuthenticated } = storeToRefs(userStore)
 const { favorites } = storeToRefs(favoritesStore)
@@ -223,11 +239,11 @@ const reputationLevelLabel = computed(() =>
 const reputationLevelClass = computed(() => {
     const level = user.value?.reputationLevel || 'newcomer'
     return {
-        newcomer: 'bg-gray-100 text-gray-700',
+        newcomer: 'bg-primary-100 text-primary-600',
         active: 'bg-green-100 text-green-700',
         hero: 'bg-purple-100 text-purple-700',
         legend: 'bg-yellow-100 text-yellow-700',
-    }[level] || 'bg-gray-100 text-gray-700'
+    }[level] || 'bg-primary-100 text-primary-600'
 })
 
 const reputationBarClass = computed(() => {
@@ -266,7 +282,7 @@ function badgeIcon(badge) {
 }
 
 function badgeClass(badge) {
-    return BADGE_CONFIG[badge]?.class || 'bg-gray-100 text-gray-700'
+    return BADGE_CONFIG[badge]?.class || 'bg-primary-100 text-primary-600'
 }
 
 function goToActivityFeed() {
@@ -281,6 +297,9 @@ async function handleLogout() {
     try {
         await userStore.logout()
         await favoritesStore.fetchFavorites()
+        reviewVotesStore.$reset()
+        confirmationsStore.$reset()
+        activityStore.$reset()
         router.push({ name: 'Home' })
     } catch (err) {
         router.push({ name: 'Home' })

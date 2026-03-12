@@ -174,6 +174,8 @@ export const useUserStore = defineStore('user', {
 
             localStorage.removeItem('token');
             localStorage.removeItem('userId');
+            localStorage.removeItem('locationFilters');
+            localStorage.removeItem('searchHistory');
             delete axios.defaults.headers.common['Authorization'];
         },
     },

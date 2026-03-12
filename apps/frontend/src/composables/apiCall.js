@@ -33,7 +33,19 @@ export default async function apiCall(endpoint, options, token) {
     } catch (error) {
         console.error('API call error:', error);
 
-        const msg = error.message || 'Ein Fehler ist aufgetreten. Bitte versuche es später erneut.';
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('userId')
+            throw error
+        }
+
+        const lang = typeof localStorage !== 'undefined'
+            ? localStorage.getItem('appLanguage') || 'de'
+            : 'de'
+        const fallback = lang === 'en'
+            ? 'An error occurred. Please try again later.'
+            : 'Ein Fehler ist aufgetreten. Bitte versuche es später erneut.'
+        const msg = error.message || fallback;
         const errorToast = await toastController.create({
             position: 'top',
             color: 'danger',

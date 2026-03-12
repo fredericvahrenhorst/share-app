@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-import { greet } from '@test/shared'
 import { adminOnlyFieldUpdate, isAdmin, isAdminOrSelf } from '../accessControl'
 
 export const Users: CollectionConfig = {
@@ -10,8 +9,7 @@ export const Users: CollectionConfig = {
   auth: {
     forgotPassword: {
       generateEmailHTML: ({ token, user }) => {
-        console.log('Generating password reset email for user:', user.email);
-        const resetPasswordURL = `${process.env.FRONTEND_URL || 'http://localhost:8100'}/reset-password?token=${token}`
+        const resetPasswordURL = `${process.env.FRONTEND_URL || '[REDACTED]'}/reset-password?token=${token}`
 
         return `
             <h1>Passwort zurücksetzen</h1>
@@ -193,7 +191,6 @@ export const Users: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data }) => {
-        console.log(greet(data.name)); // Nutzt die Shared-Utility
         return data;
       },
     ],

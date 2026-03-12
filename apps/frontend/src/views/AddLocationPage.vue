@@ -7,30 +7,32 @@
                 </ion-buttons>
                 <ion-title>{{ t('addResource.title') }}</ion-title>
             </ion-toolbar>
-            <ion-toolbar>
-                <ion-segment :value="currentStep.toString()">
-                    <ion-segment-button value="1" disabled>
-                        <ion-label>{{ t('addResource.steps.location') }}</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button value="2" disabled>
-                        <ion-label>{{ t('addResource.steps.category') }}</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button value="3" disabled>
-                        <ion-label>{{ t('addResource.steps.details') }}</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-toolbar>
         </ion-header>
 
         <ion-content class="ion-padding">
+            <div class="flex items-center px-4 py-2 bg-primary-50 rounded-lg mb-4">
+                <div v-for="step in 3" :key="step" class="flex items-center flex-1">
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                        :class="step <= currentStep ? 'bg-accent-300 text-primary-600' : 'bg-primary-200 text-primary-400'"
+                    >
+                        {{ step }}
+                    </div>
+                    <div
+                        v-if="step < 3"
+                        class="flex-1 h-0.5 mx-2"
+                        :class="step < currentStep ? 'bg-accent-300' : 'bg-primary-200'"
+                    />
+                </div>
+            </div>
             <!-- Step 1: Standort -->
             <div v-if="currentStep === 1" class="h-full flex flex-col">
                 <div class="text-center mb-4">
                     <h2 class="text-lg font-semibold">{{ t('addResource.step1.title') }}</h2>
-                    <p class="text-sm text-gray-500">{{ t('addResource.step1.searchPlaceholder') }}</p>
+                    <p class="text-sm text-primary-400">{{ t('addResource.step1.searchPlaceholder') }}</p>
                 </div>
 
-                <div class="flex-grow relative rounded-xl overflow-hidden border border-gray-200 mb-4 min-h-[300px]">
+                <div class="flex-grow relative rounded-xl overflow-hidden border border-primary-200 mb-4 min-h-[300px]">
                     <MapboxMap
                         v-if="mapboxToken"
                         :accessToken="mapboxToken"
@@ -57,7 +59,7 @@
                     {{ t('addResource.step1.useCurrentLocation') }}
                 </ion-button>
 
-                <div v-if="selectedAddress" class="mb-4 p-3 bg-gray-50 rounded-lg text-sm">
+                <div v-if="selectedAddress" class="mb-4 p-3 bg-primary-50 rounded-lg text-sm">
                     <p class="font-semibold">Ausgewählter Standort:</p>
                     <p>{{ formatAddress(selectedAddress) }}</p>
                 </div>
@@ -78,7 +80,7 @@
                         v-for="category in categories"
                         :key="category.id"
                         class="p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center justify-center text-center h-32"
-                        :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                        :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-primary-200 hover:border-primary-300'"
                         @click="selectCategory(category.id)"
                     >
                         <div class="text-3xl mb-2">{{ category.icon || '📦' }}</div>
@@ -105,28 +107,28 @@
                 </div>
 
                 <div class="space-y-4 mb-6">
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
+                    <ion-item class="rounded-lg border border-primary-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.name') }} *</ion-label>
                         <ion-input v-model="formData.name" :placeholder="t('addResource.step3.namePlaceholder')" required />
                     </ion-item>
 
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
+                    <ion-item class="rounded-lg border border-primary-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.description') }} *</ion-label>
                         <ion-textarea v-model="formData.description" :placeholder="t('addResource.step3.descriptionPlaceholder')" rows="4" required />
                     </ion-item>
 
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
+                    <ion-item class="rounded-lg border border-primary-200" lines="none">
                         <ion-label position="stacked">{{ t('addResource.step3.rules') }}</ion-label>
                         <ion-textarea v-model="formData.rules" :placeholder="t('addResource.step3.rulesPlaceholder')" rows="2" />
                     </ion-item>
 
-                    <ion-item class="rounded-lg border border-gray-200" lines="none">
+                    <ion-item class="rounded-lg border border-primary-200" lines="none">
                         <ion-label>{{ t('addResource.step3.is24_7') }}</ion-label>
                         <ion-toggle v-model="formData.is24_7" slot="end" />
                     </ion-item>
 
                     <!-- Bild Upload -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <div class="border-2 border-dashed border-primary-300 rounded-lg p-4 text-center">
                         <div v-if="imagePreview" class="relative mb-2">
                             <img :src="imagePreview" class="max-h-48 mx-auto rounded-lg" />
                             <ion-button
@@ -167,6 +169,11 @@
                 </div>
             </div>
         </ion-content>
+        <SuccessAnimation
+            :is-visible="showSuccessAnimation"
+            :message="t('addResource.success.title')"
+            @complete="onSuccessAnimationComplete"
+        />
     </ion-page>
 </template>
 
@@ -179,8 +186,6 @@ import {
     IonContent,
     IonButtons,
     IonBackButton,
-    IonSegment,
-    IonSegmentButton,
     IonLabel,
     IonButton,
     IonIcon,
@@ -208,6 +213,7 @@ import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import apiCall from '../composables/apiCall';
+import SuccessAnimation from '../components/SuccessAnimation.vue';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -225,6 +231,7 @@ const defaultCenter = [13.354336, 52.477697];
 // State
 const currentStep = ref(1);
 const isSubmitting = ref(false);
+const showSuccessAnimation = ref(false);
 
 // Step 1: Location
 const mapCenter = ref(defaultCenter);
@@ -315,6 +322,11 @@ function prevStep() {
     if (currentStep.value > 1) currentStep.value--;
 }
 
+function onSuccessAnimationComplete() {
+    showSuccessAnimation.value = false
+    router.replace('/home')
+}
+
 async function submitLocation() {
     if (!isValidStep3.value) return;
     isSubmitting.value = true;
@@ -324,18 +336,28 @@ async function submitLocation() {
 
         // 1. Bild hochladen (falls vorhanden)
         if (selectedFile.value) {
-            const uploadData = new FormData();
-            uploadData.append('file', selectedFile.value);
-            uploadData.append('_payload', JSON.stringify({ alt: formData.value.name }));
+            try {
+                const uploadData = new FormData();
+                uploadData.append('file', selectedFile.value);
+                uploadData.append('_payload', JSON.stringify({ alt: formData.value.name }));
 
-            // Spezieller API Call für Multipart
-            // Hinweis: apiCall muss FormData unterstützen oder wir nutzen axios direkt
-            // Hier nutzen wir apiCall und passen es gleich an (siehe Todo 4)
-            const mediaResponse = await apiCall('media', {
-                method: 'POST',
-                data: uploadData,
-            });
-            mediaId = mediaResponse.doc.id;
+                const mediaResponse = await apiCall('media', {
+                    method: 'POST',
+                    data: uploadData,
+                });
+                mediaId = mediaResponse.doc.id;
+            } catch (uploadError) {
+                console.error('Image upload failed:', uploadError)
+                const uploadToast = await toastController.create({
+                    position: 'top',
+                    color: 'warning',
+                    duration: 4000,
+                    icon: closeCircleOutline,
+                    message: 'Bild-Upload fehlgeschlagen. Standort wird ohne Bild erstellt.',
+                    swipeGesture: 'vertical',
+                })
+                await uploadToast.present()
+            }
         }
 
         // 2. Location erstellen
@@ -374,19 +396,9 @@ async function submitLocation() {
             data: locationPayload
         });
 
-        // Success
-        const toast = await toastController.create({
-            message: t('addResource.success.message'),
-            duration: 3000,
-            color: 'success',
-            icon: checkmarkCircleOutline,
-            position: 'top'
-        });
-        await toast.present();
-
-        // Reset & Redirect
-        locationsStore.getAllLocations(); // Neu laden
-        router.replace('/home');
+        // Success - show animation first
+        showSuccessAnimation.value = true;
+        locationsStore.getAllLocations();
     } catch (error) {
         console.error('Error creating location:', error);
         // apiCall zeigt bereits Fehler-Toast

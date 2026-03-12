@@ -10,31 +10,57 @@
         </ion-header>
         <ion-content class="ion-padding">
             <div class="max-w-md mx-auto pt-8">
+                <div class="text-center mb-8">
+                    <div class="text-5xl mb-2">🌱</div>
+                    <h1 class="text-2xl font-display font-extrabold">ShareApp</h1>
+                </div>
+                <h1 class="text-2xl font-display font-extrabold text-center mb-6">Willkommen zurück</h1>
                 <form @submit.prevent="handleSubmit" class="space-y-4">
-                    <ion-item class="ion-no-padding">
-                        <ion-input
-                            v-model="email"
-                            type="email"
-                            :placeholder="t('auth.login_email')"
-                            :disabled="isLoading"
-                            required
-                            autocomplete="email"
+                    <div>
+                        <ion-item
                             class="ion-no-padding"
-                        />
-                    </ion-item>
-                    <ion-item class="ion-no-padding">
-                        <ion-input
-                            v-model="password"
-                            type="password"
-                            :placeholder="t('auth.login_password')"
-                            :disabled="isLoading"
-                            required
-                            autocomplete="current-password"
+                            :class="emailTouched && !emailValid ? 'border-error-500 border rounded' : ''"
+                        >
+                            <ion-input
+                                v-model="email"
+                                type="email"
+                                :placeholder="t('auth.login_email')"
+                                :disabled="isLoading"
+                                required
+                                autocomplete="email"
+                                class="ion-no-padding"
+                                @ionBlur="emailTouched = true"
+                            />
+                        </ion-item>
+                        <p v-if="emailTouched && !emailValid" class="text-xs text-red-500 mt-1 px-1">
+                            Bitte eine gültige E-Mail-Adresse eingeben.
+                        </p>
+                    </div>
+                    <div>
+                        <ion-item
                             class="ion-no-padding"
-                        />
-                    </ion-item>
+                            :class="passwordTouched && !passwordValid ? 'border-error-500 border rounded' : ''"
+                        >
+                            <ion-input
+                                v-model="password"
+                                type="password"
+                                :placeholder="t('auth.login_password')"
+                                :disabled="isLoading"
+                                required
+                                autocomplete="current-password"
+                                class="ion-no-padding"
+                                @ionBlur="passwordTouched = true"
+                            />
+                        </ion-item>
+                        <p v-if="passwordTouched && !passwordValid" class="text-xs text-red-500 mt-1 px-1">
+                            Bitte Passwort eingeben.
+                        </p>
+                    </div>
                     <div class="text-right mt-1">
-                        <router-link to="/forgot-password" class="text-xs text-blue-600 hover:underline">
+                        <router-link
+                            to="/forgot-password"
+                            class="text-sm py-2 text-blue-600 hover:underline inline-block"
+                        >
                             Passwort vergessen?
                         </router-link>
                     </div>
@@ -55,7 +81,7 @@
                 </form>
 
                 <div class="mt-8 text-center">
-                    <p class="text-sm text-gray-600 mb-2">{{ t('auth.login_no_account') }}</p>
+                    <p class="text-sm text-primary-400 mb-2">{{ t('auth.login_no_account') }}</p>
                     <ion-button fill="clear" size="small" @click="goToRegister">
                         {{ t('auth.register_link') }}
                     </ion-button>
@@ -79,7 +105,7 @@ import {
     IonBackButton,
     IonSpinner,
 } from '@ionic/vue'
-import { ref, reactive } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -94,6 +120,11 @@ const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
 const errors = ref([])
+const emailTouched = ref(false)
+const passwordTouched = ref(false)
+
+const emailValid = computed(() => email.value.includes('@'))
+const passwordValid = computed(() => password.value.length > 0)
 
 const redirectTo = route.query.redirect || '/profil'
 

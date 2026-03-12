@@ -2,16 +2,18 @@
     <ion-modal
         ref="locationModal"
         :is-open="!!popupLocation"
-        :initial-breakpoint="0.5"
-        :breakpoints="[0, 0.5, 0.75, 1]"
+        :initial-breakpoint="0.65"
+        :breakpoints="[0, 0.65, 0.75, 1]"
         @didDismiss="handleDidDismiss"
         class="popupLocation"
+        role="dialog"
+        :aria-label="popupLocation?.name || 'Location detail'"
     >
         <ion-header collapse="fade" translucent>
             <ion-toolbar>
                 <div v-if="popupLocation?.category" class="flex items-center mb-2">
-                    <ion-icon :icon="categoryIcon" class="text-xl mr-2" />
-                    <span class="text-sm text-gray-500">{{ popupLocation.category?.name }}</span>
+                    <ion-icon :icon="categoryIcon" class="text-xl mr-2 text-accent-300" />
+                    <span class="text-sm text-neutral-300">{{ popupLocation.category?.name }}</span>
                     <span
                         v-if="popupLocation?.status && popupLocation.status !== 'active'"
                         class="ml-2 text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800"
@@ -24,7 +26,7 @@
                     <ion-icon
                         v-if="popupLocation?.verified"
                         :icon="checkmarkCircleOutline"
-                        class="text-green-500 shrink-0"
+                        class="text-accent-300 shrink-0"
                         title="Verifiziert"
                     />
                 </ion-title>
@@ -46,7 +48,7 @@
                 <span class="font-bold text-lg mr-1">
                     {{ popupLocation?.averageRating || '-' }}
                 </span>
-                <span class="text-sm text-gray-500">
+                <span class="text-sm text-neutral-400">
                     ({{ popupLocation?.reviewCount || 0 }} Bewertungen)
                 </span>
             </div>
@@ -56,7 +58,7 @@
                 <!-- Einzelbild oder Platzhalter -->
                 <div
                     v-if="allImageUrls.length <= 1"
-                    class="rounded-xl overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center h-56"
+                    class="rounded-xl overflow-hidden bg-neutral-100 flex items-center justify-center h-56"
                 >
                     <ion-img
                         v-if="firstImageUrl"
@@ -64,7 +66,7 @@
                         :alt="popupLocation?.name"
                         class="object-cover w-full h-full"
                     />
-                    <ion-icon v-else :icon="categoryIcon" class="text-5xl text-indigo-400" />
+                    <ion-icon v-else :icon="categoryIcon" class="text-5xl text-neutral-300" />
                 </div>
 
                 <!-- Snap-Slider bei mehreren Bildern -->
@@ -72,16 +74,16 @@
                     <!-- Pfeile -->
                     <button
                         type="button"
-                        class="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
+                        class="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
                         :class="{ 'opacity-0 pointer-events-none': imageSliderActiveIndex <= 0 }"
                         :aria-label="t('locationDetail.slider_previous')"
                         @click="imageSliderScrollToPrev"
                     >
-                        <ion-icon :icon="chevronBackOutline" class="h-6 w-6 text-gray-700" />
+                        <ion-icon :icon="chevronBackOutline" class="h-6 w-6 text-primary-600" />
                     </button>
                     <button
                         type="button"
-                        class="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
+                        class="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-opacity"
                         :class="{
                             'opacity-0 pointer-events-none':
                                 imageSliderActiveIndex >= allImageUrls.length - 1,
@@ -89,7 +91,7 @@
                         :aria-label="t('locationDetail.slider_next')"
                         @click="imageSliderScrollToNext"
                     >
-                        <ion-icon :icon="chevronForwardOutline" class="h-6 w-6 text-gray-700" />
+                        <ion-icon :icon="chevronForwardOutline" class="h-6 w-6 text-primary-600" />
                     </button>
 
                     <!-- Slider-Container -->
@@ -105,7 +107,7 @@
                             class="min-w-full w-full shrink-0 snap-start"
                         >
                             <div
-                                class="relative h-56 w-full overflow-hidden rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100"
+                                class="relative h-56 w-full overflow-hidden rounded-xl bg-neutral-100"
                             >
                                 <ion-img
                                     :src="url"
@@ -118,22 +120,26 @@
 
                     <!-- Pagination (Overlay unten) -->
                     <div
-                        class="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-2"
+                        class="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1"
                     >
                         <button
                             v-for="(_, idx) in allImageUrls"
                             :key="`dot-${idx}`"
                             type="button"
-                            class="pointer-events-auto rounded-full transition-colors"
-                            :class="
-                                idx === imageSliderActiveIndex
-                                    ? 'h-2.5 w-2.5 bg-white shadow'
-                                    : 'h-2 w-2 bg-white/60'
-                            "
+                            class="pointer-events-auto p-2 flex items-center justify-center"
                             :aria-label="`Slide ${idx + 1}`"
                             :aria-current="idx === imageSliderActiveIndex ? 'true' : 'false'"
                             @click="imageSliderScrollToIndex(idx)"
-                        />
+                        >
+                            <span
+                                class="block rounded-full transition-colors"
+                                :class="
+                                    idx === imageSliderActiveIndex
+                                        ? 'h-3 w-3 bg-white shadow'
+                                        : 'h-2.5 w-2.5 bg-white/60'
+                                "
+                            />
+                        </button>
                     </div>
                 </template>
             </div>
@@ -141,13 +147,13 @@
             <!-- Beschreibung -->
             <div v-if="descriptionText" class="mb-4">
                 <h3 class="font-semibold mb-1">{{ t('locationDetail.description') }}</h3>
-                <p class="text-gray-700 whitespace-pre-wrap">{{ descriptionText }}</p>
+                <p class="text-primary-600 whitespace-pre-wrap">{{ descriptionText }}</p>
             </div>
 
             <!-- Regeln (falls vorhanden) -->
             <div v-if="popupLocation?.rules" class="mb-4">
                 <h3 class="font-semibold mb-1">Regeln / Hinweise</h3>
-                <p class="text-gray-700 whitespace-pre-wrap">{{ popupLocation.rules }}</p>
+                <p class="text-primary-600 whitespace-pre-wrap">{{ popupLocation.rules }}</p>
             </div>
 
             <!-- Tags -->
@@ -157,7 +163,7 @@
                     <span
                         v-for="tag in locationTags"
                         :key="tag"
-                        class="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700"
+                        class="px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-600"
                     >
                         {{ tag }}
                     </span>
@@ -168,16 +174,16 @@
             <div v-if="hasAccessibility" class="mb-4">
                 <h3 class="font-semibold mb-2">{{ t('locationDetail.accessibility') }}</h3>
                 <div class="space-y-1">
-                    <div v-if="popupLocation?.accessibility?.wheelchairAccessible" class="flex items-center text-gray-700">
-                        <ion-icon :icon="checkmarkCircleOutline" class="text-green-500 mr-2 shrink-0" />
+                    <div v-if="popupLocation?.accessibility?.wheelchairAccessible" class="flex items-center text-primary-600">
+                        <ion-icon :icon="checkmarkCircleOutline" class="text-success-500 mr-2 shrink-0" />
                         {{ t('locationDetail.wheelchair_accessible') }}
                     </div>
-                    <div v-if="popupLocation?.accessibility?.accessibleToilet" class="flex items-center text-gray-700">
-                        <ion-icon :icon="checkmarkCircleOutline" class="text-green-500 mr-2 shrink-0" />
+                    <div v-if="popupLocation?.accessibility?.accessibleToilet" class="flex items-center text-primary-600">
+                        <ion-icon :icon="checkmarkCircleOutline" class="text-success-500 mr-2 shrink-0" />
                         {{ t('locationDetail.accessible_toilet') }}
                     </div>
-                    <div v-if="popupLocation?.accessibility?.accessibleParking" class="flex items-center text-gray-700">
-                        <ion-icon :icon="checkmarkCircleOutline" class="text-green-500 mr-2 shrink-0" />
+                    <div v-if="popupLocation?.accessibility?.accessibleParking" class="flex items-center text-primary-600">
+                        <ion-icon :icon="checkmarkCircleOutline" class="text-success-500 mr-2 shrink-0" />
                         {{ t('locationDetail.accessible_parking') }}
                     </div>
                 </div>
@@ -186,17 +192,17 @@
             <!-- Info-Karten -->
             <div class="space-y-2 mb-4">
                 <div v-if="formatAddress(popupLocation?.address)" class="flex items-center bg-blue-50 rounded-lg px-3 py-2">
-                    <ion-icon :icon="locationOutline" class="text-blue-400 mr-2 shrink-0" />
+                    <ion-icon :icon="locationOutline" class="text-accent-300 mr-2 shrink-0" />
                     <div class="min-w-0">
-                        <span class="font-medium block">{{ t('locationDetail.address') }}</span>
-                        <span class="text-gray-700">{{ formatAddress(popupLocation?.address) }}</span>
+                        <span class="font-medium block text-white">{{ t('locationDetail.address') }}</span>
+                        <span class="text-white/80">{{ formatAddress(popupLocation?.address) }}</span>
                     </div>
                 </div>
                 <div v-if="availabilityText" class="flex items-center bg-purple-50 rounded-lg px-3 py-2">
-                    <ion-icon :icon="timeOutline" class="text-purple-400 mr-2 shrink-0" />
+                    <ion-icon :icon="timeOutline" class="text-accent-300 mr-2 shrink-0" />
                     <div class="min-w-0">
-                        <span class="font-medium block">{{ t('locationDetail.availability') }}</span>
-                        <span class="text-gray-700 whitespace-pre-line">{{ availabilityText }}</span>
+                        <span class="font-medium block text-white">{{ t('locationDetail.availability') }}</span>
+                        <span class="text-white/80 whitespace-pre-line">{{ availabilityText }}</span>
                     </div>
                 </div>
             </div>
@@ -221,14 +227,14 @@
                     >
                         <ion-icon :icon="globeOutline" class="mr-2" />Website besuchen
                     </a>
-                    <span v-if="popupLocation?.contact?.phone" class="flex items-center text-gray-700">
+                    <span v-if="popupLocation?.contact?.phone" class="flex items-center text-primary-600">
                         <ion-icon :icon="callOutline" class="mr-2" />{{ popupLocation.contact.phone }}
                     </span>
                 </div>
             </div>
 
             <!-- Bewertungen (Detail) -->
-            <div class="mb-4 pt-4 border-t border-gray-100">
+            <div class="mb-4 pt-4 border-t border-primary-100">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold text-lg">Bewertungen</h3>
                     <ion-button
@@ -242,14 +248,14 @@
                 </div>
 
                 <!-- Review Form -->
-                <div v-if="showReviewForm" class="bg-gray-50 p-3 rounded-lg mb-4">
+                <div v-if="showReviewForm" class="bg-primary-50 p-3 rounded-lg mb-4">
                     <h4 class="font-semibold mb-2">Deine Bewertung</h4>
                     <div class="flex gap-2 mb-2">
                         <ion-icon
                             v-for="i in 5"
                             :key="i"
                             :icon="i <= newReviewRating ? star : starOutline"
-                            class="text-2xl cursor-pointer text-yellow-400"
+                            class="text-3xl cursor-pointer text-yellow-400"
                             @click="newReviewRating = i"
                         />
                     </div>
@@ -257,7 +263,7 @@
                         v-model="newReviewComment"
                         placeholder="Dein Kommentar (optional)"
                         rows="3"
-                        class="bg-white rounded-md border border-gray-200 mb-2"
+                        class="bg-white rounded-md border border-primary-200 mb-2"
                     />
                     <div class="flex justify-end gap-2">
                         <ion-button size="small" fill="clear" @click="showReviewForm = false">Abbrechen</ion-button>
@@ -277,11 +283,11 @@
                     <ion-spinner name="crescent" />
                 </div>
                 <div v-else-if="reviews.length > 0" class="space-y-4">
-                    <div v-for="review in visibleReviews" :key="review.id" class="border-b pb-3 last:border-0 border-gray-100">
+                    <div v-for="review in visibleReviews" :key="review.id" class="border-b pb-3 last:border-0 border-primary-100">
                         <div class="flex justify-between items-start mb-1">
                             <div class="flex items-center gap-2">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0"
+                                    class="w-8 h-8 rounded-full bg-primary-200 flex items-center justify-center overflow-hidden shrink-0"
                                 >
                                     <ion-img
                                         v-if="getReviewUserAvatarUrl(review.user)"
@@ -289,7 +295,7 @@
                                         class="object-cover w-full h-full"
                                         :alt="review.user?.name"
                                     />
-                                    <ion-icon v-else :icon="personCircleOutline" class="text-gray-500" />
+                                    <ion-icon v-else :icon="personCircleOutline" class="text-primary-400" />
                                 </div>
                                 <div>
                                     <span class="font-medium text-sm">{{ review.user?.name || 'Unbekannt' }}</span>
@@ -306,7 +312,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <span class="text-xs text-gray-400">
+                            <span class="text-xs text-neutral-400">
                                 {{ new Date(review.createdAt).toLocaleDateString() }}
                             </span>
                         </div>
@@ -319,25 +325,25 @@
                                 :class="i <= review.rating ? 'text-yellow-400' : 'text-gray-200'"
                             />
                         </div>
-                        <p v-if="review.comment" class="text-sm text-gray-700 pl-10">{{ review.comment }}</p>
+                        <p v-if="review.comment" class="text-sm text-primary-600 pl-10">{{ review.comment }}</p>
                         <div class="flex items-center gap-3 pl-10 mt-1">
                             <button
-                                class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
+                                class="flex items-center gap-1 text-xs px-3 py-2 min-h-[44px] min-w-[44px] rounded-full transition-colors"
                                 :class="getUserVote(review.id) === 'up'
                                     ? 'bg-green-100 text-green-700'
-                                    : 'text-gray-400 hover:text-green-600 hover:bg-green-50'"
-                                :disabled="!isAuthenticated"
+                                    : 'text-neutral-400 hover:text-success-500 hover:bg-success-50'"
+                                :disabled="!isAuthenticated || votingReviewIds.has(review.id)"
                                 @click="handleVote(review.id, 'up')"
                             >
                                 <ion-icon :icon="thumbsUpOutline" class="text-sm" />
                                 <span>{{ getVoteCounts(review.id).upvotes }}</span>
                             </button>
                             <button
-                                class="flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors"
+                                class="flex items-center gap-1 text-xs px-3 py-2 min-h-[44px] min-w-[44px] rounded-full transition-colors"
                                 :class="getUserVote(review.id) === 'down'
                                     ? 'bg-red-100 text-red-700'
-                                    : 'text-gray-400 hover:text-red-600 hover:bg-red-50'"
-                                :disabled="!isAuthenticated"
+                                    : 'text-neutral-400 hover:text-error-500 hover:bg-error-50'"
+                                :disabled="!isAuthenticated || votingReviewIds.has(review.id)"
                                 @click="handleVote(review.id, 'down')"
                             >
                                 <ion-icon :icon="thumbsDownOutline" class="text-sm" />
@@ -353,7 +359,7 @@
                         </ion-button>
                     </div>
                 </div>
-                <p v-else class="text-sm text-gray-500 italic text-center py-2">Noch keine Bewertungen vorhanden.</p>
+                <p v-else class="text-sm text-neutral-400 italic text-center py-2">Noch keine Bewertungen vorhanden.</p>
             </div>
 
             <!-- Community-Bestätigung -->
@@ -388,12 +394,14 @@
                 <ion-button
                     fill="clear"
                     class="flex-1 flex flex-col items-center"
+                    :aria-label="isFavorite ? t('favorites.remove') : t('favorites.add')"
+                    :disabled="isFavoriteLoading"
                     @click="handleFavoriteClick"
                 >
                     <ion-icon :icon="isFavorite ? heart : heartOutline" :color="isFavorite ? 'danger' : undefined" />
                     <span class="text-xs mt-1">{{ isFavorite ? t('favorites.remove') : t('favorites.add') }}</span>
                 </ion-button>
-                <ion-button fill="clear" class="flex-1 flex flex-col items-center" @click="handleShare">
+                <ion-button fill="clear" class="flex-1 flex flex-col items-center" :aria-label="t('locationDetail.share')" @click="handleShare">
                     <ion-icon :icon="shareOutline" />
                     <span class="text-xs mt-1">{{ t('locationDetail.share') }}</span>
                 </ion-button>
@@ -401,6 +409,7 @@
                     fill="solid"
                     color="primary"
                     class="flex-1 flex flex-col items-center"
+                    :aria-label="t('locationDetail.route')"
                     @click="handleRoute"
                 >
                     <ion-icon :icon="navigateOutline" />
@@ -463,6 +472,7 @@ import { useReportsStore } from '../store/reportsStore'
 import { useReviewVotesStore } from '../store/reviewVotesStore'
 import { useConfirmationsStore } from '../store/confirmationsStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
+import { hapticLight, hapticSuccess } from '../composables/useHaptics'
 
 const locationsStore = useLocationsStore()
 const favoritesStore = useFavoritesStore()
@@ -552,6 +562,8 @@ const showReviewForm = ref(false)
 const newReviewRating = ref(0)
 const newReviewComment = ref('')
 const isSubmittingReview = ref(false)
+const isFavoriteLoading = ref(false)
+const votingReviewIds = ref(new Set())
 const visibleReviewsCount = ref(3)
 
 const visibleReviews = computed(() => {
@@ -727,16 +739,20 @@ async function handleFavoriteClick() {
         return
     }
     const id = popupLocation.value?.id
-    if (!id) return
+    if (!id || isFavoriteLoading.value) return
 
+    isFavoriteLoading.value = true
     try {
         if (isFavorite.value && currentFavorite.value) {
             await favoritesStore.removeFavorite(currentFavorite.value.id)
         } else {
             await favoritesStore.addFavorite(id)
         }
+        hapticSuccess()
     } catch (err) {
         // apiCall zeigt Toast bei Fehler
+    } finally {
+        isFavoriteLoading.value = false
     }
 }
 
@@ -888,8 +904,14 @@ function getVoteCounts(reviewId) {
 }
 
 async function handleVote(reviewId, type) {
-    if (!isAuthenticated.value) return
-    await reviewVotesStore.vote(reviewId, type, userStore.userId)
+    if (!isAuthenticated.value || votingReviewIds.value.has(reviewId)) return
+    votingReviewIds.value.add(reviewId)
+    hapticLight()
+    try {
+        await reviewVotesStore.vote(reviewId, type, userStore.userId)
+    } finally {
+        votingReviewIds.value.delete(reviewId)
+    }
 }
 
 const confirmationCount = computed(() =>

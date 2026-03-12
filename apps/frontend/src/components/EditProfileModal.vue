@@ -32,9 +32,9 @@
                             />
                             <div
                                 v-else
-                                class="w-full h-full flex items-center justify-center bg-gray-200 rounded-full"
+                                class="w-full h-full flex items-center justify-center bg-primary-200 rounded-full"
                             >
-                                <ion-icon :icon="personCircleOutline" class="text-5xl text-gray-500" />
+                                <ion-icon :icon="personCircleOutline" class="text-5xl text-primary-400" />
                             </div>
                         </ion-avatar>
                         <label
@@ -49,15 +49,15 @@
                             />
                         </label>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">{{ t('profile.edit_avatar_hint') }}</p>
+                    <p class="text-xs text-primary-400 mt-1">{{ t('profile.edit_avatar_hint') }}</p>
                 </div>
 
-                <ion-item class="rounded-lg border border-gray-200" lines="none">
+                <ion-item class="rounded-lg border border-primary-200" lines="none">
                     <ion-label position="stacked">{{ t('profile.edit_name') }} *</ion-label>
                     <ion-input v-model="form.name" type="text" required />
                 </ion-item>
 
-                <ion-item class="rounded-lg border border-gray-200" lines="none">
+                <ion-item class="rounded-lg border border-primary-200" lines="none">
                     <ion-label position="stacked">{{ t('profile.edit_bio') }}</ion-label>
                     <ion-textarea v-model="form.bio" rows="3" :placeholder="t('profile.edit_bio_placeholder')" />
                 </ion-item>

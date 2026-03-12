@@ -24,13 +24,12 @@ export const locationsEndpoint = {
     });
 
     // Zielpunkt als GeoJSON-Point
-    const from = turf.point([lat, lng]);
+    const from = turf.point([lng, lat]);
     const options = { units: 'kilometers' as const };
 
     // Filtere und berechne die Distanz für jede Location
     const locationsWithDistance = locations.docs
       .map((location: any) => {
-        // console.log(location.coordinates);
         if (
           location.coordinates &&
           Array.isArray(location.coordinates) &&
@@ -39,7 +38,6 @@ export const locationsEndpoint = {
           const to = turf.point(location.coordinates);
           const distance = turf.distance(from, to, options);
 
-          console.log(distance);
           return { ...location, distance };
         }
         return null;

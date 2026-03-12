@@ -37,6 +37,11 @@ const routes = [
         component: () => import('@/views/ResetPasswordPage.vue') /* eslint-disable-line */
     },
     {
+        path: '/location/:id',
+        name: 'LocationDetail',
+        component: () => import('@/views/LocationDetailPage.vue') /* eslint-disable-line */
+    },
+    {
         path: '/add-location',
         name: 'AddLocation',
         component: () => import('@/views/AddLocationPage.vue'), /* eslint-disable-line */

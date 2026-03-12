@@ -33,7 +33,6 @@ import pageHeader from '../components/PageHeader.vue';
 const loading = ref(false);
 
 const callToaster = async() => {
-    console.log('Toaster here');
     const toast = await toastController.create({
         position: 'top',
         color: 'danger',

@@ -7,10 +7,31 @@ import type {
 
 import { adminOnlyFieldUpdate, isAdminOrOwner, isAuthenticated } from '../accessControl'
 import { onReviewCreated, onReviewDeleted } from '../hooks/communityHooks'
+import { checkSpamContent } from '../hooks/spamDetection'
 
-const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, req }) => {
+const beforeChangeHook: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
+  if (operation === 'create' && req?.user?.id) {
+    const locationId = data.location
+    const existing = await req.payload.find({
+      collection: 'reviews',
+      where: {
+        location: { equals: locationId },
+        user: { equals: req.user.id },
+      },
+      limit: 1,
+    })
+    if (existing.totalDocs > 0) {
+      throw new Error('Du hast diesen Standort bereits bewertet.')
+    }
+  }
   if (req?.user?.id && !data.user) {
     data.user = req.user.id
+  }
+  if (data.comment) {
+    const { isSpam, reason } = checkSpamContent(data.comment)
+    if (isSpam) {
+      throw new Error(`Spam erkannt: ${reason}`)
+    }
   }
   return data
 }

@@ -30,7 +30,6 @@ import { useI18n } from 'vue-i18n';
 // import { distance } from "@turf/distance";
 // import { point } from '@turf/helpers';
 
-import { useUserStore } from '../store/userStore';
 import { useAppStore } from '../store/appStore';
 import { useLocationsStore } from '../store/locationsStore';
 
@@ -40,11 +39,9 @@ import LocationMap from '../components/LocationMap.vue';
 // i18n
 const { t } = useI18n();
 
-const userStore = useUserStore();
 const appStore = useAppStore();
 const locationsStore = useLocationsStore();
 
-const { authenticated } = storeToRefs(userStore);
 const { isLoading } = storeToRefs(locationsStore);
 
 const locations = ref([]);
@@ -72,7 +69,6 @@ const locations = ref([]);
 // });
 
 onMounted(async() => {
-    console.log('authenticated.value: ', authenticated.value);
     if (!appStore.geo || (appStore.geo.ts + 900000) - Date.now() < 0) {
         try {
             await appStore.getGeoLocation();

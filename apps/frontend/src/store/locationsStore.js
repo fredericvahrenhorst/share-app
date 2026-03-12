@@ -3,11 +3,7 @@ import { defineStore } from 'pinia';
 import apiCall from '../composables/apiCall';
 import { distance as turfDistance } from '@turf/distance';
 import { point } from '@turf/helpers';
-import { storeToRefs } from 'pinia';
 import { useAppStore } from './appStore';
-
-const appStore = useAppStore();
-const { geo } = storeToRefs(appStore);
 
 export const useLocationsStore = defineStore('locations', {
     state: () => ({
@@ -197,7 +193,8 @@ export const useLocationsStore = defineStore('locations', {
                     // Distanzberechnung und Sortierung
 
 
-                    if (geo.value && Array.isArray(results)) {
+                    const geoRef = useAppStore().geo
+                    if (geoRef && Array.isArray(results)) {
                         results = this.addDistanceToLocations(results);
                         results = this.sortLocationsByDistance(results);
                     }
@@ -261,7 +258,8 @@ export const useLocationsStore = defineStore('locations', {
             }
         },
         addDistanceToLocations(locations) {
-            const userPoint = point([geo.value.long, geo.value.lat]);
+            const geoData = useAppStore().geo
+            const userPoint = point([geoData.long, geoData.lat]);
             return locations.map(location => {
                 if (location.coordinates && Array.isArray(location.coordinates) && location.coordinates.length === 2) {
                     const locationPoint = point(location.coordinates);
@@ -399,7 +397,6 @@ export const useLocationsStore = defineStore('locations', {
                     // Only update if we have valid data
                     if (parsedFilters && typeof parsedFilters === 'object') {
                         this.filterState = { ...this.filterState, ...parsedFilters };
-                        console.log('Filters loaded from localStorage:', this.filterState);
                     }
                 }
             } catch (error) {
@@ -428,8 +425,6 @@ export const useLocationsStore = defineStore('locations', {
             // Apply filters if any are set
             if (this.filterState.categories.length > 0
             || (this.filterState.radius && this.filterState.radius !== 0)) {
-                console.log('Applying filters to locations...');
-
                 locations = locations.filter((loc) => {
                     // Category filter
                     if (this.filterState.categories.length > 0) {
@@ -462,9 +457,8 @@ export const useLocationsStore = defineStore('locations', {
                     return true;
                 });
 
-                console.log('Filtered locations count:', locations.length);
             } else {
-                console.log('No filters applied, showing all locations');
+                // No filters applied, showing all locations
             }
 
             this.filteredLocations = locations;

@@ -18,7 +18,7 @@
                 </div>
 
                 <form v-else @submit.prevent="handleSubmit" class="space-y-4">
-                    <p class="text-gray-600 text-sm mb-4">
+                    <p class="text-primary-400 text-sm mb-4">
                         Bitte gib dein neues Passwort ein.
                     </p>
 
@@ -79,11 +79,12 @@ import {
     IonSpinner,
 } from '@ionic/vue'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '../store/userStore'
 
 const userStore = useUserStore()
 const route = useRoute()
+const router = useRouter()
 
 const password = ref('')
 const confirmPassword = ref('')
@@ -117,7 +118,8 @@ async function handleSubmit() {
         const result = await userStore.resetPassword(token, password.value)
 
         if (result.success) {
-            successMessage.value = 'Dein Passwort wurde erfolgreich geändert. Du kannst dich jetzt einloggen.'
+            successMessage.value = 'Dein Passwort wurde erfolgreich geändert. Du wirst zum Login weitergeleitet...'
+            setTimeout(() => { router.push('/login') }, 3000)
         } else {
             errors.value = result.errors || ['Passwort-Reset fehlgeschlagen.']
         }
