@@ -17,6 +17,7 @@
     },
     "search": {
         "title": "Search",
+        "aria_label": "Search locations",
         "placeholder": "Search for location, POI or address...",
         "placeholder-local": "Search for Point of Interest...",
         "placeholder_external": "Search for place or address...",
@@ -43,6 +44,11 @@
     },
     "filter": {
         "title": "Filter",
+        "open_filters": "Open filters",
+        "open_filters_active": "Open filters, {count} active",
+        "active_filters": "Active filters",
+        "remove_filter": "Remove filter {name}",
+        "clear_short": "Reset",
         "categories": "Categories",
         "radius": "Radius",
         "availability": "Availability",
@@ -73,6 +79,10 @@
         "label": "Radius",
         "searchHere": "Search Here"
     },
+    "map": {
+        "my_location": "Go to my location",
+        "add_location": "Add new location"
+    },
     "favorites": {
         "title": "Favorites",
         "loading": "Loading favorites…",
@@ -94,7 +104,8 @@
         "step1": {
             "title": "Where is the resource located?",
             "searchPlaceholder": "Search for address or place...",
-            "useCurrentLocation": "Use Current Location"
+            "useCurrentLocation": "Use Current Location",
+            "locationError": "Could not determine your location. Please check permissions or place the pin on the map."
         },
         "step2": {
             "title": "What type of resource is it?"
@@ -134,8 +145,16 @@
         "to": "to",
         "oclock": "o'clock",
         "is_loading": "Loading data…",
-        "apply": "Apply"
+        "apply": "Apply",
+        "more_options": "More options"
     },
+    "categories": {
+        "loading": "Loading categories…",
+        "empty_title": "No categories",
+        "empty_description": "No categories are available yet.",
+        "show_all": "Show all categories"
+    },
+
     "auth": {
         "login_title": "Log In",
         "login_email": "Email",
@@ -144,6 +163,7 @@
         "login_loading": "Logging in…",
         "login_no_account": "Don't have an account?",
         "register_link": "Register now",
+        "forgot_password": "Forgot password?",
         "register_title": "Register",
         "register_name": "Name",
         "register_email": "Email",

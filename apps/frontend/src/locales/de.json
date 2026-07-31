@@ -17,6 +17,7 @@
     },
     "search": {
         "title": "Suche",
+        "aria_label": "Standorte suchen",
         "placeholder": "Standort, POI oder Adresse suchen...",
         "placeholder-local": "Point of Interest suchen...",
         "placeholder_external": "Ort oder Adresse suchen...",
@@ -43,6 +44,11 @@
     },
     "filter": {
         "title": "Filter",
+        "open_filters": "Filter öffnen",
+        "open_filters_active": "Filter öffnen, {count} aktiv",
+        "active_filters": "Aktive Filter",
+        "remove_filter": "Filter {name} entfernen",
+        "clear_short": "Zurücksetzen",
         "categories": "Kategorien",
         "radius": "Radius",
         "availability": "Verfügbarkeit",
@@ -73,6 +79,10 @@
         "label": "Radius",
         "searchHere": "Hier suchen"
     },
+    "map": {
+        "my_location": "Zu meinem Standort",
+        "add_location": "Neuen Standort hinzufügen"
+    },
     "favorites": {
         "title": "Favoriten",
         "loading": "Favoriten werden geladen…",
@@ -94,7 +104,8 @@
         "step1": {
             "title": "Wo befindet sich die Ressource?",
             "searchPlaceholder": "Adresse oder Ort suchen...",
-            "useCurrentLocation": "Aktuellen Standort verwenden"
+            "useCurrentLocation": "Aktuellen Standort verwenden",
+            "locationError": "Standort konnte nicht ermittelt werden. Bitte Berechtigung prüfen oder Pin auf der Karte setzen."
         },
         "step2": {
             "title": "Was für eine Art von Ressource ist es?"
@@ -134,7 +145,14 @@
         "to": "bis",
         "oclock": "Uhr",
         "is_loading": "Daten laden …",
-        "apply": "Anwenden"
+        "apply": "Anwenden",
+        "more_options": "Weitere Optionen"
+    },
+    "categories": {
+        "loading": "Lade Kategorien…",
+        "empty_title": "Keine Kategorien",
+        "empty_description": "Es sind noch keine Kategorien verfügbar.",
+        "show_all": "Alle Kategorien anzeigen"
     },
     "auth": {
         "login_title": "Anmelden",
@@ -144,6 +162,7 @@
         "login_loading": "Anmeldung läuft…",
         "login_no_account": "Noch kein Konto?",
         "register_link": "Jetzt registrieren",
+        "forgot_password": "Passwort vergessen?",
         "register_title": "Registrieren",
         "register_name": "Name",
         "register_email": "E-Mail",

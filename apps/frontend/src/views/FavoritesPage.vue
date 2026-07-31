@@ -20,11 +20,11 @@
 
                 <div
                     v-else-if="!isAuthenticated"
-                    class="flex flex-col items-center justify-center py-16 text-center text-gray-500"
+                    class="flex flex-col items-center justify-center py-16 text-center"
                 >
-                    <ion-icon :icon="personCircleOutline" size="large" class="text-6xl mb-4" />
-                    <h2 class="text-xl font-semibold mb-2">{{ t('favorites.login_required_title') }}</h2>
-                    <p class="text-sm mb-4">{{ t('favorites.login_required_description') }}</p>
+                    <ion-icon :icon="personCircleOutline" class="w-16 h-16 mb-4 text-neutral-300" />
+                    <h2 class="text-xl font-semibold mb-2 text-primary-600">{{ t('favorites.login_required_title') }}</h2>
+                    <p class="text-sm mb-4 text-primary-400">{{ t('favorites.login_required_description') }}</p>
                     <ion-button fill="outline" @click="goToLogin">
                         {{ t('favorites.login') }}
                     </ion-button>
@@ -32,11 +32,11 @@
 
                 <div
                     v-else-if="favorites.length === 0"
-                    class="flex flex-col items-center justify-center py-16 text-center text-gray-500"
+                    class="flex flex-col items-center justify-center py-16 text-center"
                 >
-                    <ion-icon :icon="heartOutline" size="large" class="text-6xl mb-4" />
-                    <h2 class="text-xl font-semibold mb-2">{{ t('favorites.empty_title') }}</h2>
-                    <p class="text-sm">{{ t('favorites.empty_description') }}</p>
+                    <ion-icon :icon="heartOutline" class="w-16 h-16 mb-4 text-neutral-300" />
+                    <h2 class="text-xl font-semibold mb-2 text-primary-600">{{ t('favorites.empty_title') }}</h2>
+                    <p class="text-sm text-primary-400">{{ t('favorites.empty_description') }}</p>
                 </div>
 
                 <ion-list v-else class="space-y-2">
@@ -71,6 +71,7 @@
                             slot="end"
                             fill="clear"
                             color="danger"
+                            :aria-label="t('favorites.remove')"
                             @click.stop="handleRemoveFavorite(favorite)"
                         >
                             <ion-icon :icon="heart" />

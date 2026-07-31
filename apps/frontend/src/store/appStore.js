@@ -44,11 +44,37 @@ export const useAppStore = defineStore('app', {
         },
 
         async getGeoLocation(force = false) {
-            if (localStorage.getItem('geo') && !force) {
-                this.geo = JSON.parse(localStorage.getItem('geo'));
-            } else {
-                const geoData = await Geolocation.getCurrentPosition();
-                this.setGeoLatLong(geoData);
+            const cached = this.geo || JSON.parse(localStorage.getItem('geo') || 'null')
+            const isFresh = cached?.ts && Date.now() - cached.ts < 900000
+
+            if (!force && cached && isFresh) {
+                this.geo = cached
+                return this.geo
+            }
+
+            try {
+                const geoData = await Geolocation.getCurrentPosition({
+                    enableHighAccuracy: true,
+                    timeout: 12000,
+                })
+                this.setGeoLatLong(geoData)
+                return this.geo
+            } catch (capacitorError) {
+                // Browser-Fallback, falls Capacitor Geolocation fehlschlägt
+                if (typeof navigator === 'undefined' || !navigator.geolocation) {
+                    throw capacitorError
+                }
+
+                const browserPosition = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 12000,
+                        maximumAge: force ? 0 : 60000,
+                    })
+                })
+
+                this.setGeoLatLong(browserPosition)
+                return this.geo
             }
         },
 

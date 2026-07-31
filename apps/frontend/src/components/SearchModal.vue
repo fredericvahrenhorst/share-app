@@ -6,12 +6,12 @@
         :breakpoints="[0, 0.5, 0.75, 1]"
     >
 
-        <ion-header collapse="fade" translucent>
+        <ion-header>
             <ion-toolbar>
                 <ion-title>{{ t('search.title') }}</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="handleDismiss">
-                        <ion-icon size="small" color="primary" :icon="closeOutline" />
+                    <ion-button fill="clear" @click="handleDismiss" :aria-label="t('misc.close')">
+                        <ion-icon :icon="closeOutline" class="w-5 h-5" />
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
@@ -20,18 +20,20 @@
         <ion-content class="ion-padding">
             <!-- Tab-Switch für lokale vs externe Suche -->
             <div class="mb-4">
-                <ion-segment :value="searchMode" @ionChange="setSearchMode($event.detail.value)" class="bg-gradient-purple-blue">
+                <ion-segment
+                    :value="searchMode"
+                    @ionChange="setSearchMode($event.detail.value)"
+                    class="search-mode-segment"
+                >
                     <ion-segment-button value="external">
-                        <div class="flex items-center gap-1 transition-colors"
-                        :class="{'text-light-gray-96': searchMode === 'external'}">
+                        <div class="flex items-center gap-1">
                             <ion-icon :icon="globeOutline" class="h-4 w-4" />
                             <ion-label>{{ t('search.external_places') }}</ion-label>
                         </div>
                     </ion-segment-button>
-                    <ion-segment-button class="my-2 mx-1" value="local">
-                        <div class="flex items-center gap-1 transition-colors"
-                        :class="{'text-light-gray-96': searchMode === 'local'}">
-                            <ion-icon :icon="locationOutline" class="h-4 w-4"/>
+                    <ion-segment-button value="local">
+                        <div class="flex items-center gap-1">
+                            <ion-icon :icon="locationOutline" class="h-4 w-4" />
                             <ion-label>{{ t('search.local_places') }}</ion-label>
                         </div>
                     </ion-segment-button>
@@ -40,8 +42,8 @@
 
             <!-- Suchfeld -->
             <div class="mb-4">
-                <ion-item class="blur-bg" lines="none">
-                    <ion-icon :icon="searchOutline" size="small" slot="start" class="text-current mr-2" />
+                <ion-item class="search-modal-field rounded-lg" lines="none">
+                    <ion-icon :icon="searchOutline" size="small" slot="start" class="text-primary-400 mr-2" />
                     <ion-input
                         ref="searchInput"
                         v-model="searchQuery"
@@ -59,7 +61,8 @@
                     <!-- Dropdown Trigger -->
                     <button
                         @click="toggleCategoryDropdown"
-                        class="!bg-white blur-bg flex items-center justify-between w-full px-4.5 py-2.5"
+                        type="button"
+                        class="bg-white border border-neutral-200 text-primary-600 flex items-center justify-between w-full px-4 py-2.5 rounded-lg"
                     >
                         <span class="flex items-center">
                             <div
@@ -80,15 +83,13 @@
                     <!-- Dropdown Menu -->
                     <div
                         v-if="isCategoryDropdownOpen"
-                        class="absolute z-50 w-full mt-1 max-h-48 overflow-auto blur-bg-light"
+                        class="absolute z-50 w-full mt-1 max-h-48 overflow-auto bg-white border border-neutral-200 rounded-lg shadow-md"
                     >
                         <!-- Alle Kategorien Option -->
                         <button
                             @click="selectCategory('all')"
-                            class="
-                                flex items-center w-full px-3 py-2 text-left
-                                hover:bg-gray-100 focus:bg-gray-100 focus:outline-none
-                            "
+                            type="button"
+                            class="flex items-center w-full px-3 py-2 text-left text-primary-600 hover:bg-neutral-50 focus:bg-neutral-50 focus:outline-none"
                         >
                             <div class="flex items-center">
                                 {{ t('search.all_categories') }}
@@ -99,16 +100,14 @@
                         <button
                             v-for="category in categories"
                             :key="category.id"
+                            type="button"
                             @click="selectCategory(category.id)"
-                            class="
-                                flex items-center w-full px-3 py-2 text-left
-                                hover:bg-gray-100 focus:bg-gray-100 focus:outline-none
-                            "
+                            class="flex items-center w-full px-3 py-2 text-left text-primary-600 hover:bg-neutral-50 focus:bg-neutral-50 focus:outline-none"
                         >
                             <div class="flex items-center">
                                 <div
                                     class="w-3 h-3 rounded-full mr-2"
-                                    :style="{ backgroundColor: category.color || '#6366F1' }"
+                                    :style="{ backgroundColor: category.color || '#275243' }"
                                 ></div>
                                 {{ category.name }}
                             </div>
@@ -147,13 +146,14 @@
                     <ion-card
                         v-for="place in mapboxResults"
                         :key="place.id"
-                        class="blur-bg-light"
+                        class="bg-white border border-neutral-200 shadow-sm"
+                        button
                         @click="selectExternalPlace(place)"
                         :aria-label="place.place_name_de || place.place_name"
                     >
-                        <ion-card-content class="!p-3 imte">
-                            <div class="text-sm text-dark font-semibold flex items-center">
-                                <ion-icon :icon="locationOutline" class="mr-2 h-4.5 w-4.5 shrink-0" />
+                        <ion-card-content class="!p-3">
+                            <div class="text-sm text-primary-600 font-semibold flex items-center">
+                                <ion-icon :icon="locationOutline" class="mr-2 w-4 h-4 shrink-0 text-secondary-600" />
                                 {{ place.place_name_de || place.place_name }}
                             </div>
                         </ion-card-content>
@@ -187,9 +187,9 @@
 
             <!-- Keine Ergebnisse -->
             <div v-else-if="!searchQueryEmpty && !isSearching" class="text-center py-12">
-                <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
-                <h3 class="text-lg font-medium text-gray-600 mb-2">{{ t('search.no_results_title') }}</h3>
-                <p class="text-sm text-gray-500">
+                <ion-icon :icon="searchOutline" class="w-16 h-16 text-neutral-300 mb-4" />
+                <h3 class="text-lg font-medium text-primary-600 mb-2">{{ t('search.no_results_title') }}</h3>
+                <p class="text-sm text-primary-400">
                     {{ searchMode === 'local' ? t('search.no_results_description') : t('search.no_results_description_external') }}
                 </p>
             </div>
@@ -249,11 +249,11 @@
                 </div>
 
                 <div class="text-center py-8">
-                    <ion-icon :icon="searchOutline" class="text-6xl text-gray-300 mb-4" />
-                    <h3 class="text-lg font-medium text-gray-600 mb-2">
+                    <ion-icon :icon="searchOutline" class="w-16 h-16 text-neutral-300 mb-4" />
+                    <h3 class="text-lg font-medium text-primary-600 mb-2">
                         {{ searchMode === 'local' ? t('search.start_title') : t('search.start_title_external') }}
                     </h3>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-primary-400">
                         {{ searchMode === 'local' ? t('search.start_description') : t('search.start_description_external') }}
                     </p>
                 </div>
@@ -622,7 +622,23 @@ watch(() => props.isOpen, (newValue) => {
 </script>
 
 <style scoped>
-  ion-segment-button {
-    margin: 0.25rem 0.25rem;
-  }
+ion-segment-button {
+    margin: 0.25rem;
+}
+
+.search-modal-field {
+    --background: #ffffff;
+    --color: #333333;
+    --border-radius: 0.5rem;
+    border: 1px solid #deded9;
+}
+
+.search-modal-field ion-input {
+    --color: #333333;
+    --placeholder-color: #6c6c6c;
+}
+
+.search-mode-segment {
+    --background: #f8f8f6;
+}
 </style>

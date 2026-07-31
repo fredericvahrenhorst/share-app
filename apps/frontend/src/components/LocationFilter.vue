@@ -7,17 +7,19 @@
         class="filter-modal"
     >
 
-        <ion-header collapse="fade" translucent>
+        <ion-header>
             <ion-toolbar>
                 <ion-title>
-                    {{ t('filter.title') }}
-                    <div class="text-sm text-gray-500 mt-1">
-                        {{ locationsStore.filteredLocations.length }} {{ t('filter.locations_found') }}
-                    </div>
+                    <span class="inline-flex items-baseline gap-2 flex-wrap">
+                        <span>{{ t('filter.title') }}</span>
+                        <span class="text-sm font-normal text-white/75">
+                            {{ locationsStore.filteredLocations.length }} {{ t('filter.locations_found') }}
+                        </span>
+                    </span>
                 </ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="handleDismiss">
-                        <ion-icon size="small" color="primary" :icon="closeOutline" />
+                    <ion-button fill="clear" @click="handleDismiss" :aria-label="t('misc.close')">
+                        <ion-icon :icon="closeOutline" class="w-5 h-5" />
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
@@ -37,23 +39,23 @@
                         :class="[
                             'rounded-lg border cursor-pointer transition-colors',
                             selectedCategories.includes(category.id)
-                                ? 'bg-purple-50 border-purple-200'
-                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                ? 'bg-accent-50 border-accent-300'
+                                : 'bg-white border-primary-200 hover:border-primary-300'
                         ]"
                         lines="none"
                         button
                     >
-                        <ion-icon
-                            :icon="getCategoryIcon(category.icon)"
-                            slot="start"
-                            class="text-xl mr-3"
-                            :style="{ color: category.color }"
-                        />
+                        <div slot="start" class="mr-3" :style="{ color: category.color || '#275243' }">
+                            <CategoryIcon
+                                :icon="category.icon"
+                                size-class="w-6 h-6 text-xl"
+                            />
+                        </div>
                         <ion-label>
-                            <h4 class="font-medium text-gray-900">
+                            <h4 class="font-medium text-primary-600">
                                 {{ category.name }}
                             </h4>
-                            <p class="text-sm text-gray-500 mt-1">
+                            <p class="text-sm text-primary-400 mt-1">
                                 {{ category.description }}
                             </p>
                         </ion-label>
@@ -79,13 +81,13 @@
                         :class="[
                             'rounded-lg border cursor-pointer transition-colors',
                             selectedAvailability === opt.value
-                                ? 'bg-blue-50 border-blue-200'
-                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                ? 'bg-secondary-50 border-secondary-300'
+                                : 'bg-white border-primary-200 hover:border-primary-300'
                         ]"
                         lines="none"
                         button
                     >
-                        <span class="text-xl mr-3" slot="start">{{ opt.icon }}</span>
+                        <ion-icon :icon="opt.icon" slot="start" class="w-5 h-5 mr-3 text-secondary-600" />
                         <ion-label>{{ opt.label }}</ion-label>
                         <ion-radio
                             :value="opt.value"
@@ -106,7 +108,7 @@
                         class="rounded-lg border bg-white border-gray-200"
                         lines="none"
                     >
-                        <span class="text-xl mr-3" slot="start">♿</span>
+                        <ion-icon :icon="accessibilityOutline" slot="start" class="w-5 h-5 mr-3 text-secondary-600" />
                         <ion-label>{{ t('filter.wheelchair') }}</ion-label>
                         <ion-checkbox
                             :checked="accessibilityFilters.wheelchair"
@@ -118,7 +120,7 @@
                         class="rounded-lg border bg-white border-gray-200"
                         lines="none"
                     >
-                        <span class="text-xl mr-3" slot="start">🚻</span>
+                        <ion-icon :icon="maleFemaleOutline" slot="start" class="w-5 h-5 mr-3 text-secondary-600" />
                         <ion-label>{{ t('filter.accessible_toilet') }}</ion-label>
                         <ion-checkbox
                             :checked="accessibilityFilters.toilet"
@@ -130,7 +132,7 @@
                         class="rounded-lg border bg-white border-gray-200"
                         lines="none"
                     >
-                        <span class="text-xl mr-3" slot="start">🅿️</span>
+                        <ion-icon :icon="carOutline" slot="start" class="w-5 h-5 mr-3 text-secondary-600" />
                         <ion-label>{{ t('filter.accessible_parking') }}</ion-label>
                         <ion-checkbox
                             :checked="accessibilityFilters.parking"
@@ -164,7 +166,7 @@
                         </ion-label>
                     </ion-range>
                     <div class="text-center mt-2">
-                        <span class="text-lg font-semibold text-purple-600">
+                        <span class="text-lg font-semibold text-secondary-600">
                             {{ selectedRadius === 0 ? t('filter.all_distances') : selectedRadius + ' km' }}
                         </span>
                     </div>
@@ -227,8 +229,17 @@ import {
     IonRadio,
 } from '@ionic/vue';
 import { useI18n } from 'vue-i18n';
-import { closeOutline } from 'ionicons/icons';
+import {
+    closeOutline,
+    timeOutline,
+    ellipseOutline,
+    alarmOutline,
+    accessibilityOutline,
+    maleFemaleOutline,
+    carOutline,
+} from 'ionicons/icons';
 import { useLocationsStore } from '../store/locationsStore';
+import CategoryIcon from './CategoryIcon.vue';
 
 // i18n
 const { t } = useI18n();
@@ -259,9 +270,9 @@ const accessibilityFilters = ref({
 });
 
 const availabilityOptions = computed(() => [
-    { value: 'all', label: t('filter.all'), icon: '🕐' },
-    { value: 'open_now', label: t('filter.open_now'), icon: '🟢' },
-    { value: '24_7', label: t('filter.24_7'), icon: '⏰' },
+    { value: 'all', label: t('filter.all'), icon: timeOutline },
+    { value: 'open_now', label: t('filter.open_now'), icon: ellipseOutline },
+    { value: '24_7', label: t('filter.24_7'), icon: alarmOutline },
 ]);
 
 // Watch for changes in isOpen to sync with store
@@ -338,7 +349,6 @@ const clearFilters = () => {
     locationsStore.clearFilters();
 };
 
-const getCategoryIcon = (iconName) => iconName || 'location-outline';
 </script>
 
 <style scoped>

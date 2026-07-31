@@ -19,10 +19,22 @@ After you click the `Deploy` button above, you'll want to have standalone copy o
 1. First [clone the repo](#clone) if you have not done so already
 2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+3. `pnpm install` to install dependencies
+4. Ensure MongoDB is running and `.env` has `DATABASE_URI` + `PAYLOAD_SECRET`
+5. Seed Resource-Sharing demo data (optional but recommended for local/dev):
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+```bash
+pnpm seed
+# or from monorepo root:
+pnpm --filter ./apps/backend seed
+```
+
+   Only wipe: `pnpm seed:wipe`. Re-running `pnpm seed` replaces locations/categories and related community data; users are upserted by email.
+
+6. `pnpm dev` to start the Payload/Next dev server
+7. open `http://localhost:3000` (Admin) — login e.g. `test@example.com` / `test123`
+
+That's it! Changes made in `./src` will be reflected in your app. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
 
 #### Docker (Optional)
 

@@ -1,40 +1,38 @@
 <template>
     <ion-card
-        class="blur-bg-light text-white"
+        class="bg-white border border-neutral-200 shadow-sm text-primary-600"
         @click="handleClick"
         :aria-label="location.name"
+        button
     >
         <ion-card-content>
-            <div class="flex justify-between items-start">
-                <div class="flex-1">
-                    <ion-card-title class="text-lg font-semibold">
+            <div class="flex justify-between items-start gap-2">
+                <div class="flex-1 min-w-0">
+                    <ion-card-title class="text-lg font-semibold text-primary-600">
                         {{ location.name }}
                     </ion-card-title>
-                    <ion-card-subtitle v-if="location.category" class="flex items-center mt-1">
+                    <ion-card-subtitle v-if="location.category" class="flex items-center mt-1 text-primary-400">
                         <div
-                            class="w-3 h-3 rounded-full mr-2"
-                            :style="{ backgroundColor: location.category.color || '#6366F1' }"
+                            class="w-3 h-3 rounded-full mr-2 shrink-0"
+                            :style="{ backgroundColor: location.category.color || '#275243' }"
                         ></div>
                         {{ location.category.name }}
                     </ion-card-subtitle>
                 </div>
-                <!-- Distanz-Anzeige -->
                 <div
                     v-if="location.distance"
-                    class="text-xs text-light-gray-96 bg-blue-100 px-2 py-1 rounded-full"
+                    class="text-xs bg-accent-300 text-primary-600 px-2 py-1 rounded shrink-0"
                 >
                     {{ formatDistance(location.distance) }}
                 </div>
             </div>
 
-            <!-- Adresse -->
-            <div v-if="location.address" class="mb-2 text-sm text-gray-600">
-                <ion-icon :icon="locationOutline" class="mr-1" />
-                {{ formatAddress(location.address) }}
+            <div v-if="location.address" class="mb-2 mt-2 text-sm text-primary-400 flex items-start">
+                <ion-icon :icon="locationOutline" class="mr-1 mt-0.5 shrink-0 w-4 h-4" aria-hidden="true" />
+                <span>{{ formatAddress(location.address) }}</span>
             </div>
 
-            <!-- Beschreibung -->
-            <div v-if="location.description" class="text-sm text-gray-700 line-clamp-2">
+            <div v-if="location.description" class="text-sm text-primary-400 line-clamp-2">
                 {{ stripHtml(location.description) }}
             </div>
         </ion-card-content>
@@ -42,42 +40,42 @@
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n';
-import { IonCard, IonCardContent, IonCardTitle, IonCardSubtitle, IonIcon } from '@ionic/vue';
-import { locationOutline } from 'ionicons/icons';
+import { useI18n } from 'vue-i18n'
+import { IonCard, IonCardContent, IonCardTitle, IonCardSubtitle, IonIcon } from '@ionic/vue'
+import { locationOutline } from 'ionicons/icons'
 
-const props = defineProps({
+defineProps({
     location: { type: Object, required: true },
     categoryObj: { type: Object, default: null },
-});
+})
 
-const emit = defineEmits(['select']);
-const { t } = useI18n();
+const emit = defineEmits(['select'])
+useI18n()
 
 function formatDistance(distance) {
-    if (!distance) return '';
-    if (distance < 1000) return `${Math.round(distance)} m`;
-    return `${(distance / 1000).toFixed(1)} km`;
+    if (!distance) return ''
+    if (distance < 1000) return `${Math.round(distance)} m`
+    return `${(distance / 1000).toFixed(1)} km`
 }
 
 const stripHtml = (html) => {
-    if (!html) return '';
-    // Einfache HTML-Strip-Funktion
-    return `${html.replace(/<[^>]*>/g, '').substring(0, 150)}...`;
-};
+    if (!html) return ''
+    if (typeof html === 'object') return ''
+    return `${String(html).replace(/<[^>]*>/g, '').substring(0, 150)}...`
+}
 
 const formatAddress = (address) => {
-    const parts = [];
-    if (address.street) parts.push(address.street);
+    const parts = []
+    if (address.street) parts.push(address.street)
     if (address.postalCode && address.city) {
-        parts.push(`${address.postalCode} ${address.city}`);
+        parts.push(`${address.postalCode} ${address.city}`)
     } else if (address.city) {
-        parts.push(address.city);
+        parts.push(address.city)
     }
-    return parts.join(', ');
-};
+    return parts.join(', ')
+}
 
 function handleClick() {
-    emit('select', props.location);
+    emit('select')
 }
 </script>

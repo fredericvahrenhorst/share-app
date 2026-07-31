@@ -9,12 +9,12 @@
             <ion-toolbar>
                 <ion-title>{{ t('addResource.title') }}</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="closeModal">
-                        <ion-icon :icon="closeOutline" />
+                    <ion-button fill="clear" @click="closeModal" :aria-label="t('misc.close')">
+                        <ion-icon :icon="closeOutline" class="w-5 h-5" />
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
-            <ion-toolbar>
+            <ion-toolbar class="toolbar-segment">
                 <ion-segment :value="currentStep.toString()">
                     <ion-segment-button value="1" disabled>
                         <ion-label>{{ t('addResource.steps.location') }}</ion-label>
@@ -31,15 +31,15 @@
 
         <ion-content class="ion-padding">
             <!-- Step 1: Standort -->
-            <div v-if="currentStep === 1" class="h-full flex flex-col">
+            <div v-if="currentStep === 1" class="flex flex-col min-h-full pb-6">
                 <div class="text-center mb-4">
-                    <h2 class="text-lg font-semibold">{{ t('addResource.step1.title') }}</h2>
-                    <p class="text-sm text-gray-500">
+                    <h2 class="text-lg font-semibold text-primary-600">{{ t('addResource.step1.title') }}</h2>
+                    <p class="text-sm text-primary-400">
                         Verschiebe den Pin oder klicke auf die Karte, um den Standort festzulegen.
                     </p>
                 </div>
 
-                <div class="flex-grow relative rounded-xl overflow-hidden border border-gray-200 mb-4 min-h-[300px]">
+                <div class="relative shrink-0 rounded-xl overflow-hidden border border-neutral-200 mb-4 h-56 sm:h-64">
                     <MapboxMap
                         v-if="mapboxToken"
                         :accessToken="mapboxToken"
@@ -59,38 +59,57 @@
                     </MapboxMap>
                 </div>
 
-                <ion-button expand="block" fill="outline" class="mb-4" @click="useCurrentLocation">
-                    <ion-icon slot="start" :icon="locateOutline" />
-                    {{ t('addResource.step1.useCurrentLocation') }}
-                </ion-button>
+                <div class="shrink-0 mt-auto space-y-3 pb-6">
+                    <ion-button
+                        expand="block"
+                        fill="outline"
+                        :disabled="isLocating"
+                        @click="useCurrentLocation"
+                    >
+                        <ion-spinner v-if="isLocating" name="crescent" slot="start" />
+                        <ion-icon v-else slot="start" :icon="locateOutline" />
+                        {{ t('addResource.step1.useCurrentLocation') }}
+                    </ion-button>
 
-                <div v-if="selectedAddress" class="mb-4 p-3 bg-gray-50 rounded-lg text-sm">
-                    <p class="font-semibold">Ausgewählter Standort:</p>
-                    <p>{{ formatAddress(selectedAddress) }}</p>
+                    <div v-if="selectedAddress" class="p-3 bg-neutral-50 rounded-lg text-sm text-primary-600">
+                        <p class="font-semibold">Ausgewählter Standort:</p>
+                        <p>{{ formatAddress(selectedAddress) }}</p>
+                    </div>
+
+                    <ion-button
+                        expand="block"
+                        :disabled="!selectedCoordinates"
+                        @click="nextStep"
+                    >
+                        {{ t('common.next') }}
+                    </ion-button>
                 </div>
-
-                <ion-button expand="block" :disabled="!selectedCoordinates" @click="nextStep">
-                    {{ t('common.next') }}
-                </ion-button>
             </div>
 
             <!-- Step 2: Kategorie -->
-            <div v-else-if="currentStep === 2" class="h-full flex flex-col">
+            <div v-else-if="currentStep === 2" class="flex flex-col min-h-full pb-6">
                 <div class="text-center mb-4">
-                    <h2 class="text-lg font-semibold">{{ t('addResource.step2.title') }}</h2>
+                    <h2 class="text-lg font-semibold text-primary-600">{{ t('addResource.step2.title') }}</h2>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mb-4 overflow-y-auto">
                     <div
                         v-for="category in categories"
                         :key="category.id"
+                        role="button"
+                        tabindex="0"
+                        :aria-label="category.name"
                         class="p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center justify-center text-center h-32"
-                        :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                        :class="selectedCategoryId === category.id ? 'border-accent-300 bg-accent-50' : 'border-neutral-200 hover:border-neutral-300'"
                         @click="selectCategory(category.id)"
+                        @keydown.enter.prevent="selectCategory(category.id)"
+                        @keydown.space.prevent="selectCategory(category.id)"
                     >
-                        <!-- Icon Rendering: Falls Icon ein String (Emoji) ist -->
-                        <div class="text-3xl mb-2">{{ category.icon || '📦' }}</div>
-                        <div class="font-medium text-sm">{{ category.name }}</div>
+                        <CategoryIcon
+                            :icon="category.icon"
+                            size-class="w-8 h-8 text-3xl mb-2 text-secondary-600"
+                        />
+                        <div class="font-medium text-sm text-primary-600">{{ category.name }}</div>
                     </div>
                 </div>
 
@@ -107,9 +126,9 @@
             </div>
 
             <!-- Step 3: Details -->
-            <div v-else-if="currentStep === 3" class="h-full flex flex-col">
+            <div v-else-if="currentStep === 3" class="flex flex-col min-h-full pb-6">
                 <div class="text-center mb-4">
-                    <h2 class="text-lg font-semibold">{{ t('addResource.step3.title') }}</h2>
+                    <h2 class="text-lg font-semibold text-primary-600">{{ t('addResource.step3.title') }}</h2>
                 </div>
 
                 <div class="space-y-4 mb-6 overflow-y-auto">
@@ -227,6 +246,7 @@ import { useLocationsStore } from '../store/locationsStore';
 import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import apiCall from '../composables/apiCall';
+import CategoryIcon from './CategoryIcon.vue';
 
 const props = defineProps({
     isOpen: {
@@ -252,6 +272,7 @@ const defaultCenter = [13.354336, 52.477697];
 // State
 const currentStep = ref(1);
 const isSubmitting = ref(false);
+const isLocating = ref(false);
 const showMoreDetails = ref(false);
 
 // Step 1: Location
@@ -323,12 +344,40 @@ function updateSelectedLocation(lng, lat) {
     };
 }
 
-function useCurrentLocation() {
-    if (userLocation.value) {
-        selectedCoordinates.value = userLocation.value;
-        mapCenter.value = userLocation.value;
-        mapZoom.value = 14;
-        selectedAddress.value = { street: 'Aktueller Standort', city: '' };
+async function useCurrentLocation() {
+    if (isLocating.value) return
+
+    isLocating.value = true
+    try {
+        await appStore.getGeoLocation(true)
+        const coords = geo.value ? [geo.value.long, geo.value.lat] : null
+        if (!coords) {
+            throw new Error('no-geo')
+        }
+
+        selectedCoordinates.value = coords
+        mapCenter.value = coords
+        mapZoom.value = 15
+        selectedAddress.value = {
+            street: t('addResource.step1.useCurrentLocation'),
+            city: `${coords[1].toFixed(5)}, ${coords[0].toFixed(5)}`,
+        }
+
+        if (mapInstance.value?.flyTo) {
+            mapInstance.value.flyTo({ center: coords, zoom: 15 })
+        } else if (mapInstance.value?.easeTo) {
+            mapInstance.value.easeTo({ center: coords, zoom: 15 })
+        }
+    } catch (error) {
+        const toast = await toastController.create({
+            message: t('addResource.step1.locationError'),
+            duration: 3000,
+            color: 'danger',
+            position: 'top',
+        })
+        await toast.present()
+    } finally {
+        isLocating.value = false
     }
 }
 

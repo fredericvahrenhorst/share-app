@@ -365,7 +365,11 @@ export const useLocationsStore = defineStore('locations', {
                 }
             });
 
-            this.categories = Array.from(categoryMap.values());
+            const derived = Array.from(categoryMap.values());
+            // Keine schlechtere Fallback-Liste über eine vollständige API-Liste legen
+            if (derived.length === 0) return;
+            if (this.categories.length > derived.length) return;
+            this.categories = derived;
         },
 
         applyFilters(filterOptions) {
@@ -437,9 +441,10 @@ export const useLocationsStore = defineStore('locations', {
             if (hasAnyFilter) {
                 locations = locations.filter((loc) => {
                     if (this.filterState.categories.length > 0) {
-                        const categoryId = loc.category?.id || loc.category;
-                        if (!this.filterState.categories.includes(categoryId)) {
-                            return false;
+                        const categoryId = String(loc.category?.id || loc.category || '')
+                        const selected = this.filterState.categories.map(String)
+                        if (!selected.includes(categoryId)) {
+                            return false
                         }
                     }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" mode="ios">
   <head>
     <meta charset="utf-8" />
     <title>Ionic App</title>
@@ -20,6 +20,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Ionic App" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <script>
+      // Ionic-Mode immer iOS erzwingen (nie Android/MD), bevor die App bootet
+      document.documentElement.setAttribute('mode', 'ios');
+    </script>
   </head>
 
   <body>

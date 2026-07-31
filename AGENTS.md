@@ -15,7 +15,13 @@ ShareApp is a Turborepo monorepo with two apps and three packages. See `README.m
 
 ### Startup order
 1. MongoDB must be running before the backend starts.
-2. Backend must be running before the frontend can fetch data.
+2. Optional: seed demo data with `pnpm --filter ./apps/backend seed` (Local API; Next server not required).
+3. Backend must be running before the frontend can fetch data.
+
+### Seeding
+- `pnpm --filter ./apps/backend seed` — wipe locations/categories + related data, then recreate Resource-Sharing demo data
+- `pnpm --filter ./apps/backend seed:wipe` — wipe only
+- Logins: `test@example.com` / `test123`, `admin@shareapp.local` / `admin123`, community users `*@shareapp.local` / `demo1234`
 
 ### Environment files
 The `.env` files should be generated from injected Cursor Cloud secrets (environment variables):

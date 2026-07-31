@@ -167,7 +167,24 @@ ion-button[fill="outline"] {
 
 ion-button[fill="clear"] {
     --color: #275243;
+    --background: transparent;
     font-weight: 600;
+}
+
+ion-toolbar ion-button[fill="clear"] {
+    --color: #D7EB80;
+    --background: transparent;
+    --background-hover: transparent;
+    --background-activated: transparent;
+}
+
+/* Outline on dark toolbars (e.g. filter modal footer) — not charcoal on charcoal */
+ion-toolbar ion-button[fill="outline"] {
+    --border-color: #D7EB80;
+    --color: #D7EB80;
+    --background: transparent;
+    --background-hover: rgba(215, 235, 128, 0.12);
+    --background-activated: rgba(215, 235, 128, 0.2);
 }
 
 ion-button[color="danger"] {
@@ -188,17 +205,37 @@ ion-item {
     font-family: var(--font-body);
 }
 
+/* Form inputs — readable placeholder contrast on light surfaces */
+ion-input,
+ion-textarea {
+    --color: #333333;
+    --placeholder-color: #6c6c6c;
+    --placeholder-opacity: 1;
+}
+
 ion-list {
     background: transparent;
 }
 
-/* Modals */
+/* Modals — solid dark toolbar (no translucent wash over light content) */
 ion-modal {
     --background: #f8f8f6;
 }
 
+ion-modal ion-header,
 ion-modal ion-toolbar {
     --background: #333333;
+    --color: #ffffff;
+    --opacity: 1;
+    background: #333333;
+}
+
+ion-modal ion-toolbar ion-title {
+    color: #ffffff;
+}
+
+ion-modal ion-toolbar ion-icon {
+    color: #D7EB80;
 }
 
 /* Chips */
@@ -380,6 +417,136 @@ ion-page > ion-content {
     -webkit-backdrop-filter: none;
 }
 
+/* Map search bar — light text on dark blur surface (WCAG) */
+#search-bar .search-bar-item {
+    --background: transparent;
+    --color: #ffffff;
+    color: #ffffff;
+}
+
+#search-bar .search-bar-input {
+    --color: #ffffff;
+    --placeholder-color: rgba(255, 255, 255, 0.72);
+    color: #ffffff;
+}
+
+#search-bar .search-bar-filter {
+    --color: #D7EB80;
+    --background: #333333 !important;
+    --background-hover: #444444;
+    --background-activated: #444444;
+    --border-radius: 9999px;
+    width: 2.75rem;
+    height: 2.75rem;
+}
+
+#search-bar ion-icon {
+    color: #ffffff;
+}
+
+#search-bar .search-bar-filter ion-icon {
+    color: #D7EB80;
+}
+
+#search-bar .search-bar-filter-badge {
+    position: absolute;
+    top: -0.15rem;
+    right: -0.15rem;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding: 0 0.25rem;
+    border-radius: 9999px;
+    background: #D7EB80;
+    color: #333333;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.1rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* Aktive Filter rechts unter dem Filter-Button (nicht an Suche gekoppelt) */
+#map-active-filters .map-active-filters-panel {
+    background: rgba(51, 51, 51, 0.92);
+    border: 1px solid rgba(215, 235, 128, 0.35);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(8px);
+}
+
+#map-active-filters .map-filter-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.5rem;
+    border: none;
+    border-radius: 9999px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+#map-active-filters .map-filter-pill--category {
+    width: 2.25rem;
+    padding: 0;
+}
+
+#map-active-filters .map-filter-pill--radius {
+    background: #275243;
+}
+
+#map-active-filters .map-filter-pill-close {
+    position: absolute;
+    top: -0.2rem;
+    right: -0.2rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 9999px;
+    background: #333333;
+    color: #D7EB80;
+    padding: 0.1rem;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+#map-active-filters .map-filter-pill--radius .map-filter-pill-close {
+    position: static;
+    width: 0.9rem;
+    height: 0.9rem;
+    background: transparent;
+    box-shadow: none;
+    color: #D7EB80;
+    padding: 0;
+}
+
+#map-active-filters .map-filter-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(215, 235, 128, 0.45);
+    border-radius: 9999px;
+    background: transparent;
+    color: #D7EB80;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+}
+
+/* Map FAB — lime on map, not charcoal primary */
+.map-fab {
+    --background: #D7EB80;
+    --background-hover: #BBCF65;
+    --background-activated: #A1B353;
+    --color: #333333;
+    --border-radius: 9999px;
+}
+
 /* ═══════════════════════════════════════════
    12. FILTER MODAL
    ═══════════════════════════════════════════ */
@@ -398,6 +565,40 @@ ion-page > ion-content {
 
 ion-modal ion-content {
     --background: #f8f8f6;
+}
+
+/* Add-Location / wizard segment on dark toolbar */
+.add-location-modal ion-toolbar.toolbar-segment,
+ion-toolbar:has(ion-segment) {
+    --background: #333333;
+    --color: #ffffff;
+}
+
+.add-location-modal ion-content {
+    --padding-bottom: 1.5rem;
+}
+
+ion-toolbar ion-segment {
+    --background: rgba(255, 255, 255, 0.18);
+    border-radius: 0.5rem;
+    min-height: 2rem;
+    padding: 0.2rem;
+}
+
+ion-toolbar ion-segment-button {
+    --color: #ffffff;
+    --color-checked: #333333;
+    --indicator-color: #D7EB80;
+    --background-checked: #D7EB80;
+    --border-radius: 0.375rem;
+    min-height: 1.75rem;
+    font-weight: 600;
+    text-transform: none;
+    opacity: 1;
+}
+
+ion-toolbar ion-segment-button.segment-button-disabled {
+    opacity: 1;
 }
 
 /* ═══════════════════════════════════════════

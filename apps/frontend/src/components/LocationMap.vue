@@ -4,63 +4,101 @@
         style="width: 100%; height: 100%"
         :class="{ 'opacity-0': !ready }"
     >
-        <!-- Suchfeld in der Top-Bar -->
+        <!-- Map-Header: Suche + Filter-Button, darunter aktive Filter (kein Overlap) -->
         <div
-            id="search-bar"
-            class="fixed top-[calc(var(--ion-statusbar-padding)+2rem)] left-2 right-2 w-auto z-50
-            flex items-center gap-2"
+            id="map-header"
+            class="fixed top-[calc(var(--ion-safe-area-top,0px)+var(--ion-statusbar-padding,0px)+1rem)] left-2 right-2 z-50 flex flex-col gap-2 pointer-events-none"
         >
-            <ion-item
-                class="flex gap-2 grow blur-bg-light text-light-gray-96"
-                lines="none"
-                color="transparent"
-                aria-label="Search locations"
+            <div
+                id="search-bar"
+                class="flex items-center gap-2 w-full pointer-events-auto"
             >
-                <ion-icon
-                    :icon="searchOutline"
-                    size="small"
-                    slot="start"
-                    class="text-current mr-2"
-                />
-                <ion-input
-                    :placeholder="t('search.placeholder')"
-                    readonly
-                    @click="openSearchModal"
-                    class="cursor-pointer border-none flex-1"
-                    style="--border-width: 0px"
-                />
-            </ion-item>
+                <ion-item
+                    class="search-bar-item flex gap-2 grow blur-bg-light text-white"
+                    lines="none"
+                    color="transparent"
+                    :aria-label="t('search.aria_label')"
+                >
+                    <ion-icon
+                        :icon="searchOutline"
+                        size="small"
+                        slot="start"
+                        class="text-white mr-2"
+                        aria-hidden="true"
+                    />
+                    <ion-input
+                        :placeholder="t('search.placeholder')"
+                        readonly
+                        @click="openSearchModal"
+                        class="search-bar-input cursor-pointer border-none flex-1"
+                        style="--border-width: 0px; --color: #ffffff; --placeholder-color: rgba(255,255,255,0.72)"
+                    />
+                </ion-item>
 
-            <ion-button
-                @click="openFilterModal"
-                fill="clear"
-                class="p-0 shrink-0 blur-bg-light min-h-11 text-light-gray-96"
-                size="small"
-                aria-label="Open filters"
-            >
-                <ion-icon
-                    :icon="funnelOutline"
+                <ion-button
+                    @click="openFilterModal"
+                    fill="clear"
+                    class="search-bar-filter relative p-0 shrink-0 blur-bg-light min-h-11 min-w-11"
                     size="small"
-                    class="text-current"
-                />
-            </ion-button>
-        </div>
+                    :aria-label="filterButtonAriaLabel"
+                >
+                    <ion-icon
+                        :icon="funnelOutline"
+                        class="w-5 h-5 text-accent-300"
+                        aria-hidden="true"
+                    />
+                    <span
+                        v-if="activeFilterChips.length > 0"
+                        class="search-bar-filter-badge"
+                        aria-hidden="true"
+                    >
+                        {{ activeFilterChips.length }}
+                    </span>
+                </ion-button>
+            </div>
 
-        <!-- Filter Chips -->
-        <div
-            v-if="activeFilterChips.length > 0"
-            class="fixed top-[calc(var(--ion-statusbar-padding)+5.5rem)] left-2 right-2 z-50
-            flex flex-wrap gap-1.5"
-        >
-            <ion-chip
-                v-for="chip in activeFilterChips"
-                :key="chip.key"
-                class="blur-bg-light text-xs"
-                @click="removeFilter(chip)"
+            <div
+                v-if="activeFilterChips.length > 0"
+                id="map-active-filters"
+                class="flex justify-end pointer-events-auto"
+                role="group"
+                :aria-label="t('filter.active_filters')"
             >
-                <ion-label>{{ chip.label }}</ion-label>
-                <ion-icon :icon="closeCircle" />
-            </ion-chip>
+                <div class="map-active-filters-panel flex flex-wrap justify-end gap-2 p-2 max-w-full">
+                    <button
+                        v-for="chip in activeFilterChips"
+                        :key="chip.key"
+                        type="button"
+                        class="map-filter-pill"
+                        :class="chip.type === 'category' ? 'map-filter-pill--category' : 'map-filter-pill--radius'"
+                        :style="chip.color ? { backgroundColor: chip.color } : undefined"
+                        :aria-label="t('filter.remove_filter', { name: chip.label })"
+                        :title="chip.label"
+                        @click="removeFilter(chip)"
+                    >
+                        <CategoryIcon
+                            v-if="chip.type === 'category'"
+                            :icon="chip.icon"
+                            size-class="w-4 h-4 text-white"
+                        />
+                        <template v-else>
+                            <ion-icon :icon="navigate" class="w-3.5 h-3.5" aria-hidden="true" />
+                            <span class="text-xs font-semibold leading-none">{{ chip.shortLabel }}</span>
+                        </template>
+                        <ion-icon :icon="closeOutline" class="map-filter-pill-close w-3 h-3" aria-hidden="true" />
+                    </button>
+
+                    <button
+                        type="button"
+                        class="map-filter-clear"
+                        :aria-label="t('filter.clear_all')"
+                        @click="clearAllMapFilters"
+                    >
+                        <ion-icon :icon="closeCircle" class="w-4 h-4" aria-hidden="true" />
+                        <span>{{ t('filter.clear_short') }}</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <mapbox-map
@@ -95,22 +133,31 @@
                                 : 'rgba(99,102,241,0.5)', // fallback: Indigo-500
                         }"
                     >
-                        <ion-icon
+                        <CategoryIcon
                             v-if="currentMapData.zoom > 10"
-                            aria-hidden="true"
-                            :icon="heartOutline"
-                            class="rounded-full p-2 h-4.5 w-4.5 text-light"
+                            :icon="location.category?.icon"
+                            size-class="w-4 h-4 text-white"
                         />
                     </div>
                 </template>
             </mapbox-marker>
 
-            <!-- User Location Marker -->
+            <!-- User Location Marker — dunkler Außenring + weißer Ring für Kontrast auf heller Karte -->
             <mapbox-marker :lngLat="userLocation">
                 <template v-slot:icon>
                     <div
-                        class="w-4 h-4 rounded-full translate-y-1/2 bg-blue-500 border-4 border-white shadow-lg"
-                    ></div>
+                        class="relative flex items-center justify-center w-5 h-5 translate-y-1/2"
+                        aria-hidden="true"
+                    >
+                        <div
+                            class="absolute w-8 h-8 rounded-full bg-secondary-600/25 animate-ping"
+                        ></div>
+                        <div
+                            class="relative flex items-center justify-center w-5 h-5 rounded-full bg-white shadow-md ring-2 ring-primary-600"
+                        >
+                            <div class="w-2.5 h-2.5 rounded-full bg-secondary-600"></div>
+                        </div>
+                    </div>
                 </template>
             </mapbox-marker>
 
@@ -131,7 +178,7 @@
             <!-- Radius Info -->
             <div
                 v-if="geo"
-                class="px-3 py-1 rounded-full blur-bg-light text-xs text-gray-600
+                class="px-3 py-1 rounded-full blur-bg-light text-xs text-white
                        flex items-center justify-center gap-2"
             >
                 <span>
@@ -139,7 +186,9 @@
                 </span>
                 –
                 <span
-                    class="text-blue-500 cursor-pointer"
+                    class="text-accent-300 cursor-pointer underline-offset-2 hover:underline"
+                    role="button"
+                    tabindex="0"
                     @click="setGeoLatLong({
                         coords: {
                             latitude: currentMapData.center[1],
@@ -153,9 +202,10 @@
             </div>
 
             <div
-                class="w-10 h-10 rounded-full flex items-center justify-center blur-bg-light text-blue-500"
+                class="w-10 h-10 rounded-full flex items-center justify-center blur-bg-light text-accent-300"
                 role="button"
-                aria-label="Go to my location"
+                tabindex="0"
+                :aria-label="t('map.my_location')"
                 @click="getGeoLocation(true)"
             >
                 <ion-icon
@@ -174,10 +224,9 @@
         <div class="fixed z-50 bottom-32 right-4">
             <ion-button
                 shape="circle"
-                color="primary"
-                class="w-14 h-14 shadow-lg"
+                class="map-fab w-14 h-14 shadow-lg"
                 @click="goToAddLocation"
-                aria-label="Add new location"
+                :aria-label="t('map.add_location')"
             >
                 <ion-icon :icon="addOutline" size="large" />
             </ion-button>
@@ -208,15 +257,16 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { distance as turfDistance } from '@turf/distance';
 import { point } from '@turf/helpers';
 
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { MapboxMap, MapboxMarker, MapboxGeogeometryCircle } from 'vue-mapbox-ts';
-import { IonItem, IonInput, IonIcon, IonButton, IonChip, IonLabel } from '@ionic/vue';
-import { navigate, searchOutline, funnelOutline, heartOutline, addOutline, closeCircle } from 'ionicons/icons';
+import { IonItem, IonInput, IonIcon, IonButton } from '@ionic/vue';
+import { navigate, searchOutline, funnelOutline, addOutline, closeCircle, closeOutline } from 'ionicons/icons';
+import CategoryIcon from './CategoryIcon.vue';
 import { useRouter } from 'vue-router';
 import SearchModal from './SearchModal.vue';
 import LocationDetail from './LocationDetail.vue';
@@ -254,12 +304,15 @@ const activeFilterChips = computed(() => {
     if (filterState.value.categories && filterState.value.categories.length > 0) {
         const allCategories = locationsStore.categories || []
         filterState.value.categories.forEach((catId) => {
-            const cat = allCategories.find((c) => c.id === catId)
+            const id = typeof catId === 'object' ? catId?.id : catId
+            const cat = allCategories.find((c) => String(c.id) === String(id))
             chips.push({
-                key: `cat-${catId}`,
+                key: `cat-${id}`,
                 type: 'category',
-                value: catId,
-                label: cat ? cat.name : catId,
+                value: id,
+                label: cat?.name || (typeof catId === 'object' ? catId?.name : null) || t('filter.categories'),
+                icon: cat?.icon || '',
+                color: cat?.color || '#275243',
             })
         })
     }
@@ -269,20 +322,35 @@ const activeFilterChips = computed(() => {
             key: 'radius',
             type: 'radius',
             value: filterState.value.radius,
-            label: `< ${filterState.value.radius}${t('radius.unit')}`,
+            label: `${t('filter.radius')}: ${filterState.value.radius} ${t('radius.unit')}`,
+            shortLabel: `${filterState.value.radius}${t('radius.unit')}`,
         })
     }
 
     return chips
 })
 
+const filterButtonAriaLabel = computed(() => {
+    const count = activeFilterChips.value.length
+    if (count === 0) return t('filter.open_filters')
+    return t('filter.open_filters_active', { count })
+})
+
 const removeFilter = (chip) => {
     if (chip.type === 'category') {
-        const updated = filterState.value.categories.filter((id) => id !== chip.value)
+        const updated = filterState.value.categories.filter(
+            (id) => String(id) !== String(chip.value),
+        )
         locationsStore.applyFilters({ ...filterState.value, categories: updated })
-    } else if (chip.type === 'radius') {
+        return
+    }
+    if (chip.type === 'radius') {
         locationsStore.applyFilters({ ...filterState.value, radius: 0 })
     }
+}
+
+const clearAllMapFilters = () => {
+    locationsStore.clearFilters()
 }
 
 const defaultCenter = [13.354336, 52.477697];
@@ -761,6 +829,10 @@ watch(geo, () => {
         updateClusterSource();
     }
 });
+
+onMounted(async () => {
+    await locationsStore.fetchCategories()
+})
 </script>
 
 <style>

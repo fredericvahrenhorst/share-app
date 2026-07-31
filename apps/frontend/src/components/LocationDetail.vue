@@ -9,11 +9,14 @@
         role="dialog"
         :aria-label="popupLocation?.name || 'Location detail'"
     >
-        <ion-header collapse="fade" translucent>
+        <ion-header>
             <ion-toolbar>
                 <div v-if="popupLocation?.category" class="flex items-center mb-2">
-                    <ion-icon :icon="categoryIcon" class="text-xl mr-2 text-accent-300" />
-                    <span class="text-sm text-neutral-300">{{ popupLocation.category?.name }}</span>
+                    <CategoryIcon
+                        :icon="popupLocation.category?.icon"
+                        size-class="w-5 h-5 text-xl mr-2 text-accent-300"
+                    />
+                    <span class="text-sm text-white/70">{{ popupLocation.category?.name }}</span>
                     <span
                         v-if="popupLocation?.status && popupLocation.status !== 'active'"
                         class="ml-2 text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800"
@@ -21,21 +24,22 @@
                         {{ t('locationDetail.status_pending') }}
                     </span>
                 </div>
-                <ion-title class="flex items-center gap-2">
+                <ion-title class="flex items-center gap-2 text-white">
                     {{ popupLocation?.name }}
                     <ion-icon
                         v-if="popupLocation?.verified"
                         :icon="checkmarkCircleOutline"
                         class="text-accent-300 shrink-0"
-                        title="Verifiziert"
+                        :title="t('locationDetail.verified')"
+                        :aria-label="t('locationDetail.verified')"
                     />
                 </ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="presentActionSheet">
-                        <ion-icon size="small" :icon="ellipsisVertical" />
+                    <ion-button fill="clear" @click="presentActionSheet" :aria-label="t('misc.more_options')">
+                        <ion-icon :icon="ellipsisVertical" class="w-5 h-5" />
                     </ion-button>
-                    <ion-button @click="handleDismiss">
-                        <ion-icon size="small" color="primary" :icon="closeOutline" />
+                    <ion-button fill="clear" @click="handleDismiss" :aria-label="t('misc.close')">
+                        <ion-icon :icon="closeOutline" class="w-5 h-5" />
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
@@ -66,7 +70,11 @@
                         :alt="popupLocation?.name"
                         class="object-cover w-full h-full"
                     />
-                    <ion-icon v-else :icon="categoryIcon" class="text-5xl text-neutral-300" />
+                    <CategoryIcon
+                        v-else
+                        :icon="popupLocation?.category?.icon"
+                        size-class="w-16 h-16 text-neutral-300"
+                    />
                 </div>
 
                 <!-- Snap-Slider bei mehreren Bildern -->
@@ -468,6 +476,7 @@ import { useReviewVotesStore } from '../store/reviewVotesStore'
 import { useConfirmationsStore } from '../store/confirmationsStore'
 import useAvatarUrl from '../composables/useAvatarUrl'
 import { hapticLight, hapticSuccess } from '../composables/useHaptics'
+import CategoryIcon from './CategoryIcon.vue'
 
 const locationsStore = useLocationsStore()
 const favoritesStore = useFavoritesStore()
@@ -600,8 +609,6 @@ watch(
         }
     }
 )
-
-const categoryIcon = computed(() => popupLocation.value?.category?.icon || locationOutline)
 
 const isAuthenticated = computed(() => userStore.authenticated)
 

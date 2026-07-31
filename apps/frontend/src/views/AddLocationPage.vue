@@ -7,7 +7,7 @@
                 </ion-buttons>
                 <ion-title>{{ t('addResource.title') }}</ion-title>
             </ion-toolbar>
-            <ion-toolbar>
+            <ion-toolbar class="toolbar-segment">
                 <ion-segment :value="currentStep.toString()">
                     <ion-segment-button value="1" disabled>
                         <ion-label>{{ t('addResource.steps.location') }}</ion-label>
@@ -24,13 +24,13 @@
 
         <ion-content class="ion-padding">
             <!-- Step 1: Standort -->
-            <div v-if="currentStep === 1" class="h-full flex flex-col">
+            <div v-if="currentStep === 1" class="flex flex-col min-h-full pb-6">
                 <div class="text-center mb-4">
-                    <h2 class="text-lg font-semibold">{{ t('addResource.step1.title') }}</h2>
-                    <p class="text-sm text-gray-500">{{ t('addResource.step1.searchPlaceholder') }}</p>
+                    <h2 class="text-lg font-semibold text-primary-600">{{ t('addResource.step1.title') }}</h2>
+                    <p class="text-sm text-primary-400">{{ t('addResource.step1.searchPlaceholder') }}</p>
                 </div>
 
-                <div class="flex-grow relative rounded-xl overflow-hidden border border-gray-200 mb-4 min-h-[300px]">
+                <div class="relative shrink-0 rounded-xl overflow-hidden border border-neutral-200 mb-4 h-56 sm:h-72">
                     <MapboxMap
                         v-if="mapboxToken"
                         :accessToken="mapboxToken"
@@ -47,46 +47,66 @@
                         <MapboxMarker
                             v-if="userLocation"
                             :lngLat="userLocation"
-                            color="#3B82F6"
+                            color="#275243"
                         />
                     </MapboxMap>
                 </div>
 
-                <ion-button expand="block" fill="outline" class="mb-4" @click="useCurrentLocation">
-                    <ion-icon slot="start" :icon="locateOutline" />
-                    {{ t('addResource.step1.useCurrentLocation') }}
-                </ion-button>
+                <div class="shrink-0 mt-auto space-y-3 pb-6">
+                    <ion-button
+                        expand="block"
+                        fill="outline"
+                        :disabled="isLocating"
+                        @click="useCurrentLocation"
+                    >
+                        <ion-spinner v-if="isLocating" name="crescent" slot="start" />
+                        <ion-icon v-else slot="start" :icon="locateOutline" />
+                        {{ t('addResource.step1.useCurrentLocation') }}
+                    </ion-button>
 
-                <div v-if="selectedAddress" class="mb-4 p-3 bg-gray-50 rounded-lg text-sm">
-                    <p class="font-semibold">Ausgewählter Standort:</p>
-                    <p>{{ formatAddress(selectedAddress) }}</p>
+                    <div v-if="selectedAddress" class="p-3 bg-neutral-50 rounded-lg text-sm text-primary-600">
+                        <p class="font-semibold">Ausgewählter Standort:</p>
+                        <p>{{ formatAddress(selectedAddress) }}</p>
+                    </div>
+
+                    <ion-button
+                        expand="block"
+                        :disabled="!selectedCoordinates"
+                        @click="nextStep"
+                    >
+                        {{ t('common.next') }}
+                    </ion-button>
                 </div>
-
-                <ion-button expand="block" :disabled="!selectedCoordinates" @click="nextStep">
-                    {{ t('common.next') }}
-                </ion-button>
             </div>
 
             <!-- Step 2: Kategorie -->
-            <div v-else-if="currentStep === 2" class="h-full flex flex-col">
+            <div v-else-if="currentStep === 2" class="flex flex-col min-h-full pb-6">
                 <div class="text-center mb-4">
-                    <h2 class="text-lg font-semibold">{{ t('addResource.step2.title') }}</h2>
+                    <h2 class="text-lg font-semibold text-primary-600">{{ t('addResource.step2.title') }}</h2>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div
                         v-for="category in categories"
                         :key="category.id"
+                        role="button"
+                        tabindex="0"
+                        :aria-label="category.name"
                         class="p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center justify-center text-center h-32"
-                        :class="selectedCategoryId === category.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                        :class="selectedCategoryId === category.id ? 'border-accent-300 bg-accent-50' : 'border-neutral-200 hover:border-neutral-300'"
                         @click="selectCategory(category.id)"
+                        @keydown.enter.prevent="selectCategory(category.id)"
+                        @keydown.space.prevent="selectCategory(category.id)"
                     >
-                        <div class="text-3xl mb-2">{{ category.icon || '📦' }}</div>
-                        <div class="font-medium text-sm">{{ category.name }}</div>
+                        <CategoryIcon
+                            :icon="category.icon"
+                            size-class="w-8 h-8 text-3xl mb-2 text-secondary-600"
+                        />
+                        <div class="font-medium text-sm text-primary-600">{{ category.name }}</div>
                     </div>
                 </div>
 
-                <div class="mt-auto">
+                <div class="mt-auto pt-4">
                     <div class="flex gap-2">
                         <ion-button expand="block" fill="outline" class="flex-1" @click="prevStep">
                             {{ t('common.back') }}
@@ -214,6 +234,7 @@ import { useAppStore } from '../store/appStore';
 import { useUserStore } from '../store/userStore';
 import apiCall from '../composables/apiCall';
 import SuccessAnimation from '../components/SuccessAnimation.vue';
+import CategoryIcon from '../components/CategoryIcon.vue';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -231,6 +252,7 @@ const defaultCenter = [13.354336, 52.477697];
 // State
 const currentStep = ref(1);
 const isSubmitting = ref(false);
+const isLocating = ref(false);
 const showSuccessAnimation = ref(false);
 
 // Step 1: Location
@@ -279,12 +301,34 @@ function handleMapClick(event) {
     };
 }
 
-function useCurrentLocation() {
-    if (userLocation.value) {
-        selectedCoordinates.value = userLocation.value;
-        mapCenter.value = userLocation.value;
-        mapZoom.value = 14;
-        selectedAddress.value = { street: 'Aktueller Standort', city: '' };
+async function useCurrentLocation() {
+    if (isLocating.value) return
+
+    isLocating.value = true
+    try {
+        await appStore.getGeoLocation(true)
+        const coords = geo.value ? [geo.value.long, geo.value.lat] : null
+        if (!coords) {
+            throw new Error('no-geo')
+        }
+
+        selectedCoordinates.value = coords
+        mapCenter.value = coords
+        mapZoom.value = 15
+        selectedAddress.value = {
+            street: t('addResource.step1.useCurrentLocation'),
+            city: `${coords[1].toFixed(5)}, ${coords[0].toFixed(5)}`,
+        }
+    } catch (error) {
+        const toast = await toastController.create({
+            message: t('addResource.step1.locationError'),
+            duration: 3000,
+            color: 'danger',
+            position: 'top',
+        })
+        await toast.present()
+    } finally {
+        isLocating.value = false
     }
 }
 

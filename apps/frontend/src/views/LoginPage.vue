@@ -15,6 +15,8 @@
                         <ion-input
                             v-model="email"
                             type="email"
+                            :label="t('auth.login_email')"
+                            label-placement="stacked"
                             :placeholder="t('auth.login_email')"
                             :disabled="isLoading"
                             required
@@ -26,6 +28,8 @@
                         <ion-input
                             v-model="password"
                             type="password"
+                            :label="t('auth.login_password')"
+                            label-placement="stacked"
                             :placeholder="t('auth.login_password')"
                             :disabled="isLoading"
                             required
@@ -34,8 +38,8 @@
                         />
                     </ion-item>
                     <div class="text-right mt-1">
-                        <router-link to="/forgot-password" class="text-xs text-blue-600 hover:underline">
-                            Passwort vergessen?
+                        <router-link to="/forgot-password" class="text-xs text-secondary-600 hover:underline">
+                            {{ t('auth.forgot_password') }}
                         </router-link>
                     </div>
 

@@ -15,6 +15,8 @@
                         <ion-input
                             v-model="name"
                             type="text"
+                            :label="t('auth.register_name')"
+                            label-placement="stacked"
                             :placeholder="t('auth.register_name')"
                             :disabled="isLoading"
                             required
@@ -26,6 +28,8 @@
                         <ion-input
                             v-model="email"
                             type="email"
+                            :label="t('auth.register_email')"
+                            label-placement="stacked"
                             :placeholder="t('auth.register_email')"
                             :disabled="isLoading"
                             required
@@ -37,6 +41,8 @@
                         <ion-input
                             v-model="password"
                             type="password"
+                            :label="t('auth.register_password')"
+                            label-placement="stacked"
                             :placeholder="t('auth.register_password')"
                             :disabled="isLoading"
                             required

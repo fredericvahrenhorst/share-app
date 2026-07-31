@@ -7,8 +7,8 @@
             </div>
 
             <div v-else-if="hasError" class="flex flex-col items-center justify-center h-full text-center">
-                <ion-icon :icon="alertCircleOutline" class="text-6xl text-red-400 mb-4" />
-                <h2 class="text-lg font-semibold text-gray-700 mb-2">
+                <ion-icon :icon="alertCircleOutline" class="w-16 h-16 text-error mb-4" />
+                <h2 class="text-lg font-semibold text-primary-600 mb-2">
                     {{ t('errors.generic') }}
                 </h2>
                 <ion-button fill="outline" router-link="/home">

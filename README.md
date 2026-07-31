@@ -14,10 +14,14 @@ A sustainable resource sharing application built as a Turborepo monorepo with Pa
 # Install dependencies
 pnpm install
 
-# Start development servers
-pnpm dev
+# Ensure MongoDB is running, then fill an empty (or existing) DB with demo data
+pnpm --filter ./apps/backend seed
 
-# Start both frontend and backend together
+# Start development servers
+pnpm --filter ./apps/backend dev
+pnpm --filter ./apps/frontend dev
+
+# Or both together
 pnpm start:all
 ```
 
@@ -98,6 +102,31 @@ pnpm --filter ./apps/backend dev
 # Both frontend and backend together
 pnpm start:all
 ```
+
+### Database seeding (Resource-Sharing Testdaten)
+
+Der Seeder nutzt die Payload Local API (kein laufender Next-Server nötig). Voraussetzung: MongoDB + `apps/backend/.env` (`DATABASE_URI`, `PAYLOAD_SECRET`).
+
+```bash
+# Idempotent: löscht Locations, Kategorien und abhängige Community-Daten,
+# legt danach Resource-Sharing-Testdaten neu an (User werden upserted)
+pnpm --filter ./apps/backend seed
+
+# Nur leeren, ohne Neuaufbau
+pnpm --filter ./apps/backend seed:wipe
+```
+
+Enthalten u. a.: 8 Kategorien (Fairteiler, Givebox, BücherboXX, …), ~24 Locations mit Bildern und vollständigen Feldern, Reviews, Favoriten, Confirmations, Status-Kommentare, mehrere Demo-User.
+
+**Login-Accounts nach dem Seed:**
+
+| E-Mail | Passwort | Rolle |
+|--------|----------|-------|
+| `test@example.com` | `test123` | admin + user |
+| `admin@shareapp.local` | `admin123` | admin + user |
+| `anna@shareapp.local` | `demo1234` | user |
+
+Demo-Bild: `apps/backend/src/scripts/fixtures/demo-resource.png`.
 
 ### Testing
 

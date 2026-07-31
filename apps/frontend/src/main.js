@@ -5,6 +5,9 @@ import { createI18n } from 'vue-i18n'; // eslint-disable-line
 import App from './App.vue';
 import router from './router';
 
+// Ionic-Komponenten immer im iOS-Look (kein Android/Material Design)
+document.documentElement.setAttribute('mode', 'ios');
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -44,7 +47,11 @@ const i18n = createI18n({
 
 
 const app = createApp(App)
-    .use(IonicVue, { mode: 'ios' })
+    .use(IonicVue, {
+        mode: 'ios',
+        // Platform-Erkennung nicht für den UI-Mode nutzen
+        animated: true,
+    })
     .use(router)
     .use(pinia)
     .use(i18n);
